@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using RecipeMeal.Core.Services;
 using RecipeMeal.Infrastructure.Data;
 using System.Text;
+using RecipeMeal.Core.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,8 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Add DbContext
 builder.Services.AddDbContext<RecipeMealDbContext>(options =>

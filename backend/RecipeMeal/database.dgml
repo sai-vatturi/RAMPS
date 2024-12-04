@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="Database" Label="recipemealdb" Category="Database" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="dbo" Label="dbo" Category="Schema" Group="Expanded" />
+    <Node Id="MealPlanRecipes" Label="MealPlanRecipes" Category="Table" Group="Collapsed" />
+    <Node Id="MealPlanRecipes_MealPlanId" Label="MealPlanId int" Category="PK" Description="int" />
+    <Node Id="MealPlanRecipes_RecipeId" Label="RecipeId int" Category="PK" Description="int" />
+    <Node Id="MealPlanRecipes_MealPlanRecipeId" Label="MealPlanRecipeId int" Category="NOT NULL" Description="int" />
+    <Node Id="MealPlanRecipes_MealTime" Label="MealTime datetime2" Category="NOT NULL" Description="datetime2" />
+    <Node Id="MealPlans" Label="MealPlans" Category="Table" Group="Collapsed" />
+    <Node Id="MealPlans_MealPlanId" Label="MealPlanId int" Category="PK" Description="int" />
+    <Node Id="MealPlans_Name" Label="Name nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="MealPlans_CreatedBy" Label="CreatedBy nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="MealPlans_StartDate" Label="StartDate datetime2" Category="NOT NULL" Description="datetime2" />
+    <Node Id="MealPlans_EndDate" Label="EndDate datetime2" Category="NOT NULL" Description="datetime2" />
+    <Node Id="Nutritions" Label="Nutritions" Category="Table" Group="Collapsed" />
+    <Node Id="Nutritions_NutritionId" Label="NutritionId int" Category="PK" Description="int" />
+    <Node Id="Nutritions_RecipeId" Label="RecipeId int" Category="FK" Description="int" />
+    <Node Id="Nutritions_Calories" Label="Calories int" Category="NOT NULL" Description="int" />
+    <Node Id="Nutritions_Protein" Label="Protein real" Category="NOT NULL" Description="real" />
+    <Node Id="Nutritions_Carbs" Label="Carbs real" Category="NOT NULL" Description="real" />
+    <Node Id="Nutritions_Fat" Label="Fat real" Category="NOT NULL" Description="real" />
+    <Node Id="Nutritions_Vitamins" Label="Vitamins nvarchar(500)" Category="NULL" Description="nvarchar(500)" />
+    <Node Id="Recipes" Label="Recipes" Category="Table" Group="Collapsed" />
+    <Node Id="Recipes_RecipeId" Label="RecipeId int" Category="PK" Description="int" />
+    <Node Id="Recipes_Title" Label="Title nvarchar(100)" Category="NOT NULL" Description="nvarchar(100)" />
+    <Node Id="Recipes_Description" Label="Description nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Recipes_Ingredients" Label="Ingredients nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Recipes_Steps" Label="Steps nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Recipes_Category" Label="Category nvarchar(50)" Category="NOT NULL" Description="nvarchar(50)" />
+    <Node Id="Recipes_ImageUrl" Label="ImageUrl nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Recipes_CreatedBy" Label="CreatedBy nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Recipes_CreatedAt" Label="CreatedAt datetime2" Category="NOT NULL" Description="datetime2" />
+    <Node Id="Recipes_UpdatedAt" Label="UpdatedAt datetime2" Category="NULL" Description="datetime2" />
+    <Node Id="Reviews" Label="Reviews" Category="Table" Group="Collapsed" />
+    <Node Id="Reviews_ReviewId" Label="ReviewId int" Category="PK" Description="int" />
+    <Node Id="Reviews_RecipeId" Label="RecipeId int" Category="FK" Description="int" />
+    <Node Id="Reviews_UserName" Label="UserName nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Reviews_Rating" Label="Rating int" Category="NOT NULL" Description="int" />
+    <Node Id="Reviews_Comment" Label="Comment nvarchar(500)" Category="NOT NULL" Description="nvarchar(500)" />
+    <Node Id="Reviews_CreatedAt" Label="CreatedAt datetime2" Category="NOT NULL" Description="datetime2" />
+    <Node Id="ShoppingListItems" Label="ShoppingListItems" Category="Table" Group="Collapsed" />
+    <Node Id="ShoppingListItems_ShoppingListItemId" Label="ShoppingListItemId int" Category="PK" Description="int" />
+    <Node Id="ShoppingListItems_ShoppingListId" Label="ShoppingListId int" Category="FK" Description="int" />
+    <Node Id="ShoppingListItems_Ingredient" Label="Ingredient nvarchar(100)" Category="NOT NULL" Description="nvarchar(100)" />
+    <Node Id="ShoppingListItems_Quantity" Label="Quantity int" Category="NOT NULL" Description="int" />
+    <Node Id="ShoppingListItems_IsPurchased" Label="IsPurchased bit" Category="NOT NULL" Description="bit" />
+    <Node Id="ShoppingLists" Label="ShoppingLists" Category="Table" Group="Collapsed" />
+    <Node Id="ShoppingLists_ShoppingListId" Label="ShoppingListId int" Category="PK" Description="int" />
+    <Node Id="ShoppingLists_MealPlanId" Label="MealPlanId int" Category="FK" Description="int" />
+    <Node Id="Users" Label="Users" Category="Table" Group="Collapsed" />
+    <Node Id="Users_UserId" Label="UserId int" Category="PK" Description="int" />
+    <Node Id="Users_Username" Label="Username nvarchar(50)" Category="NOT NULL" Description="nvarchar(50)" />
+    <Node Id="Users_FirstName" Label="FirstName nvarchar(50)" Category="NOT NULL" Description="nvarchar(50)" />
+    <Node Id="Users_LastName" Label="LastName nvarchar(50)" Category="NOT NULL" Description="nvarchar(50)" />
+    <Node Id="Users_Email" Label="Email nvarchar(100)" Category="NOT NULL" Description="nvarchar(100)" />
+    <Node Id="Users_PasswordHash" Label="PasswordHash nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Users_PhoneNumber" Label="PhoneNumber nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Users_Role" Label="Role nvarchar(max)" Category="NOT NULL" Description="nvarchar(max)" />
+    <Node Id="Users_IsApproved" Label="IsApproved bit" Category="NOT NULL" Description="bit" />
+    <Node Id="Users_IsActive" Label="IsActive bit" Category="NOT NULL" Description="bit" />
+    <Node Id="Users_IsEmailVerified" Label="IsEmailVerified bit" Category="NOT NULL" Description="bit" />
+    <Node Id="Users_EmailVerificationToken" Label="EmailVerificationToken nvarchar(max)" Category="NULL" Description="nvarchar(max)" />
+    <Node Id="Users_PasswordResetToken" Label="PasswordResetToken nvarchar(max)" Category="NULL" Description="nvarchar(max)" />
+    <Node Id="Users_PasswordResetTokenExpiry" Label="PasswordResetTokenExpiry datetime2" Category="NULL" Description="datetime2" />
+  </Nodes>
+  <Links>
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="dbo" Target="MealPlanRecipes" Category="Contains" />
+    <Link Source="MealPlanRecipes" Target="MealPlanRecipes_MealPlanId" Category="Contains" />
+    <Link Source="MealPlanRecipes" Target="MealPlanRecipes_RecipeId" Category="Contains" />
+    <Link Source="MealPlanRecipes" Target="MealPlanRecipes_MealPlanRecipeId" Category="Contains" />
+    <Link Source="MealPlanRecipes" Target="MealPlanRecipes_MealTime" Category="Contains" />
+    <Link Source="MealPlanRecipes_MealPlanId" Target="MealPlans_MealPlanId" Label="FK_MealPlanRecipes_MealPlans_MealPlanId" Category="Foreign Key" />
+    <Link Source="MealPlanRecipes_RecipeId" Target="Recipes_RecipeId" Label="FK_MealPlanRecipes_Recipes_RecipeId" Category="Foreign Key" />
+    <Link Source="dbo" Target="MealPlans" Category="Contains" />
+    <Link Source="MealPlans" Target="MealPlans_MealPlanId" Category="Contains" />
+    <Link Source="MealPlans" Target="MealPlans_Name" Category="Contains" />
+    <Link Source="MealPlans" Target="MealPlans_CreatedBy" Category="Contains" />
+    <Link Source="MealPlans" Target="MealPlans_StartDate" Category="Contains" />
+    <Link Source="MealPlans" Target="MealPlans_EndDate" Category="Contains" />
+    <Link Source="dbo" Target="Nutritions" Category="Contains" />
+    <Link Source="Nutritions" Target="Nutritions_NutritionId" Category="Contains" />
+    <Link Source="Nutritions" Target="Nutritions_RecipeId" Category="Contains" />
+    <Link Source="Nutritions" Target="Nutritions_Calories" Category="Contains" />
+    <Link Source="Nutritions" Target="Nutritions_Protein" Category="Contains" />
+    <Link Source="Nutritions" Target="Nutritions_Carbs" Category="Contains" />
+    <Link Source="Nutritions" Target="Nutritions_Fat" Category="Contains" />
+    <Link Source="Nutritions" Target="Nutritions_Vitamins" Category="Contains" />
+    <Link Source="Nutritions_RecipeId" Target="Recipes_RecipeId" Label="FK_Nutritions_Recipes_RecipeId" Category="Foreign Key" />
+    <Link Source="dbo" Target="Recipes" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_RecipeId" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_Title" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_Description" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_Ingredients" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_Steps" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_Category" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_ImageUrl" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_CreatedBy" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_CreatedAt" Category="Contains" />
+    <Link Source="Recipes" Target="Recipes_UpdatedAt" Category="Contains" />
+    <Link Source="dbo" Target="Reviews" Category="Contains" />
+    <Link Source="Reviews" Target="Reviews_ReviewId" Category="Contains" />
+    <Link Source="Reviews" Target="Reviews_RecipeId" Category="Contains" />
+    <Link Source="Reviews" Target="Reviews_UserName" Category="Contains" />
+    <Link Source="Reviews" Target="Reviews_Rating" Category="Contains" />
+    <Link Source="Reviews" Target="Reviews_Comment" Category="Contains" />
+    <Link Source="Reviews" Target="Reviews_CreatedAt" Category="Contains" />
+    <Link Source="Reviews_RecipeId" Target="Recipes_RecipeId" Label="FK_Reviews_Recipes_RecipeId" Category="Foreign Key" />
+    <Link Source="dbo" Target="ShoppingListItems" Category="Contains" />
+    <Link Source="ShoppingListItems" Target="ShoppingListItems_ShoppingListItemId" Category="Contains" />
+    <Link Source="ShoppingListItems" Target="ShoppingListItems_ShoppingListId" Category="Contains" />
+    <Link Source="ShoppingListItems" Target="ShoppingListItems_Ingredient" Category="Contains" />
+    <Link Source="ShoppingListItems" Target="ShoppingListItems_Quantity" Category="Contains" />
+    <Link Source="ShoppingListItems" Target="ShoppingListItems_IsPurchased" Category="Contains" />
+    <Link Source="ShoppingListItems_ShoppingListId" Target="ShoppingLists_ShoppingListId" Label="FK_ShoppingListItems_ShoppingLists_ShoppingListId" Category="Foreign Key" />
+    <Link Source="dbo" Target="ShoppingLists" Category="Contains" />
+    <Link Source="ShoppingLists" Target="ShoppingLists_ShoppingListId" Category="Contains" />
+    <Link Source="ShoppingLists" Target="ShoppingLists_MealPlanId" Category="Contains" />
+    <Link Source="ShoppingLists_MealPlanId" Target="MealPlans_MealPlanId" Label="FK_ShoppingLists_MealPlans_MealPlanId" Category="Foreign Key" />
+    <Link Source="dbo" Target="Users" Category="Contains" />
+    <Link Source="Users" Target="Users_UserId" Category="Contains" />
+    <Link Source="Users" Target="Users_Username" Category="Contains" />
+    <Link Source="Users" Target="Users_FirstName" Category="Contains" />
+    <Link Source="Users" Target="Users_LastName" Category="Contains" />
+    <Link Source="Users" Target="Users_Email" Category="Contains" />
+    <Link Source="Users" Target="Users_PasswordHash" Category="Contains" />
+    <Link Source="Users" Target="Users_PhoneNumber" Category="Contains" />
+    <Link Source="Users" Target="Users_Role" Category="Contains" />
+    <Link Source="Users" Target="Users_IsApproved" Category="Contains" />
+    <Link Source="Users" Target="Users_IsActive" Category="Contains" />
+    <Link Source="Users" Target="Users_IsEmailVerified" Category="Contains" />
+    <Link Source="Users" Target="Users_EmailVerificationToken" Category="Contains" />
+    <Link Source="Users" Target="Users_PasswordResetToken" Category="Contains" />
+    <Link Source="Users" Target="Users_PasswordResetTokenExpiry" Category="Contains" />
+  </Links>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Table" ValueLabel="True">
+      <Condition Expression="HasCategory('Table')" />
+      <Setter Property="Background" Value="#FFC0C0C0" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Schema" ValueLabel="True">
+      <Condition Expression="HasCategory('Schema')" />
+      <Setter Property="Background" Value="#FF7F9169" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="PK" ValueLabel="True">
+      <Condition Expression="HasCategory('PK')" />
+      <Setter Property="Background" Value="#FF008000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="NULL" ValueLabel="True">
+      <Condition Expression="HasCategory('NULL')" />
+      <Setter Property="Background" Value="#FF808040" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="FK" ValueLabel="True">
+      <Condition Expression="HasCategory('FK')" />
+      <Setter Property="Background" Value="#FF8080FF" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="NOT NULL" ValueLabel="True">
+      <Condition Expression="HasCategory('NOT NULL')" />
+      <Setter Property="Background" Value="#FFC0A000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Database" ValueLabel="True">
+      <Condition Expression="HasCategory('Database')" />
+      <Setter Property="Background" Value="#FFFFFFFF" />
+    </Style>
+  </Styles>
+</DirectedGraph>

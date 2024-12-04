@@ -4,6 +4,15 @@ namespace RecipeMeal.Core.DTOs.Auth
 {
     public class SignupDto
     {
+
+        [Required]
+        [StringLength(50)]
+        public string FirstName { get; set; }
+
+        [Required]
+        [StringLength(50)]
+
+        public string LastName { get; set; }
         [Required]
         [StringLength(50, MinimumLength = 3)]
         public string Username { get; set; }
@@ -21,5 +30,6 @@ namespace RecipeMeal.Core.DTOs.Auth
 
         [Required]
         public string Role { get; set; } // Role as a string
+
     }
 }

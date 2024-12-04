@@ -102,34 +102,6 @@ namespace RecipeMeal.API.Controllers
 			return Ok(new { token });
 		}
 
-
-
-		[HttpGet("getallusers")]
-		[Authorize(Roles = "Admin")] // Restrict access to Admin only
-		public IActionResult GetAllUsers()
-		{
-			// Check if the authenticated user has Admin role
-			var currentUser = HttpContext.User;
-			if (!currentUser.IsInRole("Admin"))
-			{
-				return Forbid("You are not authorized to access this endpoint.");
-			}
-
-			// Retrieve all users from the database
-			var users = _dbContext.Users
-				.Select(u => new
-				{
-					u.FirstName,
-					u.LastName,
-					u.Username,
-					u.Email,
-					Role = u.Role.ToString(),
-				})
-				.ToList();
-
-			return Ok(users);
-		}
-
 		[HttpPost("request-password-reset")]
 		public async Task<IActionResult> RequestPasswordReset([FromBody] PasswordResetRequestDto dto)
 		{

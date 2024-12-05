@@ -146,5 +146,58 @@ namespace RecipeMeal.API.Controllers
 
 			return Ok("Meal Plan deleted successfully.");
 		}
+
+		// PATCH: api/MealPlan/{id}
+		[HttpPatch("{id}")]
+		[Authorize(Roles = "MealPlanner,Admin")]
+		public async Task<IActionResult> PatchMealPlan(int id, [FromBody] PatchMealPlanDto dto)
+		{
+			var mealPlan = await _dbContext.MealPlans.Include(mp => mp.Recipes).FirstOrDefaultAsync(mp => mp.MealPlanId == id);
+			if (mealPlan == null)
+				return NotFound("Meal Plan not found.");
+
+			if (mealPlan.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
+				return Forbid("You are not authorized to update this meal plan.");
+
+			// Update fields selectively
+			if (!string.IsNullOrEmpty(dto.Name))
+				mealPlan.Name = dto.Name;
+			if (dto.StartDate.HasValue)
+				mealPlan.StartDate = dto.StartDate.Value;
+			if (dto.EndDate.HasValue)
+				mealPlan.EndDate = dto.EndDate.Value;
+
+			// Update or add recipes
+			if (dto.Recipes != null && dto.Recipes.Any())
+			{
+				foreach (var recipeDto in dto.Recipes)
+				{
+					if (recipeDto.RecipeId.HasValue && recipeDto.MealTime.HasValue)
+					{
+						var existingRecipe = mealPlan.Recipes.FirstOrDefault(r => r.RecipeId == recipeDto.RecipeId.Value);
+						if (existingRecipe != null)
+						{
+							// Update existing recipe
+							existingRecipe.MealTime = recipeDto.MealTime.Value;
+						}
+						else
+						{
+							// Add new recipe
+							mealPlan.Recipes.Add(new MealPlanRecipe
+							{
+								RecipeId = recipeDto.RecipeId.Value,
+								MealTime = recipeDto.MealTime.Value
+							});
+						}
+					}
+				}
+			}
+
+			_dbContext.MealPlans.Update(mealPlan);
+			await _dbContext.SaveChangesAsync();
+
+			return Ok(mealPlan);
+		}
+
 	}
 }

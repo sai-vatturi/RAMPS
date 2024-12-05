@@ -29,6 +29,9 @@ namespace RecipeMeal.API.Controllers
 			if (recipe == null)
 				return NotFound("Recipe not found.");
 
+			if (await _dbContext.Nutritions.AnyAsync(n => n.RecipeId == dto.RecipeId))
+				return BadRequest("Nutrition already exists for this recipe.");
+
 			var nutrition = new Nutrition
 			{
 				RecipeId = dto.RecipeId,
@@ -54,13 +57,6 @@ namespace RecipeMeal.API.Controllers
 			if (nutrition == null)
 				return NotFound("Nutrition data not found.");
 
-			// Check ownership or admin override
-			var recipe = await _dbContext.Recipes.FindAsync(nutrition.RecipeId);
-			var createdBy = recipe?.CreatedBy;
-
-			if (createdBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to update this nutrition data.");
-
 			nutrition.Calories = dto.Calories;
 			nutrition.Protein = dto.Protein;
 			nutrition.Carbs = dto.Carbs;
@@ -73,33 +69,102 @@ namespace RecipeMeal.API.Controllers
 			return Ok(nutrition);
 		}
 
-		// Get Nutrition Summary for Meal Plan
-		[HttpGet("meal-plan/{mealPlanId}/summary")]
-		[Authorize(Roles = "MealPlanner,User,Admin")]
-		public async Task<IActionResult> GetMealPlanNutritionSummary(int mealPlanId)
+		// Patch Nutrition
+		[HttpPatch("{nutritionId}")]
+		[Authorize(Roles = "Nutritionist,Chef,Admin")]
+		public async Task<IActionResult> PatchNutrition(int nutritionId, [FromBody] PatchNutritionDto dto)
 		{
-			var mealPlan = await _dbContext.MealPlans
-				.Include(mp => mp.Recipes)
-				.ThenInclude(mpr => mpr.Recipe)
-				.ThenInclude(r => r.Nutrition)
-				.FirstOrDefaultAsync(mp => mp.MealPlanId == mealPlanId);
+			var nutrition = await _dbContext.Nutritions.FindAsync(nutritionId);
+			if (nutrition == null)
+				return NotFound("Nutrition data not found.");
 
-			if (mealPlan == null)
-				return NotFound("Meal plan not found.");
+			if (dto.Calories.HasValue) nutrition.Calories = dto.Calories.Value;
+			if (dto.Protein.HasValue) nutrition.Protein = dto.Protein.Value;
+			if (dto.Carbs.HasValue) nutrition.Carbs = dto.Carbs.Value;
+			if (dto.Fat.HasValue) nutrition.Fat = dto.Fat.Value;
+			if (!string.IsNullOrWhiteSpace(dto.Vitamins)) nutrition.Vitamins = dto.Vitamins;
 
-			var summary = mealPlan.Recipes
-				.Select(r => r.Recipe.Nutrition)
-				.GroupBy(n => true)
-				.Select(group => new
-				{
-					Calories = group.Sum(n => n.Calories),
-					Protein = group.Sum(n => n.Protein),
-					Carbs = group.Sum(n => n.Carbs),
-					Fat = group.Sum(n => n.Fat),
-					Vitamins = string.Join(", ", group.Select(n => n.Vitamins).Where(v => !string.IsNullOrEmpty(v)))
-				}).FirstOrDefault();
+			_dbContext.Nutritions.Update(nutrition);
+			await _dbContext.SaveChangesAsync();
 
-			return Ok(summary);
+			return Ok(nutrition);
 		}
+
+		// Get Pending Meals
+		[HttpGet("pending")]
+		[Authorize(Roles = "Nutritionist,Admin")]
+		public IActionResult GetPendingMeals()
+		{
+			var pendingMeals = _dbContext.Recipes
+				.Where(r => !_dbContext.Nutritions.Any(n => n.RecipeId == r.RecipeId))
+				.Select(r => new
+				{
+					r.RecipeId,
+					r.Title,
+					r.Description,
+					r.Category,
+					r.CreatedBy,
+					r.CreatedAt
+				}).ToList();
+
+			return Ok(pendingMeals);
+		}
+
+		// Get All Nutrition Data
+		[HttpGet]
+		[Authorize(Roles = "Nutritionist,Admin")]
+		public IActionResult GetAllNutrition()
+		{
+			var nutritions = _dbContext.Nutritions
+				.Include(n => n.Recipe)
+				.Select(n => new
+				{
+					n.NutritionId,
+					n.RecipeId,
+					RecipeTitle = n.Recipe.Title,
+					n.Calories,
+					n.Protein,
+					n.Carbs,
+					n.Fat,
+					n.Vitamins
+				}).ToList();
+
+			return Ok(nutritions);
+		}
+
+		// Get Nutrition By Recipe
+		[HttpGet("recipe/{recipeId}")]
+		[Authorize(Roles = "Nutritionist,Chef,Admin")]
+		public async Task<IActionResult> GetNutritionByRecipe(int recipeId)
+		{
+			var nutrition = await _dbContext.Nutritions
+				.Include(n => n.Recipe)
+				.FirstOrDefaultAsync(n => n.RecipeId == recipeId);
+
+			if (nutrition == null)
+				return NotFound("Nutrition data not found for the specified recipe.");
+
+			return Ok(nutrition);
+		}
+
+		[HttpDelete("recipe/{recipeId}")]
+		[Authorize(Roles = "Nutritionist,Admin")]
+		public async Task<IActionResult> DeleteNutritionByRecipeId(int recipeId)
+		{
+			// Find the nutrition entry based on the RecipeId
+			var nutrition = await _dbContext.Nutritions.FirstOrDefaultAsync(n => n.RecipeId == recipeId);
+
+			if (nutrition == null)
+			{
+				return NotFound($"No nutrition entry found for Recipe ID {recipeId}.");
+			}
+
+			// Remove the nutrition entry
+			_dbContext.Nutritions.Remove(nutrition);
+			await _dbContext.SaveChangesAsync();
+
+			return Ok($"Nutrition entry for Recipe ID {recipeId} deleted successfully.");
+		}
+
 	}
 }

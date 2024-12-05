@@ -57,6 +57,15 @@ builder.Services.AddCors(options =>
 	});
 });
 
+// serialize enums as strings in JSON
+builder.Services.AddControllers()
+	.AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+	});
+
+
+
 // Configure JSON serialization options to handle circular references
 builder.Services.AddControllers()
 	.AddJsonOptions(options =>

@@ -1,0 +1,64 @@
+<h1>Chef Recipe Management</h1>
+
+<!-- Add/Update Recipe Form -->
+<h2>{{ isEditMode ? 'Edit Recipe' : 'Add Recipe' }}</h2>
+<form (ngSubmit)="isEditMode ? updateRecipe() : addRecipe()">
+  <div>
+    <label>Title</label>
+    <input type="text" [(ngModel)]="newRecipe.title" name="title" required />
+  </div>
+  <div>
+    <label>Description</label>
+    <textarea [(ngModel)]="newRecipe.description" name="description" required></textarea>
+  </div>
+  <div>
+    <label>Ingredients</label>
+    <textarea [(ngModel)]="newRecipe.ingredients" name="ingredients" required></textarea>
+  </div>
+  <div>
+    <label>Steps</label>
+    <textarea [(ngModel)]="newRecipe.steps" name="steps" required></textarea>
+  </div>
+  <div>
+    <label>Category</label>
+    <input type="text" [(ngModel)]="newRecipe.category" name="category" />
+  </div>
+  <div>
+    <label>Image</label>
+    <input type="file" (change)="onFileSelected($event)" />
+  </div>
+  <button type="submit">{{ isEditMode ? 'Update Recipe' : 'Add Recipe' }}</button>
+</form>
+
+<h2>All Recipes</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Ingredients</th>
+      <th>Steps</th>
+      <th>Category</th>
+      <th>Image</th>
+      <th>Created By</th>
+      <th>Created At</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let recipe of recipes">
+      <td>{{ recipe.title }}</td>
+      <td>{{ recipe.description }}</td>
+      <td>{{ recipe.ingredients }}</td>
+      <td>{{ recipe.steps }}</td>
+      <td>{{ recipe.category }}</td>
+      <td><img [src]="recipe.imageUrl" alt="Recipe Image" width="100" /></td>
+      <td>{{ recipe.createdBy }}</td>
+      <td>{{ recipe.createdAt | date:'medium' }}</td>
+      <td>
+        <button (click)="editRecipe(recipe)">Edit</button>
+        <button (click)="deleteRecipe(recipe.recipeId)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -96,6 +96,8 @@ namespace RecipeMeal.API.Controllers
 					r.Description,
 					r.Category,
 					r.ImageUrl,
+					r.Steps,
+					r.Ingredients,
 					r.CreatedBy,
 					r.CreatedAt
 				})
@@ -136,5 +138,44 @@ namespace RecipeMeal.API.Controllers
 
 			return Ok("Recipe deleted successfully.");
 		}
+
+		[HttpPatch("{id}")]
+		[Authorize(Roles = "Chef,Admin")]
+		public async Task<IActionResult> PatchRecipe(int id, [FromForm] PatchRecipeDto dto)
+		{
+			var recipe = await _dbContext.Recipes.FindAsync(id);
+			if (recipe == null)
+				return NotFound("Recipe not found.");
+
+			// Ownership check
+			if (recipe.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
+				return Forbid("You are not authorized to update this recipe.");
+
+			// Update only the fields that are not null
+			if (!string.IsNullOrEmpty(dto.Title))
+				recipe.Title = dto.Title;
+			if (!string.IsNullOrEmpty(dto.Description))
+				recipe.Description = dto.Description;
+			if (!string.IsNullOrEmpty(dto.Ingredients))
+				recipe.Ingredients = dto.Ingredients;
+			if (!string.IsNullOrEmpty(dto.Steps))
+				recipe.Steps = dto.Steps;
+			if (!string.IsNullOrEmpty(dto.Category))
+				recipe.Category = dto.Category;
+
+			if (dto.Image != null)
+			{
+				// Upload the new image and update the URL
+				recipe.ImageUrl = await _imageService.UploadImageAsync(dto.Image);
+			}
+
+			recipe.UpdatedAt = DateTime.UtcNow;
+
+			_dbContext.Recipes.Update(recipe);
+			await _dbContext.SaveChangesAsync();
+
+			return Ok(recipe);
+		}
+
 	}
 }

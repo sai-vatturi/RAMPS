@@ -1,0 +1,103 @@
+<h1>Admin Dashboard</h1>
+
+<!-- Add User Form -->
+<h2>Add New User</h2>
+<form (ngSubmit)="addUser()" style="margin-bottom: 1rem;">
+  <div>
+    <label>First Name</label>
+    <input type="text" [(ngModel)]="newUser.firstName" name="firstName" required />
+  </div>
+  <div>
+    <label>Last Name</label>
+    <input type="text" [(ngModel)]="newUser.lastName" name="lastName" required />
+  </div>
+  <div>
+    <label>Username</label>
+    <input type="text" [(ngModel)]="newUser.username" name="username" required />
+  </div>
+  <div>
+    <label>Email</label>
+    <input type="email" [(ngModel)]="newUser.email" name="email" required />
+  </div>
+  <div>
+    <label>Password</label>
+    <input type="password" [(ngModel)]="newUser.password" name="password" required />
+  </div>
+  <div>
+    <label>Phone Number</label>
+    <input type="text" [(ngModel)]="newUser.phoneNumber" name="phoneNumber" />
+  </div>
+  <div>
+    <label>Role</label>
+    <select [(ngModel)]="newUser.role" name="role" required>
+      <option value="Admin">Admin</option>
+      <option value="Chef">Chef</option>
+      <option value="Nutritionist">Nutritionist</option>
+      <option value="MealPlanner">MealPlanner</option>
+      <option value="User">User</option>
+    </select>
+  </div>
+  <button type="submit">Add User</button>
+</form>
+
+<!-- Users Table -->
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{ user.firstName }}</td>
+      <td>{{ user.lastName }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>
+        <!-- Role Dropdown -->
+        <select [(ngModel)]="user.updatedRole" (change)="roleChanged(user)">
+          <option [selected]="user.role === 'Admin'" value="Admin">Admin</option>
+          <option [selected]="user.role === 'Chef'" value="Chef">Chef</option>
+          <option [selected]="user.role === 'Nutritionist'" value="Nutritionist">
+            Nutritionist
+          </option>
+          <option [selected]="user.role === 'MealPlanner'" value="MealPlanner">
+            MealPlanner
+          </option>
+          <option [selected]="user.role === 'User'" value="User">User</option>
+        </select>
+      </td>
+      <td>{{ user.isApproved ? 'Approved' : 'Pending' }}</td>
+      <td>
+        <button
+          (click)="openDialog(user, 'approve')"
+          [disabled]="user.isApproved"
+        >
+          Approve
+        </button>
+        <button (click)="openDialog(user, 'delete')">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Dialog Box -->
+<div
+  *ngIf="selectedUser"
+  style="border: 1px solid black; padding: 1rem; margin-top: 1rem;"
+>
+  <p>
+    Are you sure you want to
+    <strong>{{ action }}</strong>
+    the user <strong>{{ selectedUser.username }}</strong>?
+  </p>
+  <button *ngIf="action === 'approve'" (click)="approveUser()">Approve</button>
+  <button *ngIf="action === 'delete'" (click)="deleteUser()">Delete</button>
+  <button (click)="closeDialog()">Cancel</button>
+</div>

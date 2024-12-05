@@ -1,0 +1,73 @@
+<h1>Meal Plans</h1>
+
+<!-- Button to Add New Meal Plan -->
+<div>
+	<button (click)="startAddMode()">Add New Meal Plan</button>
+  </div>
+<!-- Add or Edit Meal Plan Form -->
+<div *ngIf="isEditMode || isAddMode" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px;">
+  <h2>{{ isEditMode ? 'Edit Meal Plan' : 'Add Meal Plan' }}</h2>
+  <form (ngSubmit)="isEditMode ? updateMealPlan() : createMealPlan()">
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" [(ngModel)]="currentMealPlan.name" name="name" required />
+    </div>
+    <div>
+      <label for="startDate">Start Date:</label>
+      <input type="date" id="startDate" [(ngModel)]="currentMealPlan.startDate" name="startDate" required />
+    </div>
+    <div>
+      <label for="endDate">End Date:</label>
+      <input type="date" id="endDate" [(ngModel)]="currentMealPlan.endDate" name="endDate" required />
+    </div>
+    <div>
+      <h3>Recipes</h3>
+      <div *ngFor="let recipe of currentMealPlan.recipes; let i = index">
+        <label for="recipeId-{{ i }}">Recipe:</label>
+        <select id="recipeId-{{ i }}" [(ngModel)]="recipe.recipeId" name="recipeId-{{ i }}">
+          <option *ngFor="let r of availableRecipes" [value]="r.recipeId">{{ r.title }}</option>
+        </select>
+        <label for="mealTime-{{ i }}">Meal Time:</label>
+        <input type="datetime-local" id="mealTime-{{ i }}" [(ngModel)]="recipe.mealTime" name="mealTime-{{ i }}" />
+        <button type="button" (click)="removeRecipe(i)">Remove</button>
+      </div>
+      <button type="button" (click)="addRecipe()">Add Recipe</button>
+    </div>
+    <button type="submit">{{ isEditMode ? 'Update Meal Plan' : 'Add Meal Plan' }}</button>
+    <button type="button" (click)="cancelEdit()">Cancel</button>
+  </form>
+</div>
+
+<!-- List of Meal Plans -->
+<div>
+  <h2>All Meal Plans</h2>
+  <table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Recipes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let plan of mealPlans">
+        <td>{{ plan.name }}</td>
+        <td>{{ plan.startDate | date: 'longDate' }}</td>
+        <td>{{ plan.endDate | date: 'longDate' }}</td>
+        <td>
+          <ul>
+            <li *ngFor="let recipe of plan.recipes">
+              {{ recipe.title }} - <strong>{{ getMealPeriod(recipe.mealTime) }}</strong> ({{ recipe.mealTime | date: 'shortTime' }})
+            </li>
+          </ul>
+        </td>
+        <td>
+          <button (click)="editMealPlan(plan)">Edit</button>
+          <button (click)="deleteMealPlan(plan.mealPlanId)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

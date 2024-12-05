@@ -6,6 +6,7 @@ import { ResetPasswordComponent } from './components/auth/reset-password/reset-p
 import { SignupComponent } from './components/auth/singup/signup.component';
 import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
 import { RecipeComponent } from './components/chef/recipe/recipe.component';
+import { MealPlanComponent } from './components/mealplanner/meal-plan/meal-plan.component';
 import { NutritionComponent } from './components/nutritionist/nutrition/nutrition.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 
@@ -20,5 +21,6 @@ export const routes: Routes = [
   { path: 'admin', component: AdminDashboardComponent },
   { path: 'recipes', component: RecipeComponent },
   { path: 'nutrition', component: NutritionComponent },
+  { path: 'meal-plan', component: MealPlanComponent },
   { path: '**', redirectTo: 'login' },
 ];

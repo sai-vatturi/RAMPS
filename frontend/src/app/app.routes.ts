@@ -8,6 +8,7 @@ import { VerifyEmailComponent } from './components/auth/verify-email/verify-emai
 import { RecipeComponent } from './components/chef/recipe/recipe.component';
 import { MealPlanComponent } from './components/mealplanner/meal-plan/meal-plan.component';
 import { NutritionComponent } from './components/nutritionist/nutrition/nutrition.component';
+import { ShoppingComponent } from './components/shopping-list/shopping-list.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 
 export const routes: Routes = [
@@ -22,5 +23,6 @@ export const routes: Routes = [
   { path: 'recipes', component: RecipeComponent },
   { path: 'nutrition', component: NutritionComponent },
   { path: 'meal-plan', component: MealPlanComponent },
+  { path: 'shopping-lists', component: ShoppingComponent },
   { path: '**', redirectTo: 'login' },
 ];

@@ -1,0 +1,34 @@
+<div>
+	<h1>Shopping List</h1>
+
+	<!-- Meal Plan Dropdown -->
+	<div>
+	  <label for="mealPlans">Select Meal Plan:</label>
+	  <select id="mealPlans" [(ngModel)]="selectedMealPlanId">
+		<option *ngFor="let mealPlan of mealPlans" [value]="mealPlan.mealPlanId">
+		  {{ mealPlan.name }}
+		</option>
+	  </select>
+	  <button (click)="generateShoppingList()">Generate Shopping List</button>
+	</div>
+
+	<!-- Shopping Lists -->
+	<div *ngFor="let shoppingList of shoppingLists">
+	  <h3>Shopping List (Meal Plan: {{ shoppingList.mealPlanId }})</h3>
+	  <ul>
+		<li *ngFor="let item of shoppingList.items">
+		  {{ item.ingredient }} (Quantity: {{ item.quantity }})
+		  <button *ngIf="!item.isPurchased" (click)="markAsPurchased(item.userShoppingListItemId)">
+			Mark as Purchased
+		  </button>
+		  <button *ngIf="item.isPurchased" (click)="unmarkAsPurchased(item.userShoppingListItemId)">
+			Unmark as Purchased
+		  </button>
+		  <button (click)="deleteItem(item.userShoppingListItemId)">Delete</button>
+		</li>
+	  </ul>
+	  <button (click)="deleteShoppingList(shoppingList.userShoppingListId)">
+		Delete Shopping List
+	  </button>
+	</div>
+  </div>

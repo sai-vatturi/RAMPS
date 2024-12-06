@@ -1,23 +1,27 @@
 namespace RecipeMeal.Core.DTOs.ShoppingList
 {
-	public class CreateShoppingListDto
+	public class CreateUserShoppingListDto
 	{
+		public string Username { get; set; } // Add Username for list creation
 		public int MealPlanId { get; set; }
 	}
 
-	public class ShoppingListResponseDto
+	public class UserShoppingListResponseDto
 	{
-		public int ShoppingListId { get; set; }
+		public int UserShoppingListId { get; set; }
+		public string Username { get; set; }
 		public int MealPlanId { get; set; }
-		public List<ShoppingListItemDto> Items { get; set; }
+		public List<UserShoppingListItemDto> Items { get; set; }
 	}
 
-	public class ShoppingListItemDto
+	public class UserShoppingListItemDto
 	{
-		public int ShoppingListItemId { get; set; }
+		public int UserShoppingListItemId { get; set; }
 		public string Ingredient { get; set; }
+		public int Quantity { get; set; }
 		public bool IsPurchased { get; set; }
 	}
+
 
 	public class MarkPurchasedDto
 	{

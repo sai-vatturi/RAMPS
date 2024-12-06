@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipeMeal.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using RecipeMeal.Infrastructure.Data;
 namespace RecipeMeal.Infrastructure.Migrations
 {
     [DbContext(typeof(RecipeMealDbContext))]
-    partial class RecipeMealDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241206084930_UpdateUserShoppingListToUseID")]
+    partial class UpdateUserShoppingListToUseID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,8 +266,9 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.Property<int>("MealPlanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserShoppingListId");
 
@@ -291,6 +295,10 @@ namespace RecipeMeal.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(1);
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserShoppingListId")
                         .HasColumnType("int");

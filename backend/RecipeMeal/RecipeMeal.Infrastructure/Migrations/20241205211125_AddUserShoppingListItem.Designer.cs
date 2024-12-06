@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipeMeal.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using RecipeMeal.Infrastructure.Data;
 namespace RecipeMeal.Infrastructure.Migrations
 {
     [DbContext(typeof(RecipeMealDbContext))]
-    partial class RecipeMealDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241205211125_AddUserShoppingListItem")]
+    partial class AddUserShoppingListItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,7 +173,9 @@ namespace RecipeMeal.Infrastructure.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -187,6 +192,55 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("RecipeMeal.Core.Entities.ShoppingList", b =>
+                {
+                    b.Property<int>("ShoppingListId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoppingListId"));
+
+                    b.Property<int>("MealPlanId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShoppingListId");
+
+                    b.HasIndex("MealPlanId");
+
+                    b.ToTable("ShoppingLists");
+                });
+
+            modelBuilder.Entity("RecipeMeal.Core.Entities.ShoppingListItem", b =>
+                {
+                    b.Property<int>("ShoppingListItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoppingListItemId"));
+
+                    b.Property<string>("Ingredient")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsPurchased")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("ShoppingListId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShoppingListItemId");
+
+                    b.HasIndex("ShoppingListId");
+
+                    b.ToTable("ShoppingListItems");
                 });
 
             modelBuilder.Entity("RecipeMeal.Core.Entities.User", b =>
@@ -252,25 +306,6 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("RecipeMeal.Core.Entities.UserShoppingList", b =>
-                {
-                    b.Property<int>("UserShoppingListId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserShoppingListId"));
-
-                    b.Property<int>("MealPlanId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserShoppingListId");
-
-                    b.ToTable("UserShoppingLists");
-                });
-
             modelBuilder.Entity("RecipeMeal.Core.Entities.UserShoppingListItem", b =>
                 {
                     b.Property<int>("UserShoppingListItemId")
@@ -279,25 +314,19 @@ namespace RecipeMeal.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserShoppingListItemId"));
 
-                    b.Property<string>("Ingredient")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<bool>("IsPurchased")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Quantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.Property<int>("UserShoppingListId")
+                    b.Property<int>("ShoppingListItemId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserShoppingListItemId");
 
-                    b.HasIndex("UserShoppingListId");
+                    b.HasIndex("ShoppingListItemId");
 
                     b.ToTable("UserShoppingListItems");
                 });
@@ -343,15 +372,37 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("RecipeMeal.Core.Entities.UserShoppingListItem", b =>
+            modelBuilder.Entity("RecipeMeal.Core.Entities.ShoppingList", b =>
                 {
-                    b.HasOne("RecipeMeal.Core.Entities.UserShoppingList", "UserShoppingList")
-                        .WithMany("Items")
-                        .HasForeignKey("UserShoppingListId")
+                    b.HasOne("RecipeMeal.Core.Entities.MealPlan", "MealPlan")
+                        .WithMany()
+                        .HasForeignKey("MealPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserShoppingList");
+                    b.Navigation("MealPlan");
+                });
+
+            modelBuilder.Entity("RecipeMeal.Core.Entities.ShoppingListItem", b =>
+                {
+                    b.HasOne("RecipeMeal.Core.Entities.ShoppingList", "ShoppingList")
+                        .WithMany("Items")
+                        .HasForeignKey("ShoppingListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ShoppingList");
+                });
+
+            modelBuilder.Entity("RecipeMeal.Core.Entities.UserShoppingListItem", b =>
+                {
+                    b.HasOne("RecipeMeal.Core.Entities.ShoppingListItem", "ShoppingListItem")
+                        .WithMany()
+                        .HasForeignKey("ShoppingListItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ShoppingListItem");
                 });
 
             modelBuilder.Entity("RecipeMeal.Core.Entities.MealPlan", b =>
@@ -367,7 +418,7 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("RecipeMeal.Core.Entities.UserShoppingList", b =>
+            modelBuilder.Entity("RecipeMeal.Core.Entities.ShoppingList", b =>
                 {
                     b.Navigation("Items");
                 });

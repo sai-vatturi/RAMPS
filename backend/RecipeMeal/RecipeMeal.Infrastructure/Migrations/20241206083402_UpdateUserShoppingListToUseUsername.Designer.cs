@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipeMeal.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using RecipeMeal.Infrastructure.Data;
 namespace RecipeMeal.Infrastructure.Migrations
 {
     [DbContext(typeof(RecipeMealDbContext))]
-    partial class RecipeMealDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241206083402_UpdateUserShoppingListToUseUsername")]
+    partial class UpdateUserShoppingListToUseUsername
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,10 +266,13 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.Property<int>("MealPlanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserShoppingListId");
+
+                    b.HasIndex("MealPlanId");
 
                     b.ToTable("UserShoppingLists");
                 });
@@ -292,12 +298,21 @@ namespace RecipeMeal.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("UserShoppingListId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserShoppingListId1")
                         .HasColumnType("int");
 
                     b.HasKey("UserShoppingListItemId");
 
                     b.HasIndex("UserShoppingListId");
+
+                    b.HasIndex("UserShoppingListId1");
 
                     b.ToTable("UserShoppingListItems");
                 });
@@ -343,11 +358,28 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.Navigation("Recipe");
                 });
 
+            modelBuilder.Entity("RecipeMeal.Core.Entities.UserShoppingList", b =>
+                {
+                    b.HasOne("RecipeMeal.Core.Entities.MealPlan", "MealPlan")
+                        .WithMany()
+                        .HasForeignKey("MealPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MealPlan");
+                });
+
             modelBuilder.Entity("RecipeMeal.Core.Entities.UserShoppingListItem", b =>
                 {
-                    b.HasOne("RecipeMeal.Core.Entities.UserShoppingList", "UserShoppingList")
+                    b.HasOne("RecipeMeal.Core.Entities.UserShoppingList", null)
                         .WithMany("Items")
                         .HasForeignKey("UserShoppingListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeMeal.Core.Entities.UserShoppingList", "UserShoppingList")
+                        .WithMany()
+                        .HasForeignKey("UserShoppingListId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

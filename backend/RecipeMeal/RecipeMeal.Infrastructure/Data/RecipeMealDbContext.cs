@@ -11,8 +11,8 @@ namespace RecipeMeal.Infrastructure.Data
 		public DbSet<User> Users { get; set; }
 		public DbSet<MealPlan> MealPlans { get; set; }
 		public DbSet<MealPlanRecipe> MealPlanRecipes { get; set; }
-		public DbSet<ShoppingList> ShoppingLists { get; set; }
-		public DbSet<ShoppingListItem> ShoppingListItems { get; set; }
+		public DbSet<UserShoppingList> UserShoppingLists { get; set; }
+		public DbSet<UserShoppingListItem> UserShoppingListItems { get; set; }
 		public DbSet<Review> Reviews { get; set; } // Include Reviews entity
 		public DbSet<Nutrition> Nutritions { get; set; } // Add this line
 
@@ -82,38 +82,20 @@ namespace RecipeMeal.Infrastructure.Data
 				.WithMany()
 				.HasForeignKey(mp => mp.RecipeId);
 
-			// ShoppingList configuration
-			modelBuilder.Entity<ShoppingList>()
-				.HasMany(sl => sl.Items)
-				.WithOne(i => i.ShoppingList)
-				.HasForeignKey(i => i.ShoppingListId);
+			modelBuilder.Entity<UserShoppingList>()
+				.HasMany(sl => sl.Items) // Replace `Items` with the navigation property name in your entity
+				.WithOne(i => i.UserShoppingList) // Replace `UserShoppingList` with the navigation property in `UserShoppingListItem`
+				.HasForeignKey(i => i.UserShoppingListId)
+				.OnDelete(DeleteBehavior.Cascade);
 
-			// ShoppingListItem configuration
-			modelBuilder.Entity<ShoppingListItem>()
-				.Property(i => i.Ingredient)
+			modelBuilder.Entity<UserShoppingListItem>()
+				.Property(usi => usi.Ingredient)
 				.IsRequired()
 				.HasMaxLength(100);
 
-			modelBuilder.Entity<ShoppingListItem>()
-				.Property(i => i.Quantity)
+			modelBuilder.Entity<UserShoppingListItem>()
+				.Property(usi => usi.Quantity)
 				.HasDefaultValue(1);
-
-			// Review entity configuration
-			modelBuilder.Entity<Review>()
-				.Property(rv => rv.UserName)
-				.IsRequired();
-
-			modelBuilder.Entity<Review>()
-				.Property(rv => rv.Rating)
-				.IsRequired();
-
-			modelBuilder.Entity<Review>()
-				.Property(rv => rv.Comment)
-				.HasMaxLength(500);
-
-			modelBuilder.Entity<Review>()
-				.Property(rv => rv.CreatedAt)
-				.HasDefaultValueSql("GETUTCDATE()");
 		}
 	}
 }

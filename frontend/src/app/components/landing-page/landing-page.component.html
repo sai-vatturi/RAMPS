@@ -1,0 +1,156 @@
+<!-- Navigation Bar -->
+<p-menubar [model]="menuItems" class="shadow-lg">
+	<ng-template pTemplate="start">
+	  <div class="font-bold text-xl text-primary">Meal Planning System</div>
+	</ng-template>
+	<ng-template pTemplate="end">
+	  <button pButton label="Login" class="p-button-outlined p-button-sm mr-2"></button>
+	  <button pButton label="Sign Up" class="p-button-rounded p-button-sm p-button-primary"></button>
+	</ng-template>
+  </p-menubar>
+
+  <!-- Hero Section -->
+  <section class="hero min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 text-center">
+	<h1 class="text-4xl md:text-6xl font-bold text-gray-800 mt-10">Cook Smarter, Eat Healthier</h1>
+	<p class="text-lg md:text-xl text-gray-600 mt-4 max-w-2xl">
+	  A comprehensive Recipe and Meal Planning Management System tailored to your dietary preferences and goals.
+	</p>
+	<div class="mt-8">
+	  <button pButton label="Explore Recipes" class="p-button-lg p-button-primary mr-4"></button>
+	  <button pButton label="Create Meal Plan" class="p-button-lg p-button-outlined"></button>
+	</div>
+	<img src="assets/landing-hero-image.png" alt="Hero Image" class="mt-10 w-full max-w-4xl rounded-lg shadow-lg">
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-16 bg-white px-4">
+	<h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">Core Features</h2>
+	<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+	  <!-- Feature: User Authentication -->
+	  <p-card class="shadow-md hover:shadow-lg transition">
+		<ng-template pTemplate="header">
+		  <i class="pi pi-lock text-4xl text-primary"></i>
+		</ng-template>
+		<h3 class="font-semibold text-xl mt-4">User Authentication</h3>
+		<p class="text-gray-600 mt-2">
+		  Secure login for Admins, Chefs, Nutritionists, Customers, and Meal Planners with role-based access control.
+		</p>
+	  </p-card>
+
+	  <!-- Feature: Recipe Management -->
+	  <p-card class="shadow-md hover:shadow-lg transition">
+		<ng-template pTemplate="header">
+		  <i class="pi pi-book text-4xl text-primary"></i>
+		</ng-template>
+		<h3 class="font-semibold text-xl mt-4">Recipe Management</h3>
+		<p class="text-gray-600 mt-2">
+		  Create, update, and categorize recipes. Manage ingredients, steps, and nutritional info.
+		</p>
+	  </p-card>
+
+	  <!-- Feature: Meal Planning -->
+	  <p-card class="shadow-md hover:shadow-lg transition">
+		<ng-template pTemplate="header">
+		  <i class="pi pi-calendar text-4xl text-primary"></i>
+		</ng-template>
+		<h3 class="font-semibold text-xl mt-4">Meal Planning</h3>
+		<p class="text-gray-600 mt-2">
+		  Craft personalized weekly meal plans, ensure variety, track nutritional goals, and stay organized.
+		</p>
+	  </p-card>
+	</div>
+
+	<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-8">
+	  <!-- Feature: Shopping List -->
+	  <p-card class="shadow-md hover:shadow-lg transition">
+		<ng-template pTemplate="header">
+		  <i class="pi pi-shopping-cart text-4xl text-primary"></i>
+		</ng-template>
+		<h3 class="font-semibold text-xl mt-4">Shopping List & Ingredients</h3>
+		<p class="text-gray-600 mt-2">
+		  Auto-generate shopping lists, track purchases and inventory, reduce food waste and save time.
+		</p>
+	  </p-card>
+
+	  <!-- Feature: Dietary Preferences -->
+	  <p-card class="shadow-md hover:shadow-lg transition">
+		<ng-template pTemplate="header">
+		  <i class="pi pi-heart text-4xl text-primary"></i>
+		</ng-template>
+		<h3 class="font-semibold text-xl mt-4">Dietary Preferences</h3>
+		<p class="text-gray-600 mt-2">
+		  Get tailored meal suggestions. Manage allergies, restrictions, and dietary preferences easily.
+		</p>
+	  </p-card>
+
+	  <!-- Feature: Analytics & Reporting -->
+	  <p-card class="shadow-md hover:shadow-lg transition">
+		<ng-template pTemplate="header">
+		  <i class="pi pi-chart-line text-4xl text-primary"></i>
+		</ng-template>
+		<h3 class="font-semibold text-xl mt-4">Analytics & Reporting</h3>
+		<p class="text-gray-600 mt-2">
+		  Gain insights with reports on meal adherence, nutritional intake, and recipe popularity.
+		</p>
+	  </p-card>
+	</div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="py-16 bg-gray-50 px-4">
+	<h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">What Our Users Say</h2>
+	<div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+		<p-card class="shadow-md hover:shadow-lg transition p-4">
+			<p class="text-gray-700 italic">
+			  "This system completely changed how I plan my weekly meals. I love the variety and the nutritional insights!"
+			</p>
+			<div class="flex items-center mt-4">
+			  <img src="assets/user1.jpg" alt="User 1" class="w-12 h-12 rounded-full mr-3">
+			  <div>
+				<div class="font-semibold">Sarah M.</div>
+			  </div>
+			</div>
+		  </p-card>
+
+		  <p-card class="shadow-md hover:shadow-lg transition p-4">
+			<p class="text-gray-700 italic">
+			  "The meal plans are spot-on with my keto diet needs. Saved me so much time and stress!"
+			</p>
+			<div class="flex items-center mt-4">
+			  <img src="assets/user2.jpg" alt="User 2" class="w-12 h-12 rounded-full mr-3">
+			  <div>
+				<div class="font-semibold">James K.</div>
+			  </div>
+			</div>
+		  </p-card>
+
+	</div>
+  </section>
+
+  <!-- Subscription (Call-to-Action) Section -->
+  <section id="plans" class="py-16 bg-white px-4 text-center">
+	<h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Start Your Journey Today</h2>
+	<p class="text-gray-600 max-w-2xl mx-auto mb-8">
+	  Subscribe to get personalized meal plans, premium recipes, and expert nutritional guidance.
+	</p>
+	<div class="flex flex-col md:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+	  <input pInputText type="email" placeholder="Enter your email" class="w-full p-inputtext-sm"/>
+	  <button pButton label="Subscribe" class="p-button-primary p-button-lg w-full md:w-auto"></button>
+	</div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-16 bg-gray-50 px-4 text-center">
+	<h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Get in Touch</h2>
+	<p class="text-gray-600 max-w-xl mx-auto mb-8">
+	  Questions, suggestions, or feedback? Let us know!
+	</p>
+	<div>
+	  <button pButton label="Contact Us" class="p-button-outlined p-button-primary p-button-lg"></button>
+	</div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 bg-gray-800 text-gray-300 text-center">
+	<p>© 2024 Meal Planning System. All rights reserved.</p>
+  </footer>

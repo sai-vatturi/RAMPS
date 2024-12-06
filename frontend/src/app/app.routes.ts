@@ -6,6 +6,7 @@ import { ResetPasswordComponent } from './components/auth/reset-password/reset-p
 import { SignupComponent } from './components/auth/singup/signup.component';
 import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
 import { RecipeComponent } from './components/chef/recipe/recipe.component';
+import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { MealPlanComponent } from './components/mealplanner/meal-plan/meal-plan.component';
 import { NutritionComponent } from './components/nutritionist/nutrition/nutrition.component';
 import { ShoppingComponent } from './components/shopping-list/shopping-list.component';
@@ -13,6 +14,7 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
 
 export const routes: Routes = [
   { path: 'signup', component: SignupComponent },
+  { path: 'landing-page', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'reset-password', component: ResetPasswordComponent },

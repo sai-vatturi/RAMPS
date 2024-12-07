@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RecipeMeal.Core.Entities;
-using RecipeMeal.Infrastructure.Data;
-using System.Linq;
+using RecipeMeal.Core.Interfaces.Services;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -14,178 +11,98 @@ namespace RecipeMeal.API.Controllers
 	[Authorize(Roles = "User,Admin")]
 	public class ShoppingController : ControllerBase
 	{
-		private readonly RecipeMealDbContext _dbContext;
+		private readonly IShoppingService _shoppingService;
 
-		public ShoppingController(RecipeMealDbContext dbContext)
+		public ShoppingController(IShoppingService shoppingService)
 		{
-			_dbContext = dbContext;
+			_shoppingService = shoppingService;
 		}
 
-		private async Task<int> GetUserIdFromTokenAsync()
+		private string GetUsernameFromToken()
 		{
-			var username = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
-
-			if (string.IsNullOrEmpty(username))
-				throw new UnauthorizedAccessException("User is not authenticated.");
-
-			var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-
-			if (user == null)
-				throw new UnauthorizedAccessException("User not found.");
-
-			return user.UserId;
+			return User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
 		}
 
-		// Generate a shopping list for a meal plan
 		[HttpPost("generate")]
 		public async Task<IActionResult> GenerateShoppingList(int mealPlanId)
 		{
-			int userId = await GetUserIdFromTokenAsync();
-
-			var mealPlan = await _dbContext.MealPlans
-				.Include(mp => mp.Recipes)
-				.ThenInclude(r => r.Recipe)
-				.FirstOrDefaultAsync(mp => mp.MealPlanId == mealPlanId);
-
-			if (mealPlan == null)
-				return NotFound("Meal plan not found.");
-
-			var ingredients = mealPlan.Recipes
-				.SelectMany(r => r.Recipe.Ingredients.Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries))
-				.GroupBy(ingredient => ingredient.Trim())
-				.Select(g => new { Ingredient = g.Key, Quantity = g.Count() });
-
-			var shoppingList = new UserShoppingList
+			try
 			{
-				UserId = userId,
-				MealPlanId = mealPlanId,
-				Items = ingredients.Select(i => new UserShoppingListItem
-				{
-					Ingredient = i.Ingredient,
-					Quantity = i.Quantity,
-					IsPurchased = false
-				}).ToList()
-			};
+				var username = GetUsernameFromToken();
+				int userId = await _shoppingService.GetUserIdFromTokenAsync(username);
 
-			await _dbContext.UserShoppingLists.AddAsync(shoppingList);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(new
+				var shoppingList = await _shoppingService.GenerateShoppingListAsync(mealPlanId, userId);
+				return Ok(shoppingList);
+			}
+			catch (KeyNotFoundException ex)
 			{
-				shoppingList.UserShoppingListId,
-				shoppingList.UserId,
-				shoppingList.MealPlanId,
-				Items = shoppingList.Items.Select(item => new
-				{
-					item.UserShoppingListItemId,
-					item.Ingredient,
-					item.Quantity,
-					item.IsPurchased
-				})
-			});
+				return NotFound(new { message = ex.Message });
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Unauthorized(new { message = ex.Message });
+			}
 		}
 
-		// Get all shopping lists for the logged-in user
 		[HttpGet]
 		public async Task<IActionResult> GetShoppingLists()
 		{
-			int userId = await GetUserIdFromTokenAsync();
+			var username = GetUsernameFromToken();
+			int userId = await _shoppingService.GetUserIdFromTokenAsync(username);
 
-			var shoppingLists = await _dbContext.UserShoppingLists
-				.Where(sl => sl.UserId == userId)
-				.Include(sl => sl.Items)
-				.Select(sl => new
-				{
-					sl.UserShoppingListId,
-					sl.MealPlanId,
-					Items = sl.Items.Select(i => new
-					{
-						i.UserShoppingListItemId,
-						i.Ingredient,
-						i.Quantity,
-						i.IsPurchased
-					})
-				})
-				.ToListAsync();
-
+			var shoppingLists = await _shoppingService.GetShoppingListsAsync(userId);
 			return Ok(shoppingLists);
 		}
 
-		// Mark an item as purchased
 		[HttpPut("mark-purchased/{itemId}")]
-		public async Task<IActionResult> MarkAsPurchased(int itemId)
+		public async Task<IActionResult> MarkAsPurchased(int itemId, bool isPurchased = true)
 		{
-			int userId = await GetUserIdFromTokenAsync();
+			try
+			{
+				var username = GetUsernameFromToken();
+				int userId = await _shoppingService.GetUserIdFromTokenAsync(username);
 
-			var item = await _dbContext.UserShoppingListItems
-				.Include(i => i.UserShoppingList)
-				.FirstOrDefaultAsync(i => i.UserShoppingListItemId == itemId && i.UserShoppingList.UserId == userId);
-
-			if (item == null)
-				return NotFound("Item not found.");
-
-			item.IsPurchased = true;
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(new { Message = "Item marked as purchased.", ItemId = itemId });
+				var item = await _shoppingService.MarkAsPurchasedAsync(itemId, userId, isPurchased);
+				return Ok(new { Message = isPurchased ? "Item marked as purchased." : "Item unmarked as purchased.", Item = item });
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 
-		// Unmark an item as purchased
-		[HttpPut("unmark-purchased/{itemId}")]
-		public async Task<IActionResult> UnmarkAsPurchased(int itemId)
-		{
-			int userId = await GetUserIdFromTokenAsync();
-
-			var item = await _dbContext.UserShoppingListItems
-				.Include(i => i.UserShoppingList)
-				.FirstOrDefaultAsync(i => i.UserShoppingListItemId == itemId && i.UserShoppingList.UserId == userId);
-
-			if (item == null)
-				return NotFound("Item not found.");
-
-			item.IsPurchased = false;
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(new { Message = "Item unmarked as purchased.", ItemId = itemId });
-		}
-
-		// Delete an item from the shopping list
 		[HttpDelete("delete-item/{itemId}")]
 		public async Task<IActionResult> DeleteItem(int itemId)
 		{
-			int userId = await GetUserIdFromTokenAsync();
+			try
+			{
+				var username = GetUsernameFromToken();
+				int userId = await _shoppingService.GetUserIdFromTokenAsync(username);
 
-			var item = await _dbContext.UserShoppingListItems
-				.Include(i => i.UserShoppingList)
-				.FirstOrDefaultAsync(i => i.UserShoppingListItemId == itemId && i.UserShoppingList.UserId == userId);
-
-			if (item == null)
-				return NotFound("Item not found.");
-
-			_dbContext.UserShoppingListItems.Remove(item);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(new { Message = "Item deleted.", ItemId = itemId });
+				var item = await _shoppingService.DeleteItemAsync(itemId, userId);
+				return Ok(new { Message = "Item deleted.", Item = item });
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 
-		// Delete an entire shopping list
 		[HttpDelete("delete-list/{listId}")]
 		public async Task<IActionResult> DeleteShoppingList(int listId)
 		{
-			int userId = await GetUserIdFromTokenAsync();
+			try
+			{
+				var username = GetUsernameFromToken();
+				int userId = await _shoppingService.GetUserIdFromTokenAsync(username);
 
-			var shoppingList = await _dbContext.UserShoppingLists
-				.Include(sl => sl.Items)
-				.FirstOrDefaultAsync(sl => sl.UserShoppingListId == listId && sl.UserId == userId);
-
-			if (shoppingList == null)
-				return NotFound("Shopping list not found.");
-
-			// Removing the shopping list will cascade delete the items if configured in EF Core
-			_dbContext.UserShoppingLists.Remove(shoppingList);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(new { Message = "Shopping list deleted.", ListId = listId });
+				var message = await _shoppingService.DeleteShoppingListAsync(listId, userId);
+				return Ok(new { Message = message });
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 	}
 }

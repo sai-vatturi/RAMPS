@@ -4,8 +4,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RecipeMeal.API.Filters;
 using RecipeMeal.Core.Interfaces;
+using RecipeMeal.Core.Interfaces.Services;
 using RecipeMeal.Core.Services;
 using RecipeMeal.Infrastructure.Data;
+using RecipeMeal.Infrastructure.Services;
 using RecipeMeal.Infrastructure.Validators;
 using System.Text;
 
@@ -77,9 +79,16 @@ builder.Services.AddControllers()
 
 // Register application services
 builder.Services.AddScoped<IImageService, AzureBlobStorageService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<INutritionService, NutritionService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IMealPlanService, MealPlanService>();
+builder.Services.AddScoped<IShoppingService, ShoppingService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<UserValidationService>();
+
 
 // Configure Entity Framework and database context
 builder.Services.AddDbContext<RecipeMealDbContext>(options =>

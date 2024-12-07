@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RecipeMeal.Core.DTOs.MealPlan;
-using RecipeMeal.Core.Entities;
-using RecipeMeal.Infrastructure.Data;
-using System.Linq;
+using RecipeMeal.Core.Interfaces.Services;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RecipeMeal.API.Controllers
@@ -13,191 +11,132 @@ namespace RecipeMeal.API.Controllers
 	[Route("api/[controller]")]
 	public class MealPlanController : ControllerBase
 	{
-		private readonly RecipeMealDbContext _dbContext;
+		private readonly IMealPlanService _mealPlanService;
 
-		public MealPlanController(RecipeMealDbContext dbContext)
+		public MealPlanController(IMealPlanService mealPlanService)
 		{
-			_dbContext = dbContext;
+			_mealPlanService = mealPlanService;
 		}
 
-		// Create a new meal plan
 		[HttpPost]
 		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> CreateMealPlan([FromBody] CreateMealPlanDto dto)
 		{
-			var mealPlan = new MealPlan
+			try
 			{
-				Name = dto.Name,
-				CreatedBy = HttpContext.User.Identity.Name,
-				StartDate = dto.StartDate,
-				EndDate = dto.EndDate,
-				Recipes = dto.Recipes.Select(r => new MealPlanRecipe
-				{
-					RecipeId = r.RecipeId,
-					MealTime = r.MealTime
-				}).ToList()
-			};
-
-			_dbContext.MealPlans.Add(mealPlan);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(mealPlan);
+				var createdBy = User.Identity?.Name;
+				var mealPlan = await _mealPlanService.CreateMealPlanAsync(dto, createdBy);
+				return Ok(mealPlan);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
 
-		// Update a meal plan
 		[HttpPut("{id}")]
 		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> UpdateMealPlan(int id, [FromBody] CreateMealPlanDto dto)
 		{
-			var mealPlan = await _dbContext.MealPlans.Include(mp => mp.Recipes).FirstOrDefaultAsync(mp => mp.MealPlanId == id);
-			if (mealPlan == null)
-				return NotFound("Meal Plan not found.");
-
-			if (mealPlan.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to update this meal plan.");
-
-			mealPlan.Name = dto.Name;
-			mealPlan.StartDate = dto.StartDate;
-			mealPlan.EndDate = dto.EndDate;
-			mealPlan.Recipes = dto.Recipes.Select(r => new MealPlanRecipe
+			try
 			{
-				RecipeId = r.RecipeId,
-				MealTime = r.MealTime
-			}).ToList();
-
-			_dbContext.MealPlans.Update(mealPlan);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(mealPlan);
+				var updatedBy = User.Identity?.Name;
+				var mealPlan = await _mealPlanService.UpdateMealPlanAsync(id, dto, updatedBy);
+				return Ok(mealPlan);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Forbid(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
 
-		// Get all meal plans for the logged-in user
 		[HttpGet]
 		[Authorize(Roles = "User,Admin,MealPlanner")]
-		public IActionResult GetMealPlans()
+		public async Task<IActionResult> GetMealPlans()
 		{
-			var username = HttpContext.User.Identity.Name;
-			var mealPlans = _dbContext.MealPlans
-				.Where(mp => mp.CreatedBy == username || User.IsInRole("Admin"))
-				.Select(mp => new
-				{
-					mp.MealPlanId,
-					mp.Name,
-					mp.StartDate,
-					mp.EndDate,
-					Recipes = mp.Recipes.Select(r => new
-					{
-						r.RecipeId,
-						r.Recipe.Title,
-						r.MealTime
-					})
-				}).ToList();
-
+			var username = User.Identity?.Name;
+			var isAdmin = User.IsInRole("Admin");
+			var mealPlans = await _mealPlanService.GetMealPlansAsync(username, isAdmin);
 			return Ok(mealPlans);
 		}
 
-		// Get a specific meal plan by ID
 		[HttpGet("{id}")]
 		[Authorize(Roles = "User,Admin,MealPlanner")]
 		public async Task<IActionResult> GetMealPlanById(int id)
 		{
-			var mealPlan = await _dbContext.MealPlans
-				.Include(mp => mp.Recipes)
-				.ThenInclude(r => r.Recipe)
-				.FirstOrDefaultAsync(mp => mp.MealPlanId == id);
-
-			if (mealPlan == null)
-				return NotFound("Meal Plan not found.");
-
-			if (mealPlan.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to view this meal plan.");
-
-			var result = new
+			try
 			{
-				mealPlan.MealPlanId,
-				mealPlan.Name,
-				mealPlan.StartDate,
-				mealPlan.EndDate,
-				Recipes = mealPlan.Recipes.Select(r => new
-				{
-					r.RecipeId,
-					r.Recipe.Title,
-					r.MealTime
-				})
-			};
-
-			return Ok(result);
+				var username = User.Identity?.Name;
+				var isAdmin = User.IsInRole("Admin");
+				var mealPlan = await _mealPlanService.GetMealPlanByIdAsync(id, username, isAdmin);
+				return Ok(mealPlan);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Forbid(ex.Message);
+			}
 		}
 
-		// Delete a meal plan
 		[HttpDelete("{id}")]
 		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> DeleteMealPlan(int id)
 		{
-			var mealPlan = await _dbContext.MealPlans.FindAsync(id);
-			if (mealPlan == null)
-				return NotFound("Meal Plan not found.");
-
-			if (mealPlan.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to delete this meal plan.");
-
-			_dbContext.MealPlans.Remove(mealPlan);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok("Meal Plan deleted successfully.");
+			try
+			{
+				var deletedBy = User.Identity?.Name;
+				var isAdmin = User.IsInRole("Admin");
+				var message = await _mealPlanService.DeleteMealPlanAsync(id, deletedBy, isAdmin);
+				return Ok(new { message });
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Forbid(ex.Message);
+			}
 		}
 
-		// PATCH: api/MealPlan/{id}
 		[HttpPatch("{id}")]
 		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> PatchMealPlan(int id, [FromBody] PatchMealPlanDto dto)
 		{
-			var mealPlan = await _dbContext.MealPlans.Include(mp => mp.Recipes).FirstOrDefaultAsync(mp => mp.MealPlanId == id);
-			if (mealPlan == null)
-				return NotFound("Meal Plan not found.");
-
-			if (mealPlan.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to update this meal plan.");
-
-			// Update fields selectively
-			if (!string.IsNullOrEmpty(dto.Name))
-				mealPlan.Name = dto.Name;
-			if (dto.StartDate.HasValue)
-				mealPlan.StartDate = dto.StartDate.Value;
-			if (dto.EndDate.HasValue)
-				mealPlan.EndDate = dto.EndDate.Value;
-
-			// Update or add recipes
-			if (dto.Recipes != null && dto.Recipes.Any())
+			try
 			{
-				foreach (var recipeDto in dto.Recipes)
-				{
-					if (recipeDto.RecipeId.HasValue && recipeDto.MealTime.HasValue)
-					{
-						var existingRecipe = mealPlan.Recipes.FirstOrDefault(r => r.RecipeId == recipeDto.RecipeId.Value);
-						if (existingRecipe != null)
-						{
-							// Update existing recipe
-							existingRecipe.MealTime = recipeDto.MealTime.Value;
-						}
-						else
-						{
-							// Add new recipe
-							mealPlan.Recipes.Add(new MealPlanRecipe
-							{
-								RecipeId = recipeDto.RecipeId.Value,
-								MealTime = recipeDto.MealTime.Value
-							});
-						}
-					}
-				}
+				var updatedBy = User.Identity?.Name;
+				var isAdmin = User.IsInRole("Admin");
+				var mealPlan = await _mealPlanService.PatchMealPlanAsync(id, dto, updatedBy, isAdmin);
+				return Ok(mealPlan);
 			}
-
-			_dbContext.MealPlans.Update(mealPlan);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(mealPlan);
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Forbid(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
-
 	}
 }

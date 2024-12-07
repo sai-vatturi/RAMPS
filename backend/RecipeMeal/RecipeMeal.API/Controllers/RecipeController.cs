@@ -1,12 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RecipeMeal.Core.DTOs.Recipe;
-using RecipeMeal.Core.Entities;
-using RecipeMeal.Core.Interfaces;
-using RecipeMeal.Infrastructure.Data;
-using System;
-using System.Linq;
+using RecipeMeal.Core.Interfaces.Services;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RecipeMeal.API.Controllers
@@ -15,167 +11,116 @@ namespace RecipeMeal.API.Controllers
 	[Route("api/[controller]")]
 	public class RecipeController : ControllerBase
 	{
-		private readonly RecipeMealDbContext _dbContext;
-		private readonly IImageService _imageService;
+		private readonly IRecipeService _recipeService;
 
-		public RecipeController(RecipeMealDbContext dbContext, IImageService imageService)
+		public RecipeController(IRecipeService recipeService)
 		{
-			_dbContext = dbContext;
-			_imageService = imageService;
+			_recipeService = recipeService;
 		}
 
-		// Create a new recipe
 		[HttpPost]
 		[Authorize(Roles = "Chef,Admin")]
 		public async Task<IActionResult> CreateRecipe([FromForm] CreateRecipeDto dto)
 		{
-			// Upload image to Azure Blob Storage
-			string imageUrl = await _imageService.UploadImageAsync(dto.Image);
-
-			var recipe = new Recipe
+			try
 			{
-				Title = dto.Title,
-				Description = dto.Description,
-				Ingredients = dto.Ingredients,
-				Steps = dto.Steps,
-				Category = dto.Category,
-				ImageUrl = imageUrl,
-				CreatedBy = HttpContext.User.Identity.Name,
-				CreatedAt = DateTime.UtcNow
-			};
-
-			_dbContext.Recipes.Add(recipe);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(recipe);
+				var createdBy = User.FindFirstValue(ClaimTypes.Name);
+				var recipe = await _recipeService.CreateRecipeAsync(dto, createdBy);
+				return Ok(recipe);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
 
-		// Update an existing recipe
 		[HttpPut("{id}")]
 		[Authorize(Roles = "Chef,Admin")]
 		public async Task<IActionResult> UpdateRecipe(int id, [FromForm] UpdateRecipeDto dto)
 		{
-			var recipe = await _dbContext.Recipes.FindAsync(id);
-			if (recipe == null)
-				return NotFound("Recipe not found.");
-
-			// Ownership check
-			if (recipe.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to update this recipe.");
-
-			recipe.Title = dto.Title ?? recipe.Title;
-			recipe.Description = dto.Description ?? recipe.Description;
-			recipe.Ingredients = dto.Ingredients ?? recipe.Ingredients;
-			recipe.Steps = dto.Steps ?? recipe.Steps;
-			recipe.Category = dto.Category ?? recipe.Category;
-
-			if (dto.Image != null)
+			try
 			{
-				// Upload the new image and update the URL
-				recipe.ImageUrl = await _imageService.UploadImageAsync(dto.Image);
+				var updatedBy = User.FindFirstValue(ClaimTypes.Name);
+				var recipe = await _recipeService.UpdateRecipeAsync(id, dto, updatedBy);
+				return Ok(recipe);
 			}
-
-			recipe.UpdatedAt = DateTime.UtcNow;
-
-			_dbContext.Recipes.Update(recipe);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(recipe);
+			catch (UnauthorizedAccessException ex)
+			{
+				return Forbid(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
 
-		// Get all recipes
 		[HttpGet]
 		[AllowAnonymous]
-		public IActionResult GetAllRecipes()
+		public async Task<IActionResult> GetAllRecipes()
 		{
-			var recipes = _dbContext.Recipes
-				.Select(r => new
-				{
-					r.RecipeId,
-					r.Title,
-					r.Description,
-					r.Category,
-					r.ImageUrl,
-					r.Steps,
-					r.Ingredients,
-					r.CreatedBy,
-					r.CreatedAt
-				})
-				.ToList();
-
-			return Ok(recipes);
+			try
+			{
+				var recipes = await _recipeService.GetAllRecipesAsync();
+				return Ok(recipes);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
 
-		// Get a specific recipe by ID
 		[HttpGet("{id}")]
 		[AllowAnonymous]
 		public async Task<IActionResult> GetRecipeById(int id)
 		{
-			var recipe = await _dbContext.Recipes.FindAsync(id);
-
-			if (recipe == null)
-				return NotFound("Recipe not found.");
-
-			return Ok(recipe);
+			try
+			{
+				var recipe = await _recipeService.GetRecipeByIdAsync(id);
+				return Ok(recipe);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 
-		// Delete a recipe
 		[HttpDelete("{id}")]
 		[Authorize(Roles = "Chef,Admin")]
 		public async Task<IActionResult> DeleteRecipe(int id)
 		{
-			var recipe = await _dbContext.Recipes.FindAsync(id);
-
-			if (recipe == null)
-				return NotFound("Recipe not found.");
-
-			// Ownership check
-			if (recipe.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to delete this recipe.");
-
-			_dbContext.Recipes.Remove(recipe);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok("Recipe deleted successfully.");
+			try
+			{
+				var deletedBy = User.FindFirstValue(ClaimTypes.Name);
+				var message = await _recipeService.DeleteRecipeAsync(id, deletedBy);
+				return Ok(new { message });
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				return Forbid(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
-
 		[HttpPatch("{id}")]
 		[Authorize(Roles = "Chef,Admin")]
 		public async Task<IActionResult> PatchRecipe(int id, [FromForm] PatchRecipeDto dto)
 		{
-			var recipe = await _dbContext.Recipes.FindAsync(id);
-			if (recipe == null)
-				return NotFound("Recipe not found.");
-
-			// Ownership check
-			if (recipe.CreatedBy != HttpContext.User.Identity.Name && !User.IsInRole("Admin"))
-				return Forbid("You are not authorized to update this recipe.");
-
-			// Update only the fields that are not null
-			if (!string.IsNullOrEmpty(dto.Title))
-				recipe.Title = dto.Title;
-			if (!string.IsNullOrEmpty(dto.Description))
-				recipe.Description = dto.Description;
-			if (!string.IsNullOrEmpty(dto.Ingredients))
-				recipe.Ingredients = dto.Ingredients;
-			if (!string.IsNullOrEmpty(dto.Steps))
-				recipe.Steps = dto.Steps;
-			if (!string.IsNullOrEmpty(dto.Category))
-				recipe.Category = dto.Category;
-
-			if (dto.Image != null)
+			try
 			{
-				// Upload the new image and update the URL
-				recipe.ImageUrl = await _imageService.UploadImageAsync(dto.Image);
+				var updatedBy = User.FindFirstValue(ClaimTypes.Name);
+				var recipe = await _recipeService.PatchRecipeAsync(id, dto, updatedBy);
+				return Ok(recipe);
 			}
-
-			recipe.UpdatedAt = DateTime.UtcNow;
-
-			_dbContext.Recipes.Update(recipe);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(recipe);
+			catch (UnauthorizedAccessException ex)
+			{
+				return Forbid(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
-
 	}
 }

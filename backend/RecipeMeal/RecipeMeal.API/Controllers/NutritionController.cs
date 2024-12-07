@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RecipeMeal.Core.DTOs.Nutrition;
-using RecipeMeal.Core.Entities;
-using RecipeMeal.Infrastructure.Data;
-using System.Linq;
+using RecipeMeal.Core.Interfaces.Services;
 using System.Threading.Tasks;
 
 namespace RecipeMeal.API.Controllers
@@ -13,158 +10,106 @@ namespace RecipeMeal.API.Controllers
 	[Route("api/[controller]")]
 	public class NutritionController : ControllerBase
 	{
-		private readonly RecipeMealDbContext _dbContext;
+		private readonly INutritionService _nutritionService;
 
-		public NutritionController(RecipeMealDbContext dbContext)
+		public NutritionController(INutritionService nutritionService)
 		{
-			_dbContext = dbContext;
+			_nutritionService = nutritionService;
 		}
 
-		// Add Nutrition
 		[HttpPost]
 		[Authorize(Roles = "Nutritionist,Chef,Admin")]
 		public async Task<IActionResult> AddNutrition([FromBody] AddNutritionDto dto)
 		{
-			var recipe = await _dbContext.Recipes.FindAsync(dto.RecipeId);
-			if (recipe == null)
-				return NotFound("Recipe not found.");
-
-			if (await _dbContext.Nutritions.AnyAsync(n => n.RecipeId == dto.RecipeId))
-				return BadRequest("Nutrition already exists for this recipe.");
-
-			var nutrition = new Nutrition
+			try
 			{
-				RecipeId = dto.RecipeId,
-				Calories = dto.Calories,
-				Protein = dto.Protein,
-				Carbs = dto.Carbs,
-				Fat = dto.Fat,
-				Vitamins = dto.Vitamins
-			};
-
-			_dbContext.Nutritions.Add(nutrition);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(nutrition);
+				var nutrition = await _nutritionService.AddNutritionAsync(dto);
+				return Ok(nutrition);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 		}
 
-		// Update Nutrition
 		[HttpPut("{nutritionId}")]
 		[Authorize(Roles = "Nutritionist,Chef,Admin")]
 		public async Task<IActionResult> UpdateNutrition(int nutritionId, [FromBody] UpdateNutritionDto dto)
 		{
-			var nutrition = await _dbContext.Nutritions.FindAsync(nutritionId);
-			if (nutrition == null)
-				return NotFound("Nutrition data not found.");
-
-			nutrition.Calories = dto.Calories;
-			nutrition.Protein = dto.Protein;
-			nutrition.Carbs = dto.Carbs;
-			nutrition.Fat = dto.Fat;
-			nutrition.Vitamins = dto.Vitamins;
-
-			_dbContext.Nutritions.Update(nutrition);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(nutrition);
+			try
+			{
+				var nutrition = await _nutritionService.UpdateNutritionAsync(nutritionId, dto);
+				return Ok(nutrition);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 
-		// Patch Nutrition
 		[HttpPatch("{nutritionId}")]
 		[Authorize(Roles = "Nutritionist,Chef,Admin")]
 		public async Task<IActionResult> PatchNutrition(int nutritionId, [FromBody] PatchNutritionDto dto)
 		{
-			var nutrition = await _dbContext.Nutritions.FindAsync(nutritionId);
-			if (nutrition == null)
-				return NotFound("Nutrition data not found.");
-
-			if (dto.Calories.HasValue) nutrition.Calories = dto.Calories.Value;
-			if (dto.Protein.HasValue) nutrition.Protein = dto.Protein.Value;
-			if (dto.Carbs.HasValue) nutrition.Carbs = dto.Carbs.Value;
-			if (dto.Fat.HasValue) nutrition.Fat = dto.Fat.Value;
-			if (!string.IsNullOrWhiteSpace(dto.Vitamins)) nutrition.Vitamins = dto.Vitamins;
-
-			_dbContext.Nutritions.Update(nutrition);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok(nutrition);
+			try
+			{
+				var nutrition = await _nutritionService.PatchNutritionAsync(nutritionId, dto);
+				return Ok(nutrition);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 
-		// Get Pending Meals
 		[HttpGet("pending")]
 		[Authorize(Roles = "Nutritionist,Admin")]
-		public IActionResult GetPendingMeals()
+		public async Task<IActionResult> GetPendingMeals()
 		{
-			var pendingMeals = _dbContext.Recipes
-				.Where(r => !_dbContext.Nutritions.Any(n => n.RecipeId == r.RecipeId))
-				.Select(r => new
-				{
-					r.RecipeId,
-					r.Title,
-					r.Description,
-					r.Category,
-					r.CreatedBy,
-					r.CreatedAt
-				}).ToList();
-
+			var pendingMeals = await _nutritionService.GetPendingMealsAsync();
 			return Ok(pendingMeals);
 		}
 
-		// Get All Nutrition Data
 		[HttpGet]
 		[Authorize(Roles = "Nutritionist,Admin")]
-		public IActionResult GetAllNutrition()
+		public async Task<IActionResult> GetAllNutrition()
 		{
-			var nutritions = _dbContext.Nutritions
-				.Include(n => n.Recipe)
-				.Select(n => new
-				{
-					n.NutritionId,
-					n.RecipeId,
-					RecipeTitle = n.Recipe.Title,
-					n.Calories,
-					n.Protein,
-					n.Carbs,
-					n.Fat,
-					n.Vitamins
-				}).ToList();
-
+			var nutritions = await _nutritionService.GetAllNutritionAsync();
 			return Ok(nutritions);
 		}
 
-		// Get Nutrition By Recipe
 		[HttpGet("recipe/{recipeId}")]
 		[Authorize(Roles = "Nutritionist,Chef,Admin")]
 		public async Task<IActionResult> GetNutritionByRecipe(int recipeId)
 		{
-			var nutrition = await _dbContext.Nutritions
-				.Include(n => n.Recipe)
-				.FirstOrDefaultAsync(n => n.RecipeId == recipeId);
-
-			if (nutrition == null)
-				return NotFound("Nutrition data not found for the specified recipe.");
-
-			return Ok(nutrition);
+			try
+			{
+				var nutrition = await _nutritionService.GetNutritionByRecipeAsync(recipeId);
+				return Ok(nutrition);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 
 		[HttpDelete("recipe/{recipeId}")]
 		[Authorize(Roles = "Nutritionist,Admin")]
 		public async Task<IActionResult> DeleteNutritionByRecipeId(int recipeId)
 		{
-			// Find the nutrition entry based on the RecipeId
-			var nutrition = await _dbContext.Nutritions.FirstOrDefaultAsync(n => n.RecipeId == recipeId);
-
-			if (nutrition == null)
+			try
 			{
-				return NotFound($"No nutrition entry found for Recipe ID {recipeId}.");
+				var message = await _nutritionService.DeleteNutritionByRecipeIdAsync(recipeId);
+				return Ok(new { message });
 			}
-
-			// Remove the nutrition entry
-			_dbContext.Nutritions.Remove(nutrition);
-			await _dbContext.SaveChangesAsync();
-
-			return Ok($"Nutrition entry for Recipe ID {recipeId} deleted successfully.");
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound(new { message = ex.Message });
+			}
 		}
 	}
-
 }

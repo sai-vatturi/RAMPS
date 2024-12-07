@@ -1,4 +1,4 @@
-<div class="container mx-auto p-6 ">
+<div class="container mx-auto p-6">
 	<!-- Heading -->
 	<h1 class="text-4xl font-bold text-[#191B19] mb-6">Chef Recipe Management</h1>
 
@@ -24,18 +24,27 @@
 		  class="w-full h-40 object-cover rounded-md mb-4"
 		/>
 		<h3 class="text-xl font-semibold text-[#191B19]">{{ recipe.title }}</h3>
-		<p class="text-sm text-[#494949]">{{ recipe.description | slice: 0:100 }}...</p>
-		<p class="text-sm text-gray-500 mt-2">Category: {{ recipe.category }}</p>
+		<p class="text-sm text-[#494949] mb-2">{{ recipe.description | slice:0:100 }}...</p>
+		<div class="flex items-center mb-2">
+		  <!-- Display stars based on recipe.averageRating -->
+		  <ng-container *ngFor="let star of [1,2,3,4,5]">
+			<span [class.text-yellow-500]="star <= recipe.averageRating" class="text-gray-300 text-lg">
+			  ★
+			</span>
+		  </ng-container>
+		  <span class="text-sm text-gray-500 ml-2">({{ recipe.averageRating.toFixed(1) }})</span>
+		</div>
+		<p class="text-sm text-gray-500">Category: {{ recipe.category }}</p>
 		<p class="text-sm text-gray-500">Created At: {{ recipe.createdAt | date: 'medium' }}</p>
 	  </div>
 	</div>
 
-	<!-- Recipe Detail and Input Dialog -->
+	<!-- Recipe Detail / Add-Edit Dialog -->
 	<div
 	  *ngIf="selectedRecipe"
-	  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+	  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
 	>
-	  <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative">
+	  <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative max-h-screen overflow-auto">
 		<button
 		  (click)="cancelEdit()"
 		  class="absolute top-2 right-2 bg-gray-300 text-gray-600 px-2 py-1 rounded-md hover:bg-gray-400"
@@ -43,7 +52,7 @@
 		  ✕
 		</button>
 
-		<!-- Form for Adding or Editing -->
+		<!-- If in Edit Mode: Show Form for Add/Edit -->
 		<form
 		  *ngIf="isEditMode"
 		  (ngSubmit)="saveChanges()"
@@ -132,25 +141,31 @@
 		  </div>
 		</form>
 
-		<!-- Recipe Details View -->
+		<!-- If not in Edit Mode: Show Recipe Details & Reviews -->
 		<div *ngIf="!isEditMode">
+		  <!-- Recipe Details -->
 		  <h2 class="text-2xl font-semibold text-[#494949] mb-4">{{ selectedRecipe.title }}</h2>
 		  <img
 			[src]="selectedRecipe.imageUrl"
 			alt="Recipe Image"
 			class="w-full h-48 object-cover rounded-md mb-4"
 		  />
-		  <p class="text-sm text-[#494949] mb-2">
-			<strong>Description:</strong> {{ selectedRecipe.description }}
-		  </p>
-		  <p class="text-sm text-[#494949] mb-2">
-			<strong>Ingredients:</strong> {{ selectedRecipe.ingredients }}
-		  </p>
-		  <p class="text-sm text-[#494949] mb-2">
-			<strong>Steps:</strong>
-			<span [innerHTML]="selectedRecipe.steps"></span>
-		  </p>
+		  <p class="text-sm text-[#494949] mb-2"><strong>Description:</strong> {{ selectedRecipe.description }}</p>
+		  <p class="text-sm text-[#494949] mb-2"><strong>Ingredients:</strong> {{ selectedRecipe.ingredients }}</p>
+		  <p class="text-sm text-[#494949] mb-2"><strong>Steps:</strong> {{ selectedRecipe.steps }}</p>
 		  <p class="text-sm text-gray-500 mb-2">Category: {{ selectedRecipe.category }}</p>
+
+		  <!-- Display Stars -->
+		  <div class="flex items-center mb-4">
+			<ng-container *ngFor="let star of [1,2,3,4,5]">
+			  <span [class.text-yellow-500]="star <= selectedRecipe.averageRating" class="text-gray-300 text-xl">
+				★
+			  </span>
+			</ng-container>
+			<span class="text-sm text-gray-500 ml-2">({{ selectedRecipe.averageRating.toFixed(1) }})</span>
+		  </div>
+
+		  <!-- Edit/Delete Recipe Buttons -->
 		  <div class="flex justify-end space-x-2 mt-4">
 			<button
 			  (click)="openEditDialog(selectedRecipe)"
@@ -165,6 +180,67 @@
 			  Delete
 			</button>
 		  </div>
+
+		  <!-- Reviews Section -->
+		  <h3 class="text-xl font-semibold text-[#494949] mt-6 mb-4">Reviews</h3>
+		  <div *ngIf="reviews.length > 0; else noReviews">
+			<div *ngFor="let review of reviews" class="bg-gray-100 p-4 rounded-lg shadow-md mb-4">
+			  <div class="flex justify-between items-center mb-2">
+				<h4 class="text-sm font-bold text-[#494949]">{{ review.userName }}</h4>
+				<p class="text-sm text-gray-500">Rating: {{ review.rating }}</p>
+			  </div>
+			  <p class="text-sm text-[#494949] mb-2">{{ review.comment }}</p>
+			  <!-- Edit/Delete Options for the review author -->
+			  <div class="flex space-x-2" *ngIf="review.userName === currentUsername">
+				<button
+				  class="text-sm text-blue-500 hover:underline"
+				  (click)="editReview(review)"
+				>
+				  Edit
+				</button>
+				<button
+				  class="text-sm text-red-500 hover:underline"
+				  (click)="deleteReview(review)"
+				>
+				  Delete
+				</button>
+			  </div>
+			</div>
+		  </div>
+		  <ng-template #noReviews>
+			<p class="text-sm text-gray-500">No reviews yet. Be the first to add one!</p>
+		  </ng-template>
+
+		  <!-- Add Review Form -->
+		  <form (ngSubmit)="addReview()" class="space-y-4 mt-4 bg-gray-50 p-4 rounded-lg shadow-md">
+			<h4 class="text-lg font-semibold text-[#494949]">Add Your Review</h4>
+			<div>
+			  <label class="block text-sm font-medium text-[#494949]">Rating (1-5)</label>
+			  <input
+				type="number"
+				[(ngModel)]="newReview.rating"
+				name="rating"
+				required
+				min="1"
+				max="5"
+				class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			  />
+			</div>
+			<div>
+			  <label class="block text-sm font-medium text-[#494949]">Comment</label>
+			  <textarea
+				[(ngModel)]="newReview.comment"
+				name="comment"
+				class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			  ></textarea>
+			</div>
+			<button
+			  type="submit"
+			  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+			>
+			  Submit Review
+			</button>
+		  </form>
 		</div>
 	  </div>
 	</div>

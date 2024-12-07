@@ -86,6 +86,7 @@ builder.Services.AddScoped<INutritionService, NutritionService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IMealPlanService, MealPlanService>();
 builder.Services.AddScoped<IShoppingService, ShoppingService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<UserValidationService>();
 

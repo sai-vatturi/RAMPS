@@ -29,6 +29,7 @@ export class RecipeService {
   deleteRecipe(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
+
   patchRecipe(recipeId: number, patchData: FormData): Observable<any> {
     return this.http.patch(`${this.baseUrl}/${recipeId}`, patchData);
   }

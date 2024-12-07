@@ -33,6 +33,25 @@ export class AuthService {
 	return true;
   }
 
+  // Decode JWT and extract payload
+private decodeJwt(token: string): any {
+	try {
+	  const base64Url = token.split('.')[1]; // Get the payload part of the token
+	  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	  const jsonPayload = decodeURIComponent(
+		atob(base64)
+		  .split('')
+		  .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+		  .join('')
+	  );
+	  return JSON.parse(jsonPayload);
+	} catch (error) {
+	  console.error('Error decoding token:', error);
+	  return null;
+	}
+  }
+
+
 
   // Set user role in BehaviorSubject
   setUserRole(role: string) {
@@ -87,8 +106,21 @@ export class AuthService {
   }
 
   // Set token and expiry in localStorage
-  setToken(token: string, expiry: string): void {
-    localStorage.setItem('token', token);
-    localStorage.setItem('tokenExpiry', expiry); // Expiry should be a UTC string
+  // Set token and expiry in localStorage, and extract the role
+setToken(token: string, expiry: string): void {
+	localStorage.setItem('token', token);
+	localStorage.setItem('tokenExpiry', expiry); // Expiry should be a UTC string
+
+	// Decode token to extract role
+	const payload = this.decodeJwt(token);
+	const role = payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+	if (role) {
+	  this.setUserRole(role); // Update the BehaviorSubject
+	  localStorage.setItem('userRole', role); // Optional: Store role in localStorage
+	} else {
+	  console.error('Role not found in token payload.');
+	}
   }
+
 }

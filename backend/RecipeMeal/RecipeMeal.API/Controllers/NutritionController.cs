@@ -75,7 +75,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpGet]
-		[Authorize(Roles = "Nutritionist,Admin")]
+		[Authorize]
 		public async Task<IActionResult> GetAllNutrition()
 		{
 			var nutritions = await _nutritionService.GetAllNutritionAsync();
@@ -83,7 +83,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpGet("recipe/{recipeId}")]
-		[Authorize(Roles = "Nutritionist,Chef,Admin")]
+		[Authorize]
 		public async Task<IActionResult> GetNutritionByRecipe(int recipeId)
 		{
 			try

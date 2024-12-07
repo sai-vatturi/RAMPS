@@ -14,10 +14,14 @@ export class NutritionComponent implements OnInit {
   pendingMeals: any[] = [];
   existingNutrition: any[] = [];
   selectedRecipeDetails: any = null;
+  filteredNutrition: any[] = [];
   selectedNutritionDetails: any = null;
   nutritionData: any = {};
   isEditMode: boolean = false;
   selectedMeal: any = null;
+  selectedSortOption: string = 'caloriesAsc';  // Default sort option
+  userRole: string | null = null;
+
 
   // Modal Controls
   showEditModal: boolean = false;
@@ -31,14 +35,24 @@ export class NutritionComponent implements OnInit {
   showErrorAlert: boolean = false;
   errorMessage: string = '';
 
+   // Search and Filter Controls
+   nutritionFilters: string[] = ['All', 'Low Calories', 'High Protein', 'Low Carbs', 'Low Fat'];
+   selectedNutritionFilter: string = 'All';
+   nutritionSearchQuery: string = '';
+
   constructor(
     private nutritionService: NutritionService,
     private recipeService: RecipeService
   ) {}
 
   ngOnInit() {
-    this.loadPendingMeals();
+	this.userRole = localStorage.getItem('userRole');
+    // Load pending meals only for non-User and non-MealPlanner roles
+    if (this.userRole !== 'User' && this.userRole !== 'MealPlanner') {
+      this.loadPendingMeals();
+	}
     this.loadAllNutrition();
+
   }
 
   // Load Pending Meals
@@ -56,9 +70,71 @@ export class NutritionComponent implements OnInit {
     this.nutritionService.getAllNutrition().subscribe({
       next: (data) => {
         this.existingNutrition = Array.isArray(data) ? data : data.$values || [];
+        this.applyNutritionFilters(); // Apply filters after loading
       },
       error: (err) => this.showError('Error loading existing nutrition.'),
     });
+  }
+
+  // Apply Nutrition Filters
+  applyNutritionFilters() {
+    let filtered = [...this.existingNutrition];
+
+    // Filter by search query
+    if (this.nutritionSearchQuery.trim() !== '') {
+      const query = this.nutritionSearchQuery.toLowerCase();
+      filtered = filtered.filter((nutrition) =>
+        nutrition.recipeTitle.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by selected filter criteria
+    if (this.selectedNutritionFilter !== 'All') {
+      filtered = filtered.filter((nutrition) => {
+        switch (this.selectedNutritionFilter) {
+          case 'Low Calories':
+            return nutrition.calories < 300;
+          case 'High Protein':
+            return nutrition.protein > 20;
+          case 'Low Carbs':
+            return nutrition.carbs < 20;
+          case 'Low Fat':
+            return nutrition.fat < 10;
+          default:
+            return true;
+        }
+      });
+    }
+	filtered = this.sortNutrition(filtered); // Apply sorting
+    this.filteredNutrition = filtered;
+  }
+
+  sortNutrition(nutritionData: any[]): any[] {
+    switch (this.selectedSortOption) {
+      case 'caloriesAsc':
+        return nutritionData.sort((a, b) => a.calories - b.calories);
+      case 'caloriesDesc':
+        return nutritionData.sort((a, b) => b.calories - a.calories);
+      case 'proteinAsc':
+        return nutritionData.sort((a, b) => a.protein - b.protein);
+      case 'proteinDesc':
+        return nutritionData.sort((a, b) => b.protein - a.protein);
+      case 'carbsAsc':
+        return nutritionData.sort((a, b) => a.carbs - b.carbs);
+      case 'carbsDesc':
+        return nutritionData.sort((a, b) => b.carbs - a.carbs);
+      case 'fatAsc':
+        return nutritionData.sort((a, b) => a.fat - b.fat);
+      case 'fatDesc':
+        return nutritionData.sort((a, b) => b.fat - a.fat);
+      default:
+        return nutritionData;  // Return unsorted data if no sort option matches
+    }
+}
+// Update the selected filter
+applyNutritionFilter(filter: string) {
+    this.selectedNutritionFilter = filter;
+    this.applyNutritionFilters();
   }
 
   // Select a Recipe to View Details

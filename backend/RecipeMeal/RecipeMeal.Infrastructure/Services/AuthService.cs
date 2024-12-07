@@ -90,19 +90,20 @@ namespace RecipeMeal.Infrastructure.Services
 			var user = _dbContext.Users.FirstOrDefault(u => u.Username == dto.Username);
 
 			if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-				return "Invalid username or password.";
+				throw new UnauthorizedAccessException("Invalid username or password.");
 
 			if (!user.IsActive)
-				return "Account is deactivated.";
+				throw new UnauthorizedAccessException("Account is deactivated.");
 
 			if (!user.IsApproved)
-				return "Account is pending approval.";
+				throw new UnauthorizedAccessException("Account is pending approval.");
 
 			if (!user.IsEmailVerified)
-				return "Please verify your email before logging in.";
+				throw new UnauthorizedAccessException("Please verify your email before logging in.");
 
 			return _jwtService.GenerateJwtToken(user);
 		}
+
 
 		public async Task RequestPasswordResetAsync(PasswordResetRequestDto dto)
 		{

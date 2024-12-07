@@ -16,8 +16,8 @@
 	</div>
 
 	<!-- Pending Meals Section -->
-	<section class="mb-8">
-	  <h2 class="text-2xl font-bold text-[#191B19] mb-4">Pending Meals</h2>
+	<section *ngIf="userRole !== 'User' && userRole !== 'MealPlanner'" class="mb-8">
+		<h2 class="text-2xl font-bold text-[#191B19] mb-4">Pending Meals</h2>
 	  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 		<div
 		  *ngFor="let meal of pendingMeals"
@@ -47,6 +47,90 @@
 		<p><strong>Ingredients:</strong> {{ selectedRecipeDetails.ingredients }}</p>
 	  </div>
 	</section>
+	<h2 class="text-2xl font-bold text-[#191B19] mb-4">Existing Nutrition</h2>
+
+	<!-- Filter and Search for Nutrition -->
+<div class="flex flex-wrap justify-between items-center mb-4">
+  <!-- Search Bar -->
+  <input
+    type="text"
+    [(ngModel)]="nutritionSearchQuery"
+    (input)="applyNutritionFilters()"
+    placeholder="Search by recipe name..."
+	class="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+	/>
+
+  <!-- Nutrition Filters -->
+  <div class="flex flex-wrap gap-2 mb-4 pt-4">
+    <button
+      *ngFor="let filter of nutritionFilters"
+      [class.bg-[#88C533]]="selectedNutritionFilter === filter"
+      [class.text-white]="selectedNutritionFilter === filter"
+	  class="px-4 py-2 rounded-md border border-[#88C533] text-[#494949] hover:bg-[#76b02e] hover:text-white transition-colors"
+      (click)="applyNutritionFilter(filter)"
+    >
+      {{ filter }}
+    </button>
+  </div>
+
+
+</div>
+  <!-- Sorting Dropdown for Nutrition -->
+
+  <div class="flex justify-end mb-4 space-x-2">
+	<p class="self-center">Sort By:</p>
+	<select
+	  [(ngModel)]="selectedSortOption"
+	  (change)="applyNutritionFilters()"
+	  class="border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+	>
+	  <option value="caloriesAsc">Calories Ascending</option>
+	  <option value="caloriesDesc">Calories Descending</option>
+	  <option value="proteinAsc">Protein Ascending</option>
+	  <option value="proteinDesc">Protein Descending</option>
+	  <option value="carbsAsc">Carbs Ascending</option>
+	  <option value="carbsDesc">Carbs Descending</option>
+	  <option value="fatAsc">Fat Ascending</option>
+	  <option value="fatDesc">Fat Descending</option>
+	</select>
+  </div>
+<!-- Existing Nutrition Section -->
+<section class="mb-8">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+	<div
+	*ngFor="let nutrition of filteredNutrition"
+	class="bg-white rounded-xl p-6 flex flex-col shadow-sm transition-transform transform hover:scale-105 hover:shadow-md"
+	style="border: 1px solid rgba(0, 0, 0, 0.1);"
+>
+
+
+
+      <div class="flex-1">
+        <h3 class="text-xl font-semibold mb-2 text-[#191B19]">{{ nutrition.recipeTitle }}</h3>
+        <p>Calories: <span class="font-semibold text-[#4b7a0a]"> {{ nutrition.calories }} </span> </p>
+        <p>Protein:  <span class="font-semibold text-[#4b7a0a]"> {{ nutrition.protein }}</span></p>
+        <p>Carbs:  <span class="font-semibold text-[#4b7a0a]"> {{ nutrition.carbs }}</span></p>
+        <p>Fat: <span class="font-semibold text-[#4b7a0a]"> {{ nutrition.fat }}</span></p>
+        <p>Vitamins: <span class="font-semibold text-[#4b7a0a]"> {{ nutrition.vitamins }}</span></p>
+      </div>
+	  <div *ngIf="userRole !== 'User' && userRole !== 'MealPlanner'" class="mt-4 flex space-x-2">
+        <button
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          (click)="openEditModal(nutrition)"
+        >
+          Edit
+        </button>
+        <button
+          class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+          (click)="confirmDelete(nutrition.nutritionId)"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 	<!-- Nutrition Details Section -->
 	<section *ngIf="selectedNutritionDetails" class="mb-8">
@@ -60,39 +144,6 @@
 	  </div>
 	</section>
 
-	<!-- Existing Nutrition Section -->
-	<section class="mb-8">
-	  <h2 class="text-2xl font-bold text-[#191B19] mb-4">Existing Nutrition</h2>
-	  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-		<div
-		  *ngFor="let nutrition of existingNutrition"
-		  class="bg-white shadow-lg rounded-lg p-6 flex flex-col"
-		>
-		  <div class="flex-1">
-			<h3 class="text-xl font-semibold mb-2 text-[#191B19]">{{ nutrition.recipeTitle }}</h3>
-			<p><strong>Calories:</strong> {{ nutrition.calories }}</p>
-			<p><strong>Protein:</strong> {{ nutrition.protein }}</p>
-			<p><strong>Carbs:</strong> {{ nutrition.carbs }}</p>
-			<p><strong>Fat:</strong> {{ nutrition.fat }}</p>
-			<p><strong>Vitamins:</strong> {{ nutrition.vitamins }}</p>
-		  </div>
-		  <div class="mt-4 flex space-x-2">
-			<button
-			  class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-			  (click)="openEditModal(nutrition)"
-			>
-			  Edit
-			</button>
-			<button
-			  class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-			  (click)="confirmDelete(nutrition.nutritionId)"
-			>
-			  Delete
-			</button>
-		  </div>
-		</div>
-	  </div>
-	</section>
 
 	<!-- Edit Nutrition Modal -->
 	<div

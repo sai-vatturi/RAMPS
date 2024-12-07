@@ -9,7 +9,7 @@ namespace RecipeMeal.Core.Interfaces.Services
 	{
 		Task<MealPlan> CreateMealPlanAsync(CreateMealPlanDto dto, string createdBy);
 		Task<MealPlan> UpdateMealPlanAsync(int id, CreateMealPlanDto dto, string updatedBy);
-		Task<IEnumerable<object>> GetMealPlansAsync(string username, bool isAdmin);
+		Task<IEnumerable<object>> GetMealPlansAsync(); // Remove role or username parameters
 		Task<object> GetMealPlanByIdAsync(int id, string username, bool isAdmin);
 		Task<string> DeleteMealPlanAsync(int id, string deletedBy, bool isAdmin);
 		Task<MealPlan> PatchMealPlanAsync(int id, PatchMealPlanDto dto, string updatedBy, bool isAdmin);

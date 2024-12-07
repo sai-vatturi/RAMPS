@@ -53,11 +53,16 @@ namespace RecipeMeal.API.Controllers
 				var token = await _authService.LoginAsync(dto);
 				return Ok(new { token });
 			}
-			catch (Exception ex)
+			catch (UnauthorizedAccessException ex) // Specific exception for authentication errors
 			{
 				return Unauthorized(new { message = ex.Message });
 			}
+			catch (Exception ex) // Generic exception for other errors
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
+
 
 		[HttpGet("me")]
 		[Authorize]

@@ -1,290 +1,292 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RecipeService } from '../../../services/recipe.service';
 import { ReviewService } from '../../../services/review.service';
 
 @Component({
-  selector: 'app-recipe',
-  templateUrl: './recipe.component.html',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+	selector: 'app-recipe',
+	templateUrl: './recipe.component.html',
+	standalone: true,
+	imports: [CommonModule, FormsModule],
 })
-export class RecipeComponent {
-  recipes: any[] = []; // List of all recipes
-  selectedRecipe: any = null; // Currently selected recipe (for viewing/editing)
-  isEditMode: boolean = false; // Toggle between view and edit modes
+export class RecipeComponent  implements OnInit  {
+	recipes: any[] = [];
+	sortedRecipes: any[] = [];
+	selectedRecipe: any = null;
+	isEditMode: boolean = false;
+	userRole: string | null = null;
 
-  reviews: any[] = []; // List of reviews for the selected recipe
-  newReview = { rating: 0, comment: '' }; // Holds new review data
+	reviews: any[] = [];
+	newReview = { rating: 0, comment: '' };
+	mealTimeFilters: string[] = ['All', 'Snack', 'Lunch', 'Drink', 'Dinner', 'Breakfast', 'Dessert'];
+  selectedMealTime: string = 'All'; // Default filter (show all)
+  searchQuery: string = ''; // Search query for recipe name
 
-  selectedImage: File | null = null; // Holds selected image for upload (if applicable)
+	sortOption: string = 'ratingDesc';
 
-  // Assume we have a current logged-in username (replace with actual logic)
-  currentUsername: string = 'currentUser';
+	selectedImage: File | null = null;
 
-  constructor(
-    private recipeService: RecipeService,
-    private reviewService: ReviewService
-  ) {
-    this.loadRecipes(); // Load recipes on component initialization
-  }
+	currentUsername: string = 'currentUser';
+	ngOnInit(): void {
+		// Retrieve the role from localStorage
+		this.userRole = localStorage.getItem('userRole');
+		console.log('User Role:', this.userRole);
+	  }
+	constructor(
+		private recipeService: RecipeService,
+		private reviewService: ReviewService
+	) {
+		this.loadRecipes();
+	}
 
-  /**
-   * Fetches all recipes from the backend, then fetches their average ratings.
-   */
-  loadRecipes() {
-    this.recipeService.getAllRecipes().subscribe({
-      next: (data) => {
-        const loadedRecipes = data?.$values || [];
-        // For each recipe, fetch average rating
-        let pendingRatings = loadedRecipes.map((recipe: any) =>
-          this.reviewService.getAverageRating(recipe.recipeId).toPromise().then(avg => {
-            recipe.averageRating = avg?.averageRating ?? 0;
-          })
-        );
+	loadRecipes() {
+		this.recipeService.getAllRecipes().subscribe({
+		  next: (data) => {
+			const loadedRecipes = data?.$values || [];
+			let pendingRatings = loadedRecipes.map((recipe: any) =>
+			  this.reviewService.getAverageRating(recipe.recipeId).toPromise().then(avg => {
+				recipe.averageRating = avg?.averageRating ?? 0;
+			  })
+			);
 
-        Promise.all(pendingRatings).then(() => {
-          this.recipes = loadedRecipes;
-        });
-      },
-      error: (err) => alert(`Error loading recipes: ${err.error}`),
-    });
-  }
+			Promise.all(pendingRatings).then(() => {
+			  this.recipes = loadedRecipes;
+			  this.applyFilters();
+			});
+		  },
+		  error: (err) => alert(`Error loading recipes: ${err.error}`),
+		});
+	  }
 
-  /**
-   * Opens the dialog to add a new recipe.
-   */
-  openAddDialog() {
-    this.isEditMode = true; // Enable form mode
-    this.selectedRecipe = {
-      title: '',
-      description: '',
-      ingredients: '',
-      steps: '',
-      category: '',
-      imageUrl: null, // Default value for new recipe
-      averageRating: 0
-    };
-    this.selectedImage = null; // Reset file input
-  }
+	  applyFilters() {
+		let filteredRecipes = [...this.recipes];
 
-  /**
-   * Opens the dialog to view a recipe, loads reviews, and fetches average rating.
-   * @param recipe The recipe to view
-   */
-  openViewDialog(recipe: any) {
-    this.isEditMode = false; // Disable form mode
-    // Deep copy recipe to avoid mutation
-    this.selectedRecipe = { ...recipe };
-    this.loadReviews(recipe.recipeId);
-    // Refresh rating in case it changed
-    this.reviewService.getAverageRating(recipe.recipeId).subscribe({
-      next: (res) => {
-        this.selectedRecipe.averageRating = res?.averageRating ?? 0;
-      },
-      error: () => { /* handle error if needed */ }
-    });
-  }
+		// Filter by meal time if not "All"
+		if (this.selectedMealTime !== 'All') {
+		  filteredRecipes = filteredRecipes.filter(recipe => recipe.category === this.selectedMealTime);
+		}
 
-  /**
-   * Opens the dialog in Edit Mode for the currently selected recipe.
-   * @param recipe The recipe to edit.
-   */
-  openEditDialog(recipe: any) {
-    this.isEditMode = true;
-    this.selectedRecipe = { ...recipe };
-    this.selectedImage = null; // Reset any previously selected image
-  }
+		// Filter by search query if not empty
+		if (this.searchQuery.trim() !== '') {
+		  const lowerCaseQuery = this.searchQuery.toLowerCase();
+		  filteredRecipes = filteredRecipes.filter(recipe =>
+			recipe.title.toLowerCase().includes(lowerCaseQuery)
+		  );
+		}
 
-  /**
-   * Cancels the current action (add/edit) and closes the dialog.
-   */
-  cancelEdit() {
-    this.selectedRecipe = null; // Clear selected recipe
-    this.selectedImage = null; // Reset file input
-    this.isEditMode = false; // Exit form mode
-  }
+		// Apply sorting
+		this.sortedRecipes = this.sortRecipes(filteredRecipes);
+	  }
 
-  /**
-   * Loads reviews for a specific recipe from the backend.
-   * @param recipeId The ID of the recipe for which reviews are loaded
-   */
-  loadReviews(recipeId: number) {
-    this.reviewService.getReviewsByRecipeId(recipeId).subscribe({
-      next: (data) => {
-        this.reviews = data?.$values || []; // Populate reviews array
-      },
-      error: (err) => alert(`Error loading reviews: ${err.error}`),
-    });
-  }
+	  sortRecipes(recipes: any[]) {
+		if (this.sortOption === 'ratingDesc') {
+		  return recipes.sort((a, b) => b.averageRating - a.averageRating);
+		} else if (this.sortOption === 'ratingAsc') {
+		  return recipes.sort((a, b) => a.averageRating - b.averageRating);
+		} else if (this.sortOption === 'createdAtDesc') {
+		  return recipes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+		} else if (this.sortOption === 'createdAtAsc') {
+		  return recipes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+		}
+		return recipes;
+	  }
 
-  /**
-   * Handles the addition of a new review for the selected recipe.
-   */
-  addReview() {
-    if (!this.newReview.rating) {
-      alert('Please provide a rating.');
-      return;
-    }
+	  applySorting() {
+		this.applyFilters(); // Reapply filters and sort after changing the sorting option
+	  }
 
-    const reviewDto = {
-      recipeId: this.selectedRecipe.recipeId, // Recipe ID from selected recipe
-      rating: this.newReview.rating,
-      comment: this.newReview.comment
-    };
+	  applyMealTimeFilter(filter: string) {
+		this.selectedMealTime = filter;
+		this.applyFilters();
+	  }
 
-    this.reviewService.addReview(reviewDto).subscribe({
-      next: () => {
-        alert('Review added successfully.');
-        this.newReview = { rating: 0, comment: '' }; // Reset review form
-        this.loadReviews(this.selectedRecipe.recipeId); // Reload reviews after adding
-        // Update average rating
-        this.reviewService.getAverageRating(this.selectedRecipe.recipeId).subscribe(avgRes => {
-          this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
-        });
-      },
-      error: (err) => alert(`Error adding review: ${err.error}`),
-    });
-  }
 
-  /**
-   * Edit a review (frontend logic)
-   */
-  editReview(review: any) {
-    const newComment = prompt("Edit your comment:", review.comment);
-    if (newComment === null) return; // User canceled
+	openAddDialog() {
+		this.isEditMode = true;
+		this.selectedRecipe = {
+			title: '',
+			description: '',
+			ingredients: '',
+			steps: '',
+			category: '',
+			imageUrl: null,
+			averageRating: 0
+		};
+		this.selectedImage = null;
+	}
 
-    const newRating = Number(prompt("Edit your rating (1-5):", review.rating));
-    if (!newRating || newRating < 1 || newRating > 5) {
-      alert("Invalid rating.");
-      return;
-    }
+	openViewDialog(recipe: any) {
+		this.isEditMode = false;
+		this.selectedRecipe = { ...recipe };
+		this.loadReviews(recipe.recipeId);
+		this.reviewService.getAverageRating(recipe.recipeId).subscribe({
+			next: (res) => {
+				this.selectedRecipe.averageRating = res?.averageRating ?? 0;
+			},
+			error: () => { }
+		});
+	}
 
-    const updatedReview = { ...review, rating: newRating, comment: newComment };
-    this.reviewService.updateReview(review.reviewId, updatedReview).subscribe({
-      next: () => {
-        alert('Review updated successfully.');
-        this.loadReviews(this.selectedRecipe.recipeId);
-        this.reviewService.getAverageRating(this.selectedRecipe.recipeId).subscribe(avgRes => {
-          this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
-        });
-      },
-      error: (err) => alert(`Error updating review: ${err.error}`),
-    });
-  }
+	openEditDialog(recipe: any) {
+		this.isEditMode = true;
+		this.selectedRecipe = { ...recipe };
+		this.selectedImage = null;
+	}
 
-  /**
-   * Delete a review after confirmation
-   */
-  deleteReview(review: any) {
-    if (confirm('Are you sure you want to delete this review?')) {
-      this.reviewService.deleteReview(review.reviewId).subscribe({
-        next: () => {
-          alert('Review deleted successfully.');
-          this.loadReviews(this.selectedRecipe.recipeId);
-          this.reviewService.getAverageRating(this.selectedRecipe.recipeId).subscribe(avgRes => {
-            this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
-          });
-        },
-        error: (err) => alert(`Error deleting review: ${err.error}`),
-      });
-    }
-  }
+	cancelEdit() {
+		this.selectedRecipe = null;
+		this.selectedImage = null;
+		this.isEditMode = false;
+	}
 
-  /**
-   * Handles the file selection event for image uploads.
-   * @param event The file input change event
-   */
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.selectedImage = file; // Store the selected file
-    }
-  }
+	loadReviews(recipeId: number) {
+		this.reviewService.getReviewsByRecipeId(recipeId).subscribe({
+			next: (data) => {
+				this.reviews = data?.$values || [];
+			},
+			error: (err) => alert(`Error loading reviews: ${err.error}`),
+		});
+	}
 
-  /**
-   * Saves changes to a recipe, determining whether to add or update based on the presence of an ID.
-   */
-  saveChanges() {
-    if (this.isEditMode) {
-      if (this.selectedRecipe.recipeId) {
-        this.updateRecipe();
-      } else {
-        this.addRecipe();
-      }
-    }
-  }
+	addReview() {
+		if (!this.newReview.rating) {
+			alert('Please provide a rating.');
+			return;
+		}
 
-  /**
-   * Adds a new recipe using the RecipeService.
-   */
-  addRecipe() {
-    if (!this.selectedRecipe) return;
+		const reviewDto = {
+			recipeId: this.selectedRecipe.recipeId,
+			rating: this.newReview.rating,
+			comment: this.newReview.comment
+		};
 
-    const formData = new FormData();
-    formData.append('title', this.selectedRecipe.title);
-    formData.append('description', this.selectedRecipe.description);
-    formData.append('ingredients', this.selectedRecipe.ingredients);
-    formData.append('steps', this.selectedRecipe.steps);
-    formData.append('category', this.selectedRecipe.category);
-    if (this.selectedImage) {
-      formData.append('image', this.selectedImage);
-    }
+		this.reviewService.addReview(reviewDto).subscribe({
+			next: () => {
+				alert('Review added successfully.');
+				this.newReview = { rating: 0, comment: '' };
+				this.loadReviews(this.selectedRecipe.recipeId);
+				this.reviewService.getAverageRating(this.selectedRecipe.recipeId).subscribe(avgRes => {
+					this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
+				});
+			},
+			error: (err) => alert(`Error adding review: ${err.error}`),
+		});
+	}
 
-    this.recipeService.createRecipe(formData).subscribe({
-      next: () => {
-        alert('Recipe added successfully.');
-        this.loadRecipes();
-        this.cancelEdit();
-      },
-      error: (err) => alert(`Error adding recipe: ${err.error}`),
-    });
-  }
+	editReview(review: any) {
+		const newComment = prompt("Edit your comment:", review.comment);
+		if (newComment === null) return;
 
-  /**
-   * Updates an existing recipe using the RecipeService.
-   */
-  updateRecipe() {
-    if (!this.selectedRecipe || !this.selectedRecipe.recipeId) return;
+		const newRating = Number(prompt("Edit your rating (1-5):", review.rating));
+		if (!newRating || newRating < 1 || newRating > 5) {
+			alert("Invalid rating.");
+			return;
+		}
 
-    const formData = new FormData();
-    formData.append('title', this.selectedRecipe.title);
-    formData.append('description', this.selectedRecipe.description);
-    formData.append('ingredients', this.selectedRecipe.ingredients);
-    formData.append('steps', this.selectedRecipe.steps);
-    formData.append('category', this.selectedRecipe.category);
-    if (this.selectedImage) {
-      formData.append('image', this.selectedImage);
-    }
+		const updatedReview = { ...review, rating: newRating, comment: newComment };
+		this.reviewService.updateReview(review.reviewId, updatedReview).subscribe({
+			next: () => {
+				alert('Review updated successfully.');
+				this.loadReviews(this.selectedRecipe.recipeId);
+				this.reviewService.getAverageRating(this.selectedRecipe.recipeId).subscribe(avgRes => {
+					this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
+				});
+			},
+			error: (err) => alert(`Error updating review: ${err.error}`),
+		});
+	}
 
-    this.recipeService.updateRecipe(this.selectedRecipe.recipeId, formData).subscribe({
-      next: () => {
-        alert('Recipe updated successfully.');
-        this.loadRecipes();
-        this.cancelEdit();
-      },
-      error: (err) => alert(`Error updating recipe: ${err.error}`),
-    });
-  }
+	deleteReview(review: any) {
+		if (confirm('Are you sure you want to delete this review?')) {
+			this.reviewService.deleteReview(review.reviewId).subscribe({
+				next: () => {
+					alert('Review deleted successfully.');
+					this.loadReviews(this.selectedRecipe.recipeId);
+					this.reviewService.getAverageRating(this.selectedRecipe.recipeId).subscribe(avgRes => {
+						this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
+					});
+				},
+				error: (err) => alert(`Error deleting review: ${err.error}`),
+			});
+		}
+	}
 
-  /**
-   * Deletes a recipe after user confirmation.
-   * @param id The ID of the recipe to delete
-   */
-  deleteRecipe(id: number) {
-    if (confirm('Are you sure you want to delete this recipe?')) {
-      this.recipeService.deleteRecipe(id).subscribe({
-        next: () => {
-          alert('Recipe deleted successfully.');
-          this.loadRecipes();
-          // If the deleted recipe was open in view, close it
-          if (this.selectedRecipe && this.selectedRecipe.recipeId === id) {
-            this.cancelEdit();
-          }
-        },
-        error: (err) => alert(`Error deleting recipe: ${err.error}`),
-      });
-    }
-  }
+	onFileSelected(event: any) {
+		const file: File = event.target.files[0];
+		if (file) {
+			this.selectedImage = file;
+		}
+	}
+
+	saveChanges() {
+		if (this.isEditMode) {
+			if (this.selectedRecipe.recipeId) {
+				this.updateRecipe();
+			} else {
+				this.addRecipe();
+			}
+		}
+	}
+
+	addRecipe() {
+		if (!this.selectedRecipe) return;
+
+		const formData = new FormData();
+		formData.append('title', this.selectedRecipe.title);
+		formData.append('description', this.selectedRecipe.description);
+		formData.append('ingredients', this.selectedRecipe.ingredients);
+		formData.append('steps', this.selectedRecipe.steps);
+		formData.append('category', this.selectedRecipe.category);
+		if (this.selectedImage) {
+			formData.append('image', this.selectedImage);
+		}
+
+		this.recipeService.createRecipe(formData).subscribe({
+			next: () => {
+				alert('Recipe added successfully.');
+				this.loadRecipes();
+				this.cancelEdit();
+			},
+			error: (err) => alert(`Error adding recipe: ${err.error}`),
+		});
+	}
+
+	updateRecipe() {
+		if (!this.selectedRecipe || !this.selectedRecipe.recipeId) return;
+
+		const formData = new FormData();
+		formData.append('title', this.selectedRecipe.title);
+		formData.append('description', this.selectedRecipe.description);
+		formData.append('ingredients', this.selectedRecipe.ingredients);
+		formData.append('steps', this.selectedRecipe.steps);
+		formData.append('category', this.selectedRecipe.category);
+		if (this.selectedImage) {
+			formData.append('image', this.selectedImage);
+		}
+
+		this.recipeService.updateRecipe(this.selectedRecipe.recipeId, formData).subscribe({
+			next: () => {
+				alert('Recipe updated successfully.');
+				this.loadRecipes();
+				this.cancelEdit();
+			},
+			error: (err) => alert(`Error updating recipe: ${err.error}`),
+		});
+	}
+
+	deleteRecipe(id: number) {
+		if (confirm('Are you sure you want to delete this recipe?')) {
+			this.recipeService.deleteRecipe(id).subscribe({
+				next: () => {
+					alert('Recipe deleted successfully.');
+					this.loadRecipes();
+					if (this.selectedRecipe && this.selectedRecipe.recipeId === id) {
+						this.cancelEdit();
+					}
+				},
+				error: (err) => alert(`Error deleting recipe: ${err.error}`),
+			});
+		}
+	}
 }

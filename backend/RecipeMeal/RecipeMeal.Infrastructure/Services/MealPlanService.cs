@@ -62,10 +62,9 @@ namespace RecipeMeal.Infrastructure.Services
 			return mealPlan;
 		}
 
-		public async Task<IEnumerable<object>> GetMealPlansAsync(string username, bool isAdmin)
+		public async Task<IEnumerable<object>> GetMealPlansAsync()
 		{
 			return await _dbContext.MealPlans
-				.Where(mp => mp.CreatedBy == username || isAdmin)
 				.Select(mp => new
 				{
 					mp.MealPlanId,
@@ -80,6 +79,7 @@ namespace RecipeMeal.Infrastructure.Services
 					})
 				}).ToListAsync();
 		}
+
 
 		public async Task<object> GetMealPlanByIdAsync(int id, string username, bool isAdmin)
 		{

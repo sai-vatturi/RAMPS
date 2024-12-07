@@ -1,7 +1,9 @@
-<div class="min-h-screen  font-sans p-6">
+<div class="min-h-screen font-sans p-6">
 	<header class="flex justify-between items-center mb-6">
 	  <h1 class="text-3xl font-bold text-[#191B19]">Meal Plans</h1>
+	  <!-- Only MealPlanner and Admin can add -->
 	  <button
+		*ngIf="userRole === 'MealPlanner' || userRole === 'Admin'"
 		(click)="startAddMode()"
 		class="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#388E3C] transition-colors"
 	  >
@@ -10,9 +12,9 @@
 	</header>
 
 	<div
-	  *ngIf="isEditMode || isAddMode"
-	  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-	>
+    *ngIf="(isEditMode || isAddMode) && (userRole === 'MealPlanner' || userRole === 'Admin')"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  >
 	  <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
 		<h2 class="text-2xl font-semibold mb-4 text-[#494949]">
 		  {{ isEditMode ? 'Edit Meal Plan' : 'Add Meal Plan' }}
@@ -123,29 +125,31 @@
 	</div>
 
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-	  <div
+		<div
 		*ngFor="let plan of mealPlans"
-		class="bg-white rounded-lg shadow p-6 flex flex-col justify-between"
-	  >
+		class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm transition-transform transform hover:scale-105 hover:shadow-md"
+		style="border: 1px solid rgba(0, 0, 0, 0.1);"
+>
+
 		<div>
-		  <h2 class="text-2xl font-semibold  mb-2">{{ plan.name }}</h2>
+		  <h2 class="text-xl font-semibold  mb-2">{{ plan.name }}</h2>
 		  <p class="text-[#494949] mb-1">
-			<span class="font-medium">Start Date:</span> {{ plan.startDate | date: 'longDate' }}
+			<span class=" text-sm font-medium">Start Date:</span> {{ plan.startDate | date: 'longDate' }}
 		  </p>
 		  <p class="text-[#494949] mb-4">
-			<span class="font-medium">End Date:</span> {{ plan.endDate | date: 'longDate' }}
+			<span class=" text-sm font-medium">End Date:</span> {{ plan.endDate | date: 'longDate' }}
 		  </p>
 		  <div>
-			<h3 class="text-xl font-medium text-[#494949] mb-2">Recipes</h3>
+			<h3 class="text-md font-medium text-[#494949] mb-2">Recipes</h3>
 			<ul class="list-disc list-inside">
-			  <li *ngFor="let recipe of plan.recipes" class="text-[#494949]">
+			  <li *ngFor="let recipe of plan.recipes" class="text-[#494949] text-sm">
 				{{ recipe.title }} - <strong>{{ getMealPeriod(recipe.mealTime) }}</strong>
 				({{ recipe.mealTime | date: 'shortTime' }})
 			  </li>
 			</ul>
 		  </div>
 		</div>
-		<div class="mt-4 flex space-x-2">
+		<div *ngIf="userRole === 'MealPlanner' || userRole === 'Admin'" class="mt-4 flex space-x-2">
 		  <button
 			(click)="editMealPlan(plan)"
 			class="flex-1 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors"

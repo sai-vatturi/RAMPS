@@ -1,43 +1,101 @@
-<div class="container mx-auto p-6">
-	<!-- Heading -->
-	<h1 class="text-4xl font-bold text-[#191B19] mb-6">Chef Recipe Management</h1>
+<div
+  *ngIf="userRole === 'Admin' || userRole === 'Chef'"
+  class="container mx-auto p-6"
+>
+  <!-- Heading -->
+  <h1 class="text-4xl font-bold text-[#191B19] mb-6">Chef Recipe Management</h1>
 
-	<!-- Add Recipe Button -->
-	<button
-	  (click)="openAddDialog()"
-	  class="mb-6 bg-[#88C533] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#76b02e] transition-colors"
-	>
-	  Add Recipe
-	</button>
+  <!-- Add Recipe Button -->
+  <button
+    (click)="openAddDialog()"
+    class="mb-6 bg-[#88C533] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#76b02e] transition-colors"
+  >
+    Add Recipe
+  </button>
+</div>
+
 
 	<!-- Recipes List as Cards -->
 	<h2 class="text-2xl font-semibold text-[#494949] mt-8 mb-4">All Recipes</h2>
-	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-	  <div
-		*ngFor="let recipe of recipes"
-		class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-		(click)="openViewDialog(recipe)"
-	  >
-		<img
-		  [src]="recipe.imageUrl"
-		  alt="Recipe Image"
-		  class="w-full h-40 object-cover rounded-md mb-4"
-		/>
-		<h3 class="text-xl font-semibold text-[#191B19]">{{ recipe.title }}</h3>
-		<p class="text-sm text-[#494949] mb-2">{{ recipe.description | slice:0:100 }}...</p>
-		<div class="flex items-center mb-2">
-		  <!-- Display stars based on recipe.averageRating -->
-		  <ng-container *ngFor="let star of [1,2,3,4,5]">
-			<span [class.text-yellow-500]="star <= recipe.averageRating" class="text-gray-300 text-lg">
-			  ★
-			</span>
-		  </ng-container>
-		  <span class="text-sm text-gray-500 ml-2">({{ recipe.averageRating.toFixed(1) }})</span>
-		</div>
-		<p class="text-sm text-gray-500">Category: {{ recipe.category }}</p>
-		<p class="text-sm text-gray-500">Created At: {{ recipe.createdAt | date: 'medium' }}</p>
+	<!-- Search Bar -->
+<div class="mb-4">
+	<input
+	  type="text"
+	  [(ngModel)]="searchQuery"
+	  (input)="applyFilters()"
+	  placeholder="Search recipes by name..."
+	  class="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+	/>
+  </div>
+
+	<!-- Meal Time Filters -->
+<div class="flex flex-wrap gap-2 mb-4">
+	<button
+	  *ngFor="let filter of mealTimeFilters"
+	  [class.bg-[#88C533]]="selectedMealTime === filter"
+	  [class.text-white]="selectedMealTime === filter"
+	  class="px-4 py-2 rounded-md border border-[#88C533] text-[#494949] hover:bg-[#76b02e] hover:text-white transition-colors"
+	  (click)="applyMealTimeFilter(filter)"
+	>
+	  {{ filter }}
+	</button>
+  </div>
+
+	<!-- Sorting Options -->
+	<div class="flex justify-end mb-4 space-x-2">
+		<p class="self-center">Sort By:</p>
+		<select
+		  id="sort"
+		  [(ngModel)]="sortOption"
+		  (change)="applySorting()"
+		  class="border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+		>
+		  <option value="ratingDesc">Rating (High to Low)</option>
+		  <option value="ratingAsc">Rating (Low to High)</option>
+		  <option value="createdAtDesc">Created At (Newest First)</option>
+		  <option value="createdAtAsc">Created At (Oldest First)</option>
+		</select>
 	  </div>
+
+	  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+		<div
+		  *ngFor="let recipe of sortedRecipes"
+		  class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform transform hover:scale-105 cursor-pointer border border-gray-200 overflow-hidden"
+		  (click)="openViewDialog(recipe)"
+		>
+		  <div class="relative w-full h-48">
+			<img
+			  [src]="recipe.imageUrl"
+			  alt="Recipe Image"
+			  class="w-full h-full object-cover transition-transform transform hover:scale-110"
+			/>
+			<div class="absolute top-2 right-2 bg-white/80 backdrop-blur-sm text-gray-800 text-sm px-3 py-1 rounded-full shadow-sm">
+			  {{ recipe.category }}
+			</div>
+		  </div>
+		  <div class="p-6">
+			<h3 class="text-xl font-bold text-[#191B19] mb-2">{{ recipe.title }}</h3>
+			<p class="text-sm text-gray-600 mb-2">{{ recipe.description | slice:0:100 }}...</p>
+			<div class="flex items-center mb-2">
+			  <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+				<span
+				  [class.text-yellow-500]="star <= recipe.averageRating"
+				  class="text-gray-300 text-lg transition-colors"
+				>
+				  ★
+				</span>
+			  </ng-container>
+			  <span class="text-sm text-gray-500 ml-2">({{ recipe.averageRating.toFixed(1) }})</span>
+			</div>
+			<div class="text-sm text-gray-500">
+			  <p>Created At: {{ recipe.createdAt | date: 'medium' }}</p>
+			</div>
+		  </div>
+		</div>
 	</div>
+
+
+
 
 	<!-- Recipe Detail / Add-Edit Dialog -->
 	<div
@@ -165,21 +223,25 @@
 			<span class="text-sm text-gray-500 ml-2">({{ selectedRecipe.averageRating.toFixed(1) }})</span>
 		  </div>
 
-		  <!-- Edit/Delete Recipe Buttons -->
-		  <div class="flex justify-end space-x-2 mt-4">
-			<button
-			  (click)="openEditDialog(selectedRecipe)"
-			  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-			>
-			  Edit
-			</button>
-			<button
-			  (click)="deleteRecipe(selectedRecipe.recipeId)"
-			  class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-			>
-			  Delete
-			</button>
-		  </div>
+		 <!-- Edit/Delete Recipe Buttons -->
+<div
+*ngIf="userRole === 'Admin' || userRole === 'Chef'"
+class="flex justify-end space-x-2 mt-4"
+>
+<button
+  (click)="openEditDialog(selectedRecipe)"
+  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+>
+  Edit
+</button>
+<button
+  (click)="deleteRecipe(selectedRecipe.recipeId)"
+  class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+>
+  Delete
+</button>
+</div>
+
 
 		  <!-- Reviews Section -->
 		  <h3 class="text-xl font-semibold text-[#494949] mt-6 mb-4">Reviews</h3>
@@ -244,4 +306,3 @@
 		</div>
 	  </div>
 	</div>
-  </div>

@@ -26,29 +26,43 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  // Handle form submission
   onSubmit() {
-    this.authService.login(this.loginData).subscribe({
-      next: (res: any) => {
-        const token = res.token;
-        const expiry = res.expiry; // Assuming the backend sends token expiry
+	this.authService.login(this.loginData).subscribe({
+	  next: (res: any) => {
+		const token = res.token; // Token from backend
+		const expiry = res.expiry; // Expiry date from backend
 
-        // Store the token and expiry in localStorage
-        this.authService.setToken(token, expiry);
+		// Save token and expiry in AuthService
+		this.authService.setToken(token, expiry);
 
-        // Show success alert and navigate to the dashboard
-        this.showAlert('success', 'Login Successful', 'Redirecting to your dashboard...');
-        setTimeout(() => {
-          this.router.navigate(['/user-dashboard']); // Redirect to the default dashboard
-        }, 2000);
-      },
-      error: (err) => {
-        // Handle login errors
-        const errorMsg = err.error || 'Invalid username or password.';
-        this.showAlert('error', 'Login Failed', errorMsg);
-      },
-    });
+		// Decode token to extract role
+		const payload = this.authService['decodeJwt'](token); // Use the decodeJwt method from AuthService
+		const role = payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+		if (role) {
+		  this.authService.setUserRole(role); // Update role in BehaviorSubject
+		  localStorage.setItem('userRole', role); // Optionally save role to localStorage
+		  console.log('Role extracted and saved:', role);
+		} else {
+		  console.error('Role is missing in token payload!');
+		}
+
+		// Display success message and redirect
+		this.showAlert('success', 'Login Successful', 'Redirecting to your dashboard...');
+		setTimeout(() => {
+		  this.router.navigate(['/recipes']);
+		}, 2000);
+	  },
+	  error: (err) => {
+		// Handle errors
+		const errorMsg = err.error?.message || 'An unexpected error occurred.';
+		this.showAlert('error', 'Login Failed', errorMsg);
+	  },
+	});
   }
+
+
+
 
   // Toggle password visibility
   togglePasswordVisibility() {

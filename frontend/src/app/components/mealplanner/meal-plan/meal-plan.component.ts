@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MealPlanService } from '../../../services/meal-plan.service';
 
@@ -9,11 +9,12 @@ import { MealPlanService } from '../../../services/meal-plan.service';
   standalone: true,
   imports: [FormsModule, CommonModule],
 })
-export class MealPlanComponent {
+export class MealPlanComponent implements OnInit {
   mealPlans: any[] = [];
   availableRecipes: any[] = []; // To fetch and show available recipes
   isEditMode: boolean = false;
   isAddMode: boolean = false;
+  userRole: string | null = null;
 
   currentMealPlan: any = {
     name: '',
@@ -21,6 +22,14 @@ export class MealPlanComponent {
     endDate: '',
     recipes: [],
   };
+
+  ngOnInit() {
+    this.userRole = localStorage.getItem('userRole'); // Get user role
+    this.loadMealPlans();
+    if (this.userRole === 'MealPlanner' || this.userRole === 'Admin') {
+      this.loadAvailableRecipes();
+    }
+  }
 
   constructor(private mealPlanService: MealPlanService) {
     this.loadMealPlans();
@@ -34,19 +43,20 @@ export class MealPlanComponent {
 
 
   loadMealPlans() {
-    this.mealPlanService.getAllMealPlans().subscribe({
-      next: (data) => {
-        this.mealPlans = (data.$values || data).map((plan: any) => ({
-          ...plan,
-          recipes: (plan.recipes?.$values || plan.recipes || []).map((recipe: any) => ({
-            ...recipe,
-            mealPeriod: this.getMealPeriod(recipe.mealTime),
-          })),
-        }));
-      },
-      error: (err) => alert(`Error loading meal plans: ${err.error}`),
-    });
+	this.mealPlanService.getAllMealPlans().subscribe({
+	  next: (data) => {
+		this.mealPlans = (data.$values || data).map((plan: any) => ({
+		  ...plan,
+		  recipes: (plan.recipes?.$values || plan.recipes || []).map((recipe: any) => ({
+			...recipe,
+			mealPeriod: this.getMealPeriod(recipe.mealTime),
+		  })),
+		}));
+	  },
+	  error: (err) => alert(`Error loading meal plans: ${err.error}`),
+	});
   }
+
 
   loadAvailableRecipes() {
     this.mealPlanService.getAvailableRecipes().subscribe({

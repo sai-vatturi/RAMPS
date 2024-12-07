@@ -25,12 +25,12 @@ export class SidebarComponent implements OnInit {
   // Centralized menu configuration
   private menuConfig = {
 	common: [
-	  { label: 'User Dashboard', icon: 'fas fa-tachometer-alt', path: 'user-dashboard' },
+	//   { label: 'User Dashboard', icon: 'fas fa-tachometer-alt', path: 'user-dashboard' },
 	  { label: 'Recipes', icon: 'fas fa-utensils', path: 'recipes' },
 	  { label: 'Nutritions', icon: 'fas fa-leaf', path: 'nutrition' },
 	  { label: 'Meal Plans', icon: 'fas fa-calendar-alt', path: 'meal-plan' },
 	  { label: 'Shopping Lists', icon: 'fas fa-shopping-cart', path: 'shopping-lists' },
-	  { label: 'FAQ', icon: 'fas fa-question-circle', path: 'faq' },
+	//   { label: 'FAQ', icon: 'fas fa-question-circle', path: 'faq' },
 	],
 	admin: [
 	  { label: 'Users', icon: 'fas fa-users', path: 'users' },

@@ -24,23 +24,35 @@
 	  </div>
 	</header>
 
-	<!-- Shopping Lists -->
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-	  <div
-		*ngFor="let shoppingList of shoppingLists"
-		class="bg-white border border-gray-200 rounded-lg shadow p-6 flex flex-col justify-between max-w-md w-full mx-auto cursor-pointer"
-		(click)="openModal(shoppingList)"
-	  >
-		<h3 class="text-xl font-semibold text-black">
-		  Shopping List ({{ getMealPlanName(shoppingList.mealPlanId) }})
-		</h3>
-		<button
-		  (click)="deleteShoppingList(shoppingList.userShoppingListId); $event.stopPropagation()"
-		  class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-		>
-		  Delete Shopping List
-		</button>
-	  </div>
+	<!-- Responsive Table -->
+	<div class="overflow-x-auto">
+	  <table class="table-auto w-full border-collapse border border-gray-200">
+		<thead>
+		  <tr class="bg-gray-100 text-left">
+			<th class="border border-gray-200 px-4 py-2">Meal Plan</th>
+			<th class="border border-gray-200 px-4 py-2">Actions</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr
+			*ngFor="let shoppingList of shoppingLists"
+			class="cursor-pointer hover:bg-gray-50 transition"
+			(click)="openModal(shoppingList)"
+		  >
+			<td class="border border-gray-200 px-4 py-2">
+			  Shopping List ({{ getMealPlanName(shoppingList.mealPlanId) }})
+			</td>
+			<td class="border border-gray-200 px-4 py-2">
+			  <button
+				(click)="deleteShoppingList(shoppingList.userShoppingListId); $event.stopPropagation()"
+				class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+			  >
+				Delete
+			  </button>
+			</td>
+		  </tr>
+		</tbody>
+	  </table>
 	</div>
 
 	<!-- Modal Dialog -->
@@ -92,7 +104,6 @@
 >
   Delete
 </button>
-
 			</div>
 		  </li>
 		</ul>

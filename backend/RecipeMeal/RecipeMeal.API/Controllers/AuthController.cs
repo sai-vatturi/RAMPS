@@ -11,21 +11,21 @@ using RecipeMeal.Core.Interfaces;
 
 namespace RecipeMeal.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
-    {
-        private readonly RecipeMealDbContext _dbContext;
-        private readonly JwtService _jwtService;
+	[ApiController]
+	[Route("api/[controller]")]
+	public class AuthController : ControllerBase
+	{
+		private readonly RecipeMealDbContext _dbContext;
+		private readonly JwtService _jwtService;
 		private readonly IEmailService _emailService;
 
 
-        public AuthController(RecipeMealDbContext dbContext, JwtService jwtService, IEmailService emailService)
-        {
-            _dbContext = dbContext;
-            _jwtService = jwtService;
+		public AuthController(RecipeMealDbContext dbContext, JwtService jwtService, IEmailService emailService)
+		{
+			_dbContext = dbContext;
+			_jwtService = jwtService;
 			_emailService = emailService;
-        }
+		}
 
 		[HttpPost("signup")]
 		public async Task<IActionResult> Signup([FromBody] SignupDto dto)
@@ -102,6 +102,29 @@ namespace RecipeMeal.API.Controllers
 			return Ok(new { token });
 		}
 
+		[HttpGet("me")]
+		[Authorize]
+		public IActionResult GetCurrentUser()
+		{
+			var username = User.Identity?.Name;
+
+			if (username == null)
+				return Unauthorized("Invalid token.");
+
+			var user = _dbContext.Users.FirstOrDefault(u => u.Username == username);
+
+			if (user == null)
+				return NotFound("User not found.");
+
+			return Ok(new
+			{
+				user.FirstName,
+				user.Username,
+				Role = user.Role.ToString()
+			});
+		}
+
+
 		[HttpPost("request-password-reset")]
 		public async Task<IActionResult> RequestPasswordReset([FromBody] PasswordResetRequestDto dto)
 		{
@@ -129,6 +152,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 
+
 		[HttpPost("reset-password")]
 		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
 		{
@@ -153,5 +177,5 @@ namespace RecipeMeal.API.Controllers
 			return Ok("Test email sent.");
 		}
 
-    }
+	}
 }

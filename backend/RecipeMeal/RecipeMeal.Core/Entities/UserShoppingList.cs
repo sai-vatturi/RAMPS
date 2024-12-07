@@ -14,6 +14,7 @@ namespace RecipeMeal.Core.Entities
 		[Required]
 		public int MealPlanId { get; set; } // Links to the meal plan.
 
-		public List<UserShoppingListItem> Items { get; set; } = new(); // Items in this list.
+		public List<UserShoppingListItem> Items { get; set; } = new();
 	}
+
 }

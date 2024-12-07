@@ -83,10 +83,11 @@ namespace RecipeMeal.Infrastructure.Data
 				.HasForeignKey(mp => mp.RecipeId);
 
 			modelBuilder.Entity<UserShoppingList>()
-				.HasMany(sl => sl.Items) // Replace `Items` with the navigation property name in your entity
-				.WithOne(i => i.UserShoppingList) // Replace `UserShoppingList` with the navigation property in `UserShoppingListItem`
+				.HasMany(sl => sl.Items)
+				.WithOne(i => i.UserShoppingList)
 				.HasForeignKey(i => i.UserShoppingListId)
-				.OnDelete(DeleteBehavior.Cascade);
+				.OnDelete(DeleteBehavior.Restrict); // Avoid cascading delete to prevent multiple paths to the same entity
+
 
 			modelBuilder.Entity<UserShoppingListItem>()
 				.Property(usi => usi.Ingredient)

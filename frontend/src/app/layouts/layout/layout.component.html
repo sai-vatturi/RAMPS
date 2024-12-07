@@ -1,0 +1,24 @@
+<!-- layout.component.html -->
+<div class="flex flex-col h-screen">
+	<!-- Header (Visible only when sidebar is collapsed) -->
+	<header
+	  *ngIf="!isSidebarOpen"
+	  class="fixed top-0 left-0 w-full bg-white shadow-sm z-50 transition-all duration-300"
+	>
+	  <div class="flex items-center justify-center py-3">
+		<!-- Logo -->
+		<img src="assets/images/logo-green.png" alt="Logo" class="h-10 w-auto" />
+	  </div>
+	</header>
+
+	<!-- Main Content -->
+	<div class="flex flex-1 pt-16 lg:pt-0">
+	  <!-- Sidebar -->
+	  <app-sidebar></app-sidebar>
+
+	  <!-- Main Content (Router Outlet) -->
+	  <div class="flex-1 p-6 lg:ml-64">
+		<router-outlet></router-outlet>
+	  </div>
+	</div>
+  </div>

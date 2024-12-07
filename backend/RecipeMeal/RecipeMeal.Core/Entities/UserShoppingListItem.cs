@@ -8,8 +8,8 @@ namespace RecipeMeal.Core.Entities
 		public int UserShoppingListItemId { get; set; }
 
 		[Required]
-		public int UserShoppingListId { get; set; }
-		public UserShoppingList UserShoppingList { get; set; } // Foreign Key Relationship
+		public int UserShoppingListId { get; set; } // Foreign Key
+		public UserShoppingList UserShoppingList { get; set; } // Navigation property
 
 		[Required]
 		public string Ingredient { get; set; }
@@ -19,6 +19,5 @@ namespace RecipeMeal.Core.Entities
 
 		public bool IsPurchased { get; set; } = false;
 	}
-
 
 }

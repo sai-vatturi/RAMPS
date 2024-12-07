@@ -1,12 +1,169 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Custom font import */
+/* Gilroy Black */
+@font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-Black.ttf') format('truetype');
+	font-weight: 900;
+	font-style: normal;
+  }
 
-html, body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
-}
+  /* Gilroy Black Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-BlackItalic.ttf') format('truetype');
+	font-weight: 900;
+	font-style: italic;
+  }
+
+  /* Gilroy Bold */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+  }
+
+  /* Gilroy Bold Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-BoldItalic.ttf') format('truetype');
+	font-weight: bold;
+	font-style: italic;
+  }
+
+  /* Gilroy Extra Bold */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-ExtraBold.ttf') format('truetype');
+	font-weight: 800;
+	font-style: normal;
+  }
+
+  /* Gilroy Extra Bold Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-ExtraBoldItalic.ttf') format('truetype');
+	font-weight: 800;
+	font-style: italic;
+  }
+
+  /* Gilroy Heavy */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-Heavy.ttf') format('truetype');
+	font-weight: 700;
+	font-style: normal;
+  }
+
+  /* Gilroy Heavy Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-HeavyItalic.ttf') format('truetype');
+	font-weight: 700;
+	font-style: italic;
+  }
+
+  /* Gilroy Light */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+  }
+
+  /* Gilroy Light Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-LightItalic.ttf') format('truetype');
+	font-weight: 300;
+	font-style: italic;
+  }
+
+  /* Gilroy Medium */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-Medium.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
+  }
+
+  /* Gilroy Medium Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-MediumItalic.ttf') format('truetype');
+	font-weight: 500;
+	font-style: italic;
+  }
+
+  /* Gilroy Regular */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+  }
+
+  /* Gilroy Regular Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-RegularItalic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+  }
+
+  /* Gilroy SemiBold */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-SemiBold.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
+  }
+
+  /* Gilroy SemiBold Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-SemiBoldItalic.ttf') format('truetype');
+	font-weight: 600;
+	font-style: italic;
+  }
+
+  /* Gilroy Thin */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-Thin.ttf') format('truetype');
+	font-weight: 100;
+	font-style: normal;
+  }
+
+  /* Gilroy Thin Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-ThinItalic.ttf') format('truetype');
+	font-weight: 100;
+	font-style: italic;
+  }
+
+  /* Gilroy UltraLight */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-UltraLight.ttf') format('truetype');
+	font-weight: 200;
+	font-style: normal;
+  }
+
+  /* Gilroy UltraLight Italic */
+  @font-face {
+	font-family: 'Gilroy';
+	src: url('assets/fonts/Gilroy-UltraLightItalic.ttf') format('truetype');
+	font-weight: 200;
+	font-style: italic;
+  }
+
+/* Default Font*/
+  body {
+	font-family: 'Gilroy', sans-serif;
+  }

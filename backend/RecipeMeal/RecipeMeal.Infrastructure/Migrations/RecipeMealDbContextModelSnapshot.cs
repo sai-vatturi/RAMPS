@@ -348,7 +348,7 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.HasOne("RecipeMeal.Core.Entities.UserShoppingList", "UserShoppingList")
                         .WithMany("Items")
                         .HasForeignKey("UserShoppingListId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("UserShoppingList");

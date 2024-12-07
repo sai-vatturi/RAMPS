@@ -14,9 +14,10 @@ export class AdminService {
     return this.http.get<any>(`${this.baseUrl}/users`);
   }
 
-  approveUser(username: string): Observable<any> {
-    return this.http.put(`${this.baseUrl}/approve-user`, { username, isApproved: true });
+  approveUser(username: string): Observable<string> {
+	return this.http.put(`${this.baseUrl}/approve-user`, { username, isApproved: true }, { responseType: 'text' });
   }
+
 
   deleteUser(username: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/delete-user/${username}`);

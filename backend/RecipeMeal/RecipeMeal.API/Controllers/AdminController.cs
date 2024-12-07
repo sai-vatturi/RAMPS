@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RecipeMeal.Core.DTOs.Admin;
 using RecipeMeal.Core.DTOs;
+using RecipeMeal.Infrastructure.Validators;
 
 namespace RecipeMeal.API.Controllers
 {
@@ -20,10 +21,13 @@ namespace RecipeMeal.API.Controllers
 		private readonly RecipeMealDbContext _dbContext;
 		private readonly IEmailService _emailService;
 
-		public AdminController(RecipeMealDbContext dbContext, IEmailService emailService)
+		private readonly UserValidationService _userValidationService;
+
+		public AdminController(RecipeMealDbContext dbContext, IEmailService emailService, UserValidationService userValidationService)
 		{
 			_dbContext = dbContext;
 			_emailService = emailService;
+			_userValidationService = userValidationService;
 		}
 
 		// Get all users
@@ -71,6 +75,18 @@ namespace RecipeMeal.API.Controllers
 				return BadRequest(new { message = "Phone number is required." });
 			}
 
+			// Check if email already exists
+			if (await _userValidationService.EmailExistsAsync(userDto.Email))
+			{
+				return BadRequest(new { message = "Email already exists." });
+			}
+
+			// Check if username already exists
+			if (await _userValidationService.UsernameExistsAsync(userDto.Username))
+			{
+				return BadRequest(new { message = "Username already exists." });
+			}
+
 			// Parse and validate the role
 			if (!Enum.TryParse(typeof(RecipeMeal.Core.Enums.Role), userDto.Role, true, out var parsedRole))
 			{
@@ -104,6 +120,7 @@ namespace RecipeMeal.API.Controllers
 				return StatusCode(500, new { message = "Internal server error.", error = ex.Message });
 			}
 		}
+
 
 
 		[HttpPut("update-role")]

@@ -1,73 +1,164 @@
-<h1>Meal Plans</h1>
+<div class="min-h-screen  font-sans p-6">
+	<header class="flex justify-between items-center mb-6">
+	  <h1 class="text-3xl font-bold text-[#191B19]">Meal Plans</h1>
+	  <button
+		(click)="startAddMode()"
+		class="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#388E3C] transition-colors"
+	  >
+		Add New Meal Plan
+	  </button>
+	</header>
 
-<!-- Button to Add New Meal Plan -->
-<div>
-	<button (click)="startAddMode()">Add New Meal Plan</button>
+	<div
+	  *ngIf="isEditMode || isAddMode"
+	  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+	>
+	  <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+		<h2 class="text-2xl font-semibold mb-4 text-[#494949]">
+		  {{ isEditMode ? 'Edit Meal Plan' : 'Add Meal Plan' }}
+		</h2>
+		<form (ngSubmit)="isEditMode ? updateMealPlan() : createMealPlan()" class="space-y-4">
+		  <div>
+			<label for="name" class="block text-sm font-medium text-[#494949] mb-1">Name:</label>
+			<input
+			  type="text"
+			  id="name"
+			  [(ngModel)]="currentMealPlan.name"
+			  name="name"
+			  required
+			  class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
+			/>
+		  </div>
+
+		  <div>
+			<label for="startDate" class="block text-sm font-medium text-[#494949] mb-1">Start Date:</label>
+			<input
+			  type="date"
+			  id="startDate"
+			  [(ngModel)]="currentMealPlan.startDate"
+			  name="startDate"
+			  required
+			  class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
+			/>
+		  </div>
+
+		  <div>
+			<label for="endDate" class="block text-sm font-medium text-[#494949] mb-1">End Date:</label>
+			<input
+			  type="date"
+			  id="endDate"
+			  [(ngModel)]="currentMealPlan.endDate"
+			  name="endDate"
+			  required
+			  class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
+			/>
+		  </div>
+
+		  <div>
+			<h3 class="text-xl font-medium text-[#494949] mb-2">Recipes</h3>
+			<div class="h-60 overflow-y-auto">
+			  <div *ngFor="let recipe of currentMealPlan.recipes; let i = index" class="flex items-center space-x-2 mb-2">
+				<div class="flex-1">
+				  <label for="recipeId-{{ i }}" class="block text-sm font-medium text-[#494949] mb-1">Recipe:</label>
+				  <select
+					id="recipeId-{{ i }}"
+					[(ngModel)]="recipe.recipeId"
+					name="recipeId-{{ i }}"
+					class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
+				  >
+					<option *ngFor="let r of availableRecipes" [value]="r.recipeId">
+					  {{ r.title }}
+					</option>
+				  </select>
+				</div>
+
+				<div class="flex-1">
+				  <label for="mealTime-{{ i }}" class="block text-sm font-medium text-[#494949] mb-1">Meal Time:</label>
+				  <input
+					type="datetime-local"
+					id="mealTime-{{ i }}"
+					[(ngModel)]="recipe.mealTime"
+					name="mealTime-{{ i }}"
+					class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
+				  />
+				</div>
+
+				<button
+				  type="button"
+				  (click)="removeRecipe(i)"
+				  class="mt-6 text-red-500 hover:text-red-700"
+				  title="Remove Recipe"
+				>
+				  &times;
+				</button>
+			  </div>
+
+			  <button
+				type="button"
+				(click)="addRecipe()"
+				class="mt-2 bg-[#494949] text-white px-3 py-1 rounded hover:bg-[#191B19] transition-colors"
+			  >
+				Add Recipe
+			  </button>
+			</div>
+		  </div>
+
+		  <div class="flex justify-end space-x-2 mt-4">
+			<button
+			  type="submit"
+			  class="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#388E3C] transition-colors"
+			>
+			  {{ isEditMode ? 'Update Meal Plan' : 'Add Meal Plan' }}
+			</button>
+			<button
+			  type="button"
+			  (click)="cancelEdit()"
+			  class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
+			>
+			  Cancel
+			</button>
+		  </div>
+		</form>
+	  </div>
+	</div>
+
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+	  <div
+		*ngFor="let plan of mealPlans"
+		class="bg-white rounded-lg shadow p-6 flex flex-col justify-between"
+	  >
+		<div>
+		  <h2 class="text-2xl font-semibold  mb-2">{{ plan.name }}</h2>
+		  <p class="text-[#494949] mb-1">
+			<span class="font-medium">Start Date:</span> {{ plan.startDate | date: 'longDate' }}
+		  </p>
+		  <p class="text-[#494949] mb-4">
+			<span class="font-medium">End Date:</span> {{ plan.endDate | date: 'longDate' }}
+		  </p>
+		  <div>
+			<h3 class="text-xl font-medium text-[#494949] mb-2">Recipes</h3>
+			<ul class="list-disc list-inside">
+			  <li *ngFor="let recipe of plan.recipes" class="text-[#494949]">
+				{{ recipe.title }} - <strong>{{ getMealPeriod(recipe.mealTime) }}</strong>
+				({{ recipe.mealTime | date: 'shortTime' }})
+			  </li>
+			</ul>
+		  </div>
+		</div>
+		<div class="mt-4 flex space-x-2">
+		  <button
+			(click)="editMealPlan(plan)"
+			class="flex-1 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors"
+		  >
+			Edit
+		  </button>
+		  <button
+			(click)="deleteMealPlan(plan.mealPlanId)"
+			class="flex-1 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-700 transition-colors"
+		  >
+			Delete
+		  </button>
+		</div>
+	  </div>
+	</div>
   </div>
-<!-- Add or Edit Meal Plan Form -->
-<div *ngIf="isEditMode || isAddMode" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px;">
-  <h2>{{ isEditMode ? 'Edit Meal Plan' : 'Add Meal Plan' }}</h2>
-  <form (ngSubmit)="isEditMode ? updateMealPlan() : createMealPlan()">
-    <div>
-      <label for="name">Name:</label>
-      <input type="text" id="name" [(ngModel)]="currentMealPlan.name" name="name" required />
-    </div>
-    <div>
-      <label for="startDate">Start Date:</label>
-      <input type="date" id="startDate" [(ngModel)]="currentMealPlan.startDate" name="startDate" required />
-    </div>
-    <div>
-      <label for="endDate">End Date:</label>
-      <input type="date" id="endDate" [(ngModel)]="currentMealPlan.endDate" name="endDate" required />
-    </div>
-    <div>
-      <h3>Recipes</h3>
-      <div *ngFor="let recipe of currentMealPlan.recipes; let i = index">
-        <label for="recipeId-{{ i }}">Recipe:</label>
-        <select id="recipeId-{{ i }}" [(ngModel)]="recipe.recipeId" name="recipeId-{{ i }}">
-          <option *ngFor="let r of availableRecipes" [value]="r.recipeId">{{ r.title }}</option>
-        </select>
-        <label for="mealTime-{{ i }}">Meal Time:</label>
-        <input type="datetime-local" id="mealTime-{{ i }}" [(ngModel)]="recipe.mealTime" name="mealTime-{{ i }}" />
-        <button type="button" (click)="removeRecipe(i)">Remove</button>
-      </div>
-      <button type="button" (click)="addRecipe()">Add Recipe</button>
-    </div>
-    <button type="submit">{{ isEditMode ? 'Update Meal Plan' : 'Add Meal Plan' }}</button>
-    <button type="button" (click)="cancelEdit()">Cancel</button>
-  </form>
-</div>
-
-<!-- List of Meal Plans -->
-<div>
-  <h2>All Meal Plans</h2>
-  <table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Recipes</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let plan of mealPlans">
-        <td>{{ plan.name }}</td>
-        <td>{{ plan.startDate | date: 'longDate' }}</td>
-        <td>{{ plan.endDate | date: 'longDate' }}</td>
-        <td>
-          <ul>
-            <li *ngFor="let recipe of plan.recipes">
-              {{ recipe.title }} - <strong>{{ getMealPeriod(recipe.mealTime) }}</strong> ({{ recipe.mealTime | date: 'shortTime' }})
-            </li>
-          </ul>
-        </td>
-        <td>
-          <button (click)="editMealPlan(plan)">Edit</button>
-          <button (click)="deleteMealPlan(plan.mealPlanId)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>

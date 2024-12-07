@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class NutritionService {
   private baseUrl = 'http://localhost:5228/api/Nutrition';
+  private nutritionDetailsBaseUrl = 'http://localhost:5228/api/NutritionDetails';
 
   constructor(private http: HttpClient) {}
 
@@ -29,8 +30,13 @@ export class NutritionService {
   patchNutrition(nutritionId: number, data: any): Observable<any> {
     return this.http.patch(`${this.baseUrl}/${nutritionId}`, data);
   }
-  deleteNutrition(nutritionId: number) {
-	return this.http.delete(`${this.baseUrl}/nutrition/${nutritionId}`);
+
+  deleteNutrition(nutritionId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/nutrition/${nutritionId}`);
   }
 
+  // New Method to Fetch Combined Recipe and Nutrition Details
+  getNutritionDetailsByRecipe(recipeId: number): Observable<any> {
+    return this.http.get(`${this.nutritionDetailsBaseUrl}/recipe/${recipeId}`);
+  }
 }

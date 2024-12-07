@@ -165,6 +165,6 @@ namespace RecipeMeal.API.Controllers
 
 			return Ok($"Nutrition entry for Recipe ID {recipeId} deleted successfully.");
 		}
-
 	}
+
 }

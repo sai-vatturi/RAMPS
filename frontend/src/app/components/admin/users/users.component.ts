@@ -8,125 +8,155 @@ import { AdminService } from '../../../services/admin.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './users.component.html',
-  styleUrl: './users.component.css'
+  styleUrls: ['./users.component.css'],
 })
 export class UsersComponent {
-	users: any[] = [];
-	selectedUser: any = null;
-	action: 'approve' | 'delete' | null = null;
+  users: any[] = [];
+  pendingUsers: any[] = [];
+  approvedUsers: any[] = [];
+  selectedUser: any = null;
+  action: 'approve' | 'delete' | null = null;
 
-	// New user form data
-	newUser = {
-	  firstName: '',
-	  lastName: '',
-	  username: '',
-	  email: '',
-	  password: '',
-	  phoneNumber: '',
-	  role: 'User', // Default role
-	  isApproved: true, // Default to approved
-	};
+  // Dialog Controls
+  isAddUserDialogOpen: boolean = false;
+  isActionDialogOpen: boolean = false;
+  isChangeRoleDialogOpen: boolean = false;
 
-	constructor(private adminService: AdminService) {
-	  this.loadUsers();
-	}
+  // For Add User
+  newUser = {
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+    phoneNumber: '',
+    role: 'User',
+    isApproved: false,
+  };
 
-	loadUsers() {
-	  this.adminService.getAllUsers().subscribe({
-		next: (data) => {
-		  this.users = data.$values || data; // Extract users from response
-		  this.users.forEach(user => {
-			user.updatedRole = user.role; // Initialize updatedRole for role dropdown
-		  });
-		},
-		error: (err) => alert(`Error: ${err.error}`),
-	  });
-	}
+  // For Change Role
+  newRole: string = '';
 
-	openDialog(user: any, action: 'approve' | 'delete') {
-	  this.selectedUser = user;
-	  this.action = action;
-	}
+  constructor(private adminService: AdminService) {
+    this.loadUsers();
+  }
 
-	closeDialog() {
-	  this.selectedUser = null;
-	  this.action = null;
-	}
+  loadUsers() {
+    this.adminService.getAllUsers().subscribe({
+      next: (data) => {
+        this.users = data.$values || data;
+        this.pendingUsers = this.users.filter((u) => !u.isApproved);
+        this.approvedUsers = this.users.filter((u) => u.isApproved);
+      },
+      error: (err) => console.error(`Error loading users: ${err.message}`),
+    });
+  }
 
-	approveUser() {
-	  if (this.selectedUser) {
-		this.adminService.approveUser(this.selectedUser.username).subscribe({
-		  next: () => {
-			alert(`User ${this.selectedUser.username} approved successfully.`);
-			this.closeDialog();
-			this.loadUsers();
-		  },
-		  error: (err) => alert(`Error: ${err.error}`),
-		});
-	  }
-	}
+  /* Add User Dialog Methods */
+  openAddUserDialog() {
+    this.isAddUserDialogOpen = true;
+  }
 
-	deleteUser() {
-	  if (this.selectedUser) {
-		this.adminService.deleteUser(this.selectedUser.username).subscribe({
-		  next: () => {
-			alert(`User ${this.selectedUser.username} deleted successfully.`);
-			this.closeDialog();
-			this.loadUsers();
-		  },
-		  error: (err) => {
-			if (err.status === 200) {
-			  alert(`User ${this.selectedUser.username} deleted successfully.`);
-			  this.closeDialog();
-			  this.loadUsers();
-			} else {
-			  console.error('Unexpected error during user deletion:', err);
-			}
-		  },
-		});
-	  }
-	}
+  closeAddUserDialog() {
+    this.isAddUserDialogOpen = false;
+    this.resetNewUser();
+  }
 
-	addUser() {
-	  console.log('New User Payload:', this.newUser); // Log payload for debugging
-	  this.adminService.addUser(this.newUser).subscribe({
-		next: () => {
-		  alert(`User ${this.newUser.username} added successfully.`);
-		  this.newUser = {
-			firstName: '',
-			lastName: '',
-			username: '',
-			email: '',
-			password: '',
-			phoneNumber: '',
-			role: 'User', // Reset role to default
-			isApproved: true, // Reset approval to default
-		  };
-		  this.loadUsers(); // Refresh the user list
+  resetNewUser() {
+    this.newUser = {
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
+      phoneNumber: '',
+      role: 'User',
+      isApproved: false,
+    };
+  }
+
+  addUser() {
+    this.adminService.addUser(this.newUser).subscribe({
+      next: () => {
+        alert(`User ${this.newUser.username} added successfully.`);
+        this.closeAddUserDialog();
+        this.loadUsers();
+      },
+      error: (err) => console.error(`Error adding user: ${err.message}`),
+    });
+  }
+
+  /* Action Dialog Methods (Approve/Delete) */
+  openActionDialog(user: any, action: 'approve' | 'delete') {
+    this.selectedUser = user;
+    this.action = action;
+    this.isActionDialogOpen = true;
+  }
+
+  closeActionDialog() {
+    this.selectedUser = null;
+    this.action = null;
+    this.isActionDialogOpen = false;
+  }
+
+  approveUser() {
+	if (this.selectedUser) {
+	  this.adminService.approveUser(this.selectedUser.username).subscribe({
+		next: (response: string) => {
+		  // Handle success
+		  alert(response || `User ${this.selectedUser.username} approved successfully.`);
+		  this.closeActionDialog();
+		  this.loadUsers();
 		},
 		error: (err) => {
-		  const errorMessage =
-			err.error?.message || 'An unexpected error occurred.';
-		  console.error('Error adding user:', err.error);
-		  alert(`Error adding user: ${errorMessage}`);
+		  // Handle error
+		  console.error(`Error approving user: ${err.message}`);
+		  alert(`Failed to approve user: ${err.message}`);
 		},
 	  });
 	}
-
-	roleChanged(user: any) {
-	  if (user.role !== user.updatedRole) {
-		this.adminService.updateUserRole(user.username, user.updatedRole).subscribe({
-		  next: () => {
-			alert(`Role updated for user ${user.username}.`);
-			this.loadUsers();
-		  },
-		  error: (err) => {
-			const errorMessage =
-			  err.error?.message || 'An unexpected error occurred.';
-			console.error('Error updating role:', err.error);
-			alert(`Error updating role: ${errorMessage}`);
-		  },
-		});
-	  }
-	}
   }
+
+
+  deleteUser() {
+    if (this.selectedUser) {
+      this.adminService.deleteUser(this.selectedUser.username).subscribe({
+        next: () => {
+          alert(`User ${this.selectedUser.username} deleted successfully.`);
+          this.closeActionDialog();
+          this.loadUsers();
+        },
+        error: (err) => console.error(`Error deleting user: ${err.message}`),
+      });
+    }
+  }
+
+  /* Change Role Dialog Methods */
+  openChangeRoleDialog(user: any) {
+    this.selectedUser = user;
+    this.newRole = user.role; // Initialize with current role
+    this.isChangeRoleDialogOpen = true;
+  }
+
+  closeChangeRoleDialog() {
+    this.selectedUser = null;
+    this.newRole = '';
+    this.isChangeRoleDialogOpen = false;
+  }
+
+  confirmChangeRole() {
+    if (this.selectedUser && this.newRole && this.newRole !== this.selectedUser.role) {
+      this.adminService.updateUserRole(this.selectedUser.username, this.newRole).subscribe({
+        next: () => {
+          alert(`Role updated for user ${this.selectedUser.username} to ${this.newRole}.`);
+          this.closeChangeRoleDialog();
+          this.loadUsers();
+        },
+        error: (err) => console.error(`Error updating role: ${err.message}`),
+      });
+    } else {
+      alert('No changes made to the role.');
+      this.closeChangeRoleDialog();
+    }
+  }
+}

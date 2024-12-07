@@ -13,6 +13,7 @@ export class ShoppingComponent implements OnInit {
   mealPlans: any[] = [];
   shoppingLists: any[] = [];
   selectedMealPlanId: number | null = null;
+  selectedShoppingList: any | null = null;
 
   constructor(private shoppingService: ShoppingService) {}
 
@@ -23,19 +24,23 @@ export class ShoppingComponent implements OnInit {
 
   loadMealPlans(): void {
     this.shoppingService.getMealPlans().subscribe({
-      next: (data) => (this.mealPlans = data.$values || []), // Ensure $values is handled
+      next: (data) => (this.mealPlans = data.$values || []),
       error: (err) => console.error('Error loading meal plans', err)
     });
+  }
+
+  getMealPlanName(mealPlanId: number): string {
+    const mealPlan = this.mealPlans.find(plan => plan.mealPlanId === mealPlanId);
+    return mealPlan ? mealPlan.name : 'Unknown';
   }
 
   loadShoppingLists(): void {
     this.shoppingService.getShoppingLists().subscribe({
       next: (data) => {
-        // Transform the response to handle $values
         this.shoppingLists = (data.$values || []).map((list: any) => ({
           userShoppingListId: list.userShoppingListId,
           mealPlanId: list.mealPlanId,
-          items: list.items?.$values || [] // Ensure nested $values is handled
+          items: list.items?.$values || []
         }));
       },
       error: (err) => console.error('Error loading shopping lists', err)
@@ -51,35 +56,51 @@ export class ShoppingComponent implements OnInit {
     }
   }
 
-  markAsPurchased(itemId: number): void {
+  markAsPurchased(itemId: number, item: any): void {
     this.shoppingService.markAsPurchased(itemId).subscribe({
-      next: () => this.loadShoppingLists(),
+      next: () => {
+        item.isPurchased = true; // Update local state
+      },
       error: (err) => console.error('Error marking item as purchased', err)
     });
   }
 
-  unmarkAsPurchased(itemId: number): void {
+  unmarkAsPurchased(itemId: number, item: any): void {
     this.shoppingService.unmarkAsPurchased(itemId).subscribe({
-      next: () => this.loadShoppingLists(),
+      next: () => {
+        item.isPurchased = false; // Update local state
+      },
       error: (err) => console.error('Error unmarking item as purchased', err)
     });
   }
 
   deleteItem(itemId: number): void {
     this.shoppingService.deleteItem(itemId).subscribe({
-      next: () => this.loadShoppingLists(),
+      next: () => {
+        this.selectedShoppingList.items = this.selectedShoppingList.items.filter(
+          (item: any) => item.userShoppingListItemId !== itemId
+        );
+      },
       error: (err) => console.error('Error deleting item', err)
     });
   }
 
   deleteShoppingList(listId: number): void {
-	this.shoppingService.deleteShoppingList(listId).subscribe({
-	  next: () => {
-		console.log('Shopping list deleted successfully');
-		this.loadShoppingLists(); // Refresh the shopping lists
-	  },
-	  error: (err) => console.error('Error deleting shopping list', err.message)
-	});
+    this.shoppingService.deleteShoppingList(listId).subscribe({
+      next: () => {
+        this.shoppingLists = this.shoppingLists.filter(
+          (list: any) => list.userShoppingListId !== listId
+        );
+      },
+      error: (err) => console.error('Error deleting shopping list', err.message)
+    });
   }
 
+  openModal(shoppingList: any): void {
+    this.selectedShoppingList = shoppingList;
+  }
+
+  closeModal(): void {
+    this.selectedShoppingList = null;
+  }
 }

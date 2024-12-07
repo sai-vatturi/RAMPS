@@ -6,6 +6,7 @@ using RecipeMeal.API.Filters;
 using RecipeMeal.Core.Interfaces;
 using RecipeMeal.Core.Services;
 using RecipeMeal.Infrastructure.Data;
+using RecipeMeal.Infrastructure.Validators;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +79,7 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<IImageService, AzureBlobStorageService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<UserValidationService>();
 
 // Configure Entity Framework and database context
 builder.Services.AddDbContext<RecipeMealDbContext>(options =>

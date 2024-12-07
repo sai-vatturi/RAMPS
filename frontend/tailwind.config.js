@@ -20,10 +20,14 @@ module.exports = {
 			heavy: 900,
 		  },
 		colors: {
-		  primary: '#4f46e5', // Example primary color
 		  secondary: '#9333ea',
 		  'brand-green': '#80C522',
 		  'dark-green': '#5B6056',
+		  primary: '#88C533',    // 88C533
+		  darkGray: '#494949',   // 494949
+		  almostBlack: '#191B19',// 191B19
+		  mediumGray: '#3C3D3C', // 3C3D3C
+		  lightGray: '#82867E',  // 82867E
 		}
 	  }
 	},

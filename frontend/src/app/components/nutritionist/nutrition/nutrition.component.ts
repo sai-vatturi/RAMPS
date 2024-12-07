@@ -1,103 +1,196 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NutritionService } from '../../../services/nutrition.service';
+import { RecipeService } from '../../../services/recipe.service';
 
 @Component({
   selector: 'app-nutrition',
   standalone: true,
   templateUrl: './nutrition.component.html',
-  imports: [CommonModule, FormsModule],
+  imports: [NgIf, NgFor, CommonModule, FormsModule],
 })
 export class NutritionComponent implements OnInit {
-	pendingMeals: any[] = []; // Ensure it's initialized as an array
-	existingNutrition: any[] = []; // Ensure it's initialized as an array
-	nutritionData: any = {}; // For new nutrition or patch
-	selectedMeal: any = null; // Selected meal for editing nutrition
-	isEditMode: boolean = false;
+  pendingMeals: any[] = [];
+  existingNutrition: any[] = [];
+  selectedRecipeDetails: any = null;
+  selectedNutritionDetails: any = null;
+  nutritionData: any = {};
+  isEditMode: boolean = false;
+  selectedMeal: any = null;
 
-	constructor(private nutritionService: NutritionService) {}
+  // Modal Controls
+  showEditModal: boolean = false;
+  showDeleteModal: boolean = false;
+  confirmNutritionId: number | null = null;
 
-	ngOnInit() {
-	  this.loadPendingMeals();
-	  this.loadAllNutrition();
-	}
+  // Alert Controls
+  showSuccessAlert: boolean = false;
+  successMessage: string = '';
 
-	loadPendingMeals() {
-	  this.nutritionService.getPendingMeals().subscribe({
-		next: (data) => {
-		  // Ensure the response is treated as an array
-		  this.pendingMeals = Array.isArray(data) ? data : data.$values || [];
-		},
-		error: (err) => console.error('Error loading pending meals:', err),
-	  });
-	}
+  showErrorAlert: boolean = false;
+  errorMessage: string = '';
 
-	loadAllNutrition() {
-	  this.nutritionService.getAllNutrition().subscribe({
-		next: (data) => {
-		  // Ensure the response is treated as an array
-		  this.existingNutrition = Array.isArray(data) ? data : data.$values || [];
-		},
-		error: (err) => console.error('Error loading existing nutrition:', err),
-	  });
-	}
+  constructor(
+    private nutritionService: NutritionService,
+    private recipeService: RecipeService
+  ) {}
 
-	addNutrition() {
-	  if (!this.nutritionData.recipeId) {
-		alert('Recipe ID is required!');
-		return;
-	  }
-
-	  this.nutritionService.addNutrition(this.nutritionData).subscribe({
-		next: () => {
-		  alert('Nutrition added successfully!');
-		  this.nutritionData = {};
-		  this.loadPendingMeals();
-		  this.loadAllNutrition();
-		},
-		error: (err) => console.error('Error adding nutrition:', err),
-	  });
-	}
-
-	editNutrition(nutrition: any) {
-	  this.isEditMode = true;
-	  this.selectedMeal = nutrition;
-	  this.nutritionData = { ...nutrition };
-	}
-
-	updateNutrition() {
-	  if (!this.selectedMeal?.nutritionId) {
-		alert('No nutrition selected for editing!');
-		return;
-	  }
-
-	  this.nutritionService.updateNutrition(this.selectedMeal.nutritionId, this.nutritionData).subscribe({
-		next: () => {
-		  alert('Nutrition updated successfully!');
-		  this.isEditMode = false;
-		  this.nutritionData = {};
-		  this.loadAllNutrition();
-		},
-		error: (err) => console.error('Error updating nutrition:', err),
-	  });
-	}
-
-	cancelEdit() {
-	  this.isEditMode = false;
-	  this.nutritionData = {};
-	  this.selectedMeal = null;
-	}
-	deleteNutrition(nutritionId: number) {
-		if (confirm('Are you sure you want to delete this nutrition entry?')) {
-		  this.nutritionService.deleteNutrition(nutritionId).subscribe({
-			next: () => {
-			  alert('Nutrition deleted successfully!');
-			  this.loadAllNutrition(); // Reload the list after deletion
-			},
-			error: (err) => console.error('Error deleting nutrition:', err),
-		  });
-		}
-	  }
-
+  ngOnInit() {
+    this.loadPendingMeals();
+    this.loadAllNutrition();
   }
+
+  // Load Pending Meals
+  loadPendingMeals() {
+    this.nutritionService.getPendingMeals().subscribe({
+      next: (data) => {
+        this.pendingMeals = Array.isArray(data) ? data : data.$values || [];
+      },
+      error: (err) => this.showError('Error loading pending meals.'),
+    });
+  }
+
+  // Load All Nutrition Entries
+  loadAllNutrition() {
+    this.nutritionService.getAllNutrition().subscribe({
+      next: (data) => {
+        this.existingNutrition = Array.isArray(data) ? data : data.$values || [];
+      },
+      error: (err) => this.showError('Error loading existing nutrition.'),
+    });
+  }
+
+  // Select a Recipe to View Details
+  selectRecipe(recipeId: number) {
+    this.fetchRecipeDetails(recipeId);
+    this.fetchNutritionDetails(recipeId);
+    this.nutritionData.recipeId = recipeId; // Automatically set recipe ID for adding nutrition
+  }
+
+  // Fetch Recipe Details
+  fetchRecipeDetails(recipeId: number) {
+    this.recipeService.getRecipeById(recipeId).subscribe({
+      next: (data) => {
+        this.selectedRecipeDetails = data;
+      },
+      error: (err) => this.showError('Error fetching recipe details.'),
+    });
+  }
+
+  // Fetch Nutrition Details
+  fetchNutritionDetails(recipeId: number) {
+    this.nutritionService.getNutritionDetailsByRecipe(recipeId).subscribe({
+      next: (data) => {
+        this.selectedNutritionDetails = data;
+      },
+      error: (err) => {
+        this.selectedNutritionDetails = null; // Clear nutrition details if not found
+      },
+    });
+  }
+
+  // Add Nutrition Entry
+  addNutrition() {
+    if (!this.nutritionData.recipeId) {
+      this.showError('Recipe ID is required!');
+      return;
+    }
+
+    this.nutritionService.addNutrition(this.nutritionData).subscribe({
+      next: () => {
+        this.showSuccess('Nutrition added successfully!');
+        this.nutritionData = {};
+        this.loadPendingMeals();
+        this.loadAllNutrition();
+      },
+      error: (err) => this.showError('Error adding nutrition.'),
+    });
+  }
+
+  // Open Edit Modal
+  openEditModal(nutrition: any) {
+    this.isEditMode = true;
+    this.selectedMeal = nutrition;
+    this.nutritionData = { ...nutrition }; // Pre-fill the form with existing data
+    this.showEditModal = true;
+  }
+
+  // Close Edit Modal
+  closeEditModal() {
+    this.showEditModal = false;
+    this.isEditMode = false;
+    this.nutritionData = {};
+    this.selectedMeal = null;
+  }
+
+  // Update Nutrition Entry
+  updateNutrition() {
+    if (!this.selectedMeal?.nutritionId) {
+      this.showError('No nutrition selected for editing!');
+      return;
+    }
+
+    this.nutritionService
+      .updateNutrition(this.selectedMeal.nutritionId, this.nutritionData)
+      .subscribe({
+        next: () => {
+          this.showSuccess('Nutrition updated successfully!');
+          this.closeEditModal();
+          this.loadAllNutrition();
+        },
+        error: (err) => this.showError('Error updating nutrition.'),
+      });
+  }
+
+  // Confirm Deletion
+  confirmDelete(nutritionId: number) {
+    this.confirmNutritionId = nutritionId;
+    this.showDeleteModal = true;
+  }
+
+  // Delete Nutrition Entry
+  deleteNutrition(nutritionId: number) {
+    if (nutritionId === null) return;
+
+    this.nutritionService.deleteNutrition(nutritionId).subscribe({
+      next: () => {
+        this.showSuccess('Nutrition deleted successfully!');
+        this.loadAllNutrition();
+        this.closeDeleteModal();
+      },
+      error: (err) => this.showError('Error deleting nutrition.'),
+    });
+  }
+
+  // Close Delete Modal
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.confirmNutritionId = null;
+  }
+
+  // Reset Add Nutrition Form
+  resetForm() {
+    this.nutritionData = {};
+  }
+
+  // Show Success Alert
+  showSuccess(message: string) {
+    this.successMessage = message;
+    this.showSuccessAlert = true;
+    setTimeout(() => {
+      this.showSuccessAlert = false;
+      this.successMessage = '';
+    }, 3000);
+  }
+
+  // Show Error Alert
+  showError(message: string) {
+    this.errorMessage = message;
+    this.showErrorAlert = true;
+    setTimeout(() => {
+      this.showErrorAlert = false;
+      this.errorMessage = '';
+    }, 3000);
+  }
+}

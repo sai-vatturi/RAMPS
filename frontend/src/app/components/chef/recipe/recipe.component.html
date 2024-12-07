@@ -1,99 +1,171 @@
-<h1>Chef Recipe Management</h1>
+<div class="container mx-auto p-6 ">
+	<!-- Heading -->
+	<h1 class="text-4xl font-bold text-[#191B19] mb-6">Chef Recipe Management</h1>
 
-<!-- Add/Update Recipe Form -->
-<h2>{{ isEditMode ? 'Edit Recipe' : 'Add Recipe' }}</h2>
-<form (ngSubmit)="isEditMode ? updateRecipe() : addRecipe()">
-  <div>
-    <label>Title</label>
-    <input type="text" [(ngModel)]="newRecipe.title" name="title" required />
-  </div>
-  <div>
-    <label>Description</label>
-    <textarea [(ngModel)]="newRecipe.description" name="description" required></textarea>
-  </div>
-  <div>
-    <label>Ingredients</label>
-    <textarea [(ngModel)]="newRecipe.ingredients" name="ingredients" required></textarea>
-  </div>
-  <div>
-    <label>Steps</label>
-    <textarea [(ngModel)]="newRecipe.steps" name="steps" required></textarea>
-  </div>
-  <div>
-    <label>Category</label>
-    <input type="text" [(ngModel)]="newRecipe.category" name="category" />
-  </div>
-  <div>
-    <label>Image</label>
-    <input type="file" (change)="onFileSelected($event)" />
-  </div>
-  <button type="submit">{{ isEditMode ? 'Update Recipe' : 'Add Recipe' }}</button>
-</form>
+	<!-- Add Recipe Button -->
+	<button
+	  (click)="openAddDialog()"
+	  class="mb-6 bg-[#88C533] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#76b02e] transition-colors"
+	>
+	  Add Recipe
+	</button>
 
-<h2>All Recipes</h2>
-<table border="1" cellpadding="5" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Description</th>
-      <th>Ingredients</th>
-      <th>Steps</th>
-      <th>Category</th>
-      <th>Image</th>
-      <th>Created By</th>
-      <th>Created At</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let recipe of recipes">
-      <td>{{ recipe.title }}</td>
-      <td>{{ recipe.description }}</td>
-      <td>{{ recipe.ingredients }}</td>
-      <td>{{ recipe.steps }}</td>
-      <td>{{ recipe.category }}</td>
-      <td><img [src]="recipe.imageUrl" alt="Recipe Image" width="100" /></td>
-      <td>{{ recipe.createdBy }}</td>
-      <td>{{ recipe.createdAt | date:'medium' }}</td>
-      <td>
-        <button (click)="editRecipe(recipe)">Edit</button>
-        <button (click)="deleteRecipe(recipe.recipeId)">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+	<!-- Recipes List as Cards -->
+	<h2 class="text-2xl font-semibold text-[#494949] mt-8 mb-4">All Recipes</h2>
+	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+	  <div
+		*ngFor="let recipe of recipes"
+		class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+		(click)="openViewDialog(recipe)"
+	  >
+		<img
+		  [src]="recipe.imageUrl"
+		  alt="Recipe Image"
+		  class="w-full h-40 object-cover rounded-md mb-4"
+		/>
+		<h3 class="text-xl font-semibold text-[#191B19]">{{ recipe.title }}</h3>
+		<p class="text-sm text-[#494949]">{{ recipe.description | slice: 0:100 }}...</p>
+		<p class="text-sm text-gray-500 mt-2">Category: {{ recipe.category }}</p>
+		<p class="text-sm text-gray-500">Created At: {{ recipe.createdAt | date: 'medium' }}</p>
+	  </div>
+	</div>
 
+	<!-- Recipe Detail and Input Dialog -->
+	<div
+	  *ngIf="selectedRecipe"
+	  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+	>
+	  <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative">
+		<button
+		  (click)="cancelEdit()"
+		  class="absolute top-2 right-2 bg-gray-300 text-gray-600 px-2 py-1 rounded-md hover:bg-gray-400"
+		>
+		  ✕
+		</button>
 
+		<!-- Form for Adding or Editing -->
+		<form
+		  *ngIf="isEditMode"
+		  (ngSubmit)="saveChanges()"
+		  class="space-y-4"
+		>
+		  <h2 class="text-2xl font-semibold text-[#494949] mb-4">
+			{{ selectedRecipe.recipeId ? 'Edit Recipe' : 'Add New Recipe' }}
+		  </h2>
 
-<!-- Patch Form -->
-<div *ngIf="selectedRecipe" style="border: 1px solid #ccc; padding: 10px; margin: 20px 0;">
-	<h2>Update Recipe</h2>
-	<form (ngSubmit)="patchRecipe()">
-	  <div>
-		<label>Title:</label>
-		<input [(ngModel)]="patchData.title" name="title" />
+		  <div>
+			<label class="block text-sm font-medium text-[#494949]">Title</label>
+			<input
+			  type="text"
+			  [(ngModel)]="selectedRecipe.title"
+			  name="title"
+			  required
+			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			/>
+		  </div>
+
+		  <div>
+			<label class="block text-sm font-medium text-[#494949]">Description</label>
+			<textarea
+			  [(ngModel)]="selectedRecipe.description"
+			  name="description"
+			  required
+			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			></textarea>
+		  </div>
+
+		  <div>
+			<label class="block text-sm font-medium text-[#494949]">Ingredients</label>
+			<textarea
+			  [(ngModel)]="selectedRecipe.ingredients"
+			  name="ingredients"
+			  required
+			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			></textarea>
+		  </div>
+
+		  <div>
+			<label class="block text-sm font-medium text-[#494949]">Steps</label>
+			<textarea
+			  [(ngModel)]="selectedRecipe.steps"
+			  name="steps"
+			  required
+			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			></textarea>
+		  </div>
+
+		  <div>
+			<label class="block text-sm font-medium text-[#494949]">Category</label>
+			<input
+			  type="text"
+			  [(ngModel)]="selectedRecipe.category"
+			  name="category"
+			  required
+			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			/>
+		  </div>
+
+		  <div>
+			<label class="block text-sm font-medium text-[#494949]">Image</label>
+			<input
+			  type="file"
+			  (change)="onFileSelected($event)"
+			  [required]="!selectedRecipe.recipeId"
+			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
+			/>
+		  </div>
+
+		  <div class="flex justify-end space-x-2">
+			<button
+			  type="submit"
+			  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+			>
+			  Save
+			</button>
+			<button
+			  type="button"
+			  (click)="cancelEdit()"
+			  class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+			>
+			  Cancel
+			</button>
+		  </div>
+		</form>
+
+		<!-- Recipe Details View -->
+		<div *ngIf="!isEditMode">
+		  <h2 class="text-2xl font-semibold text-[#494949] mb-4">{{ selectedRecipe.title }}</h2>
+		  <img
+			[src]="selectedRecipe.imageUrl"
+			alt="Recipe Image"
+			class="w-full h-48 object-cover rounded-md mb-4"
+		  />
+		  <p class="text-sm text-[#494949] mb-2">
+			<strong>Description:</strong> {{ selectedRecipe.description }}
+		  </p>
+		  <p class="text-sm text-[#494949] mb-2">
+			<strong>Ingredients:</strong> {{ selectedRecipe.ingredients }}
+		  </p>
+		  <p class="text-sm text-[#494949] mb-2">
+			<strong>Steps:</strong>
+			<span [innerHTML]="selectedRecipe.steps"></span>
+		  </p>
+		  <p class="text-sm text-gray-500 mb-2">Category: {{ selectedRecipe.category }}</p>
+		  <div class="flex justify-end space-x-2 mt-4">
+			<button
+			  (click)="openEditDialog(selectedRecipe)"
+			  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+			>
+			  Edit
+			</button>
+			<button
+			  (click)="deleteRecipe(selectedRecipe.recipeId)"
+			  class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+			>
+			  Delete
+			</button>
+		  </div>
+		</div>
 	  </div>
-	  <div>
-		<label>Description:</label>
-		<input [(ngModel)]="patchData.description" name="description" />
-	  </div>
-	  <div>
-		<label>Ingredients:</label>
-		<input [(ngModel)]="patchData.ingredients" name="ingredients" />
-	  </div>
-	  <div>
-		<label>Steps:</label>
-		<input [(ngModel)]="patchData.steps" name="steps" />
-	  </div>
-	  <div>
-		<label>Category:</label>
-		<input [(ngModel)]="patchData.category" name="category" />
-	  </div>
-	  <div>
-		<label>Image:</label>
-		<input type="file" (change)="onFileSelected($event)" />
-	  </div>
-	  <button type="submit">Update Recipe</button>
-	  <button type="button" (click)="cancelEdit()">Cancel</button>
-	</form>
+	</div>
   </div>

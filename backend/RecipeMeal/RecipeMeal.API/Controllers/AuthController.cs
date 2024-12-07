@@ -8,6 +8,7 @@ using BCrypt.Net;
 using RecipeMeal.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using RecipeMeal.Core.Interfaces;
+using RecipeMeal.Infrastructure.Validators;
 
 namespace RecipeMeal.API.Controllers
 {
@@ -18,20 +19,24 @@ namespace RecipeMeal.API.Controllers
 		private readonly RecipeMealDbContext _dbContext;
 		private readonly JwtService _jwtService;
 		private readonly IEmailService _emailService;
+		private readonly UserValidationService _userValidationService;
 
-
-		public AuthController(RecipeMealDbContext dbContext, JwtService jwtService, IEmailService emailService)
+		public AuthController(RecipeMealDbContext dbContext, JwtService jwtService, IEmailService emailService, UserValidationService userValidationService)
 		{
 			_dbContext = dbContext;
 			_jwtService = jwtService;
 			_emailService = emailService;
+			_userValidationService = userValidationService;
 		}
 
 		[HttpPost("signup")]
 		public async Task<IActionResult> Signup([FromBody] SignupDto dto)
 		{
-			if (_dbContext.Users.Any(u => u.Username == dto.Username || u.Email == dto.Email))
-				return BadRequest("Username or Email already exists.");
+			if (await _userValidationService.EmailExistsAsync(dto.Email))
+				return BadRequest("Email already exists.");
+
+			if (await _userValidationService.UsernameExistsAsync(dto.Username))
+				return BadRequest("Username already exists.");
 
 			if (!Enum.TryParse<Role>(dto.Role, true, out var role))
 				return BadRequest("Invalid role.");

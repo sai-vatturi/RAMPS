@@ -86,7 +86,7 @@ namespace RecipeMeal.Infrastructure.Data
 				.HasMany(sl => sl.Items)
 				.WithOne(i => i.UserShoppingList)
 				.HasForeignKey(i => i.UserShoppingListId)
-				.OnDelete(DeleteBehavior.Restrict); // Avoid cascading delete to prevent multiple paths to the same entity
+				.OnDelete(DeleteBehavior.Cascade); // Avoid cascading delete to prevent multiple paths to the same entity
 
 
 			modelBuilder.Entity<UserShoppingListItem>()

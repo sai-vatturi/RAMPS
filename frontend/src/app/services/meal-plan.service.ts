@@ -3,35 +3,35 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+	providedIn: 'root'
 })
 export class MealPlanService {
-  private baseUrl = 'http://localhost:5228/api/MealPlan';
-  private recipesUrl = 'http://localhost:5228/api/Recipe'; // Assuming a Recipe endpoint exists
+	private baseUrl = 'http://localhost:5228/api/MealPlan';
+	private recipesUrl = 'http://localhost:5228/api/Recipe';
 
-  constructor(private http: HttpClient) {}
+	constructor(private http: HttpClient) {}
 
-  getAllMealPlans(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}`);
-  }
+	getAllMealPlans(): Observable<any> {
+		return this.http.get<any>(`${this.baseUrl}`);
+	}
 
-  getMealPlanById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${id}`);
-  }
+	getMealPlanById(id: number): Observable<any> {
+		return this.http.get<any>(`${this.baseUrl}/${id}`);
+	}
 
-  createMealPlan(data: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}`, data);
-  }
+	createMealPlan(data: any): Observable<any> {
+		return this.http.post<any>(`${this.baseUrl}`, data);
+	}
 
-  updateMealPlan(id: number, data: any): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/${id}`, data);
-  }
+	updateMealPlan(id: number, data: any): Observable<any> {
+		return this.http.put<any>(`${this.baseUrl}/${id}`, data);
+	}
 
-  deleteMealPlan(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`);
-  }
+	deleteMealPlan(id: number): Observable<any> {
+		return this.http.delete<any>(`${this.baseUrl}/${id}`);
+	}
 
-  getAvailableRecipes(): Observable<any> {
-    return this.http.get<any>(`${this.recipesUrl}`);
-  }
+	getAvailableRecipes(): Observable<any> {
+		return this.http.get<any>(`${this.recipesUrl}`);
+	}
 }

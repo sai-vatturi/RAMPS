@@ -1,121 +1,57 @@
 <div class="min-h-screen font-sans p-6">
-	<!-- Header -->
 	<header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-	  <h1 class="text-3xl font-bold text-black mb-4 md:mb-0">Shopping List</h1>
+		<h1 class="text-3xl font-bold text-black mb-4 md:mb-0">Shopping List</h1>
 
-	  <!-- Meal Plan Dropdown and Generate Button -->
-	  <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-		<label for="mealPlans" class="text-black font-medium">Select Meal Plan:</label>
-		<select
-		  id="mealPlans"
-		  [(ngModel)]="selectedMealPlanId"
-		  class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500"
-		>
-		  <option *ngFor="let mealPlan of mealPlans" [value]="mealPlan.mealPlanId">
-			{{ mealPlan.name }}
-		  </option>
-		</select>
-		<button
-		  (click)="generateShoppingList()"
-		  class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-		>
-		  Generate Shopping List
-		</button>
-	  </div>
+		<div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+			<label for="mealPlans" class="text-black font-medium">Select Meal Plan:</label>
+			<select id="mealPlans" [(ngModel)]="selectedMealPlanId" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-green-500">
+				<option *ngFor="let mealPlan of mealPlans" [value]="mealPlan.mealPlanId">{{ mealPlan.name }}</option>
+			</select>
+			<button (click)="generateShoppingList()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">Generate Shopping List</button>
+		</div>
 	</header>
 
-	<!-- Responsive Table -->
 	<div class="overflow-x-auto">
-	  <table class="table-auto w-full border-collapse border border-gray-200">
-		<thead>
-		  <tr class="bg-gray-100 text-left">
-			<th class="border border-gray-200 px-4 py-2">Meal Plan</th>
-			<th class="border border-gray-200 px-4 py-2">Actions</th>
-		  </tr>
-		</thead>
-		<tbody>
-		  <tr
-			*ngFor="let shoppingList of shoppingLists"
-			class="cursor-pointer hover:bg-gray-50 transition"
-			(click)="openModal(shoppingList)"
-		  >
-			<td class="border border-gray-200 px-4 py-2">
-			  Shopping List ({{ getMealPlanName(shoppingList.mealPlanId) }})
-			</td>
-			<td class="border border-gray-200 px-4 py-2">
-			  <button
-				(click)="deleteShoppingList(shoppingList.userShoppingListId); $event.stopPropagation()"
-				class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-			  >
-				Delete
-			  </button>
-			</td>
-		  </tr>
-		</tbody>
-	  </table>
+		<table class="table-auto w-full border-collapse border border-gray-200">
+			<thead>
+				<tr class="bg-gray-100 text-left">
+					<th class="border border-gray-200 px-4 py-2">Meal Plan</th>
+					<th class="border border-gray-200 px-4 py-2">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let shoppingList of shoppingLists" class="cursor-pointer hover:bg-gray-50 transition" (click)="openModal(shoppingList)">
+					<td class="border border-gray-200 px-4 py-2">Shopping List ({{ getMealPlanName(shoppingList.mealPlanId) }})</td>
+					<td class="border border-gray-200 px-4 py-2">
+						<button (click)="deleteShoppingList(shoppingList.userShoppingListId); $event.stopPropagation()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Delete</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 
-	<!-- Modal Dialog -->
-	<div
-	  *ngIf="selectedShoppingList"
-	  class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-	  (click)="closeModal()"
-	>
-	  <div
-		class="bg-white w-full h-full md:w-3/4 lg:w-1/2 p-6 overflow-y-auto"
-		(click)="$event.stopPropagation()"
-	  >
-		<div class="flex justify-between items-center mb-4">
-		  <h2 class="text-2xl font-bold">Shopping List Details</h2>
-		  <button
-			(click)="closeModal()"
-			class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-		</div>
-
-		<h3 class="text-xl font-semibold text-black mb-4">
-		  Meal Plan: {{ getMealPlanName(selectedShoppingList.mealPlanId) }}
-		</h3>
-		<ul class="list-disc list-inside space-y-2">
-		  <li *ngFor="let item of selectedShoppingList.items" class="flex items-center justify-between">
-			<span
-			  [class.line-through]="item.isPurchased"
-			  class="text-black"
-			>
-			  {{ item.ingredient }} (Qty: {{ item.quantity }})
-			</span>
-			<div class="flex space-x-2">
-			  <button
-				*ngIf="!item.isPurchased"
-				(click)="markAsPurchased(item.userShoppingListItemId, item)"
-				class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition text-sm"
-			  >
-				Mark
-			  </button>
-			  <button
-				*ngIf="item.isPurchased"
-				(click)="unmarkAsPurchased(item.userShoppingListItemId, item)"
-				class="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 transition text-sm"
-			  >
-				Unmark
-			  </button>
-			  <button
-  (click)="deleteItem(item.userShoppingListItemId)"
-  class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition text-sm"
->
-  Delete
-</button>
+	<div *ngIf="selectedShoppingList" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" (click)="closeModal()">
+		<div class="bg-white w-full h-full md:w-3/4 lg:w-1/2 p-6 overflow-y-auto" (click)="$event.stopPropagation()">
+			<div class="flex justify-between items-center mb-4">
+				<h2 class="text-2xl font-bold">Shopping List Details</h2>
+				<button (click)="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
 			</div>
-		  </li>
-		</ul>
 
-		<div class="mt-6 flex justify-end">
-		  <button
-			(click)="closeModal()"
-			class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-		  >
-			Close
-		  </button>
+			<h3 class="text-xl font-semibold text-black mb-4">Meal Plan: {{ getMealPlanName(selectedShoppingList.mealPlanId) }}</h3>
+			<ul class="list-disc list-inside space-y-2">
+				<li *ngFor="let item of selectedShoppingList.items" class="flex items-center justify-between">
+					<span [class.line-through]="item.isPurchased" class="text-black">{{ item.ingredient }} (Qty: {{ item.quantity }})</span>
+					<div class="flex space-x-2">
+						<button *ngIf="!item.isPurchased" (click)="markAsPurchased(item.userShoppingListItemId, item)" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition text-sm">Mark</button>
+						<button *ngIf="item.isPurchased" (click)="unmarkAsPurchased(item.userShoppingListItemId, item)" class="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 transition text-sm">Unmark</button>
+						<button (click)="deleteItem(item.userShoppingListItemId)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition text-sm">Delete</button>
+					</div>
+				</li>
+			</ul>
+
+			<div class="mt-6 flex justify-end">
+				<button (click)="closeModal()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Close</button>
+			</div>
 		</div>
-	  </div>
 	</div>
-  </div>
+</div>

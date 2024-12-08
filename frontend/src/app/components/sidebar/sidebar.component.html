@@ -1,84 +1,42 @@
 <div class="relative flex h-screen">
-	<!-- Mobile Overlay -->
-	<div
-	  *ngIf="isOpen"
-	  class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden animate-fade-in"
-	  (click)="closeSidebar()"
-	></div>
-
-	<!-- Hamburger Menu -->
-	<button
-	  class="fixed top-4 left-4 p-1 lg:hidden text-[#8DC63F] z-50 transform transition-all hover:rotate-90"
-	  (click)="toggleSidebar()"
-	>
-	  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-		<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-	  </svg>
+	<div *ngIf="isOpen" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden animate-fade-in" (click)="closeSidebar()"></div>
+	<button class="fixed top-4 left-4 p-1 lg:hidden text-[#8DC63F] z-50 transform transition-all hover:rotate-90" (click)="toggleSidebar()">
+		<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+		</svg>
 	</button>
-
-	<!-- Sidebar -->
-	<div
-	  [ngClass]="{
-		'translate-x-0 opacity-100': isOpen,
-		'-translate-x-full opacity-0': !isOpen
-	  }"
-	  class="fixed inset-y-0 left-0 w-64 bg-white shadow-md z-50 transition-all duration-300 ease-in-out lg:translate-x-0 lg:opacity-100 font-gilroy"
-	>
-	  <div class="flex flex-col h-full">
-		<!-- Fixed Logo Section -->
-		<div class="flex justify-center items-center py-6 border-b border-gray-100 bg-white sticky top-0 z-50">
-		  <img src="assets/images/logo-green.png" alt="Logo" class="h-12 w-auto" />
-		</div>
-
-		<!-- Scrollable Content Container -->
-		<div class="overflow-y-auto flex-grow scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-		  <!-- User Profile -->
-		  <div class="text-center py-6 border-b border-gray-100">
-			<div class="relative w-16 h-16 mx-auto mb-3 group">
-			  <img
-				src="assets/images/profile-placeholder.png"
-				alt="Profile"
-				class="absolute inset-0 h-full w-full object-cover rounded-full border-2 border-[#8DC63F]"
-			  />
-			  <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-full transition-all"></div>
+	<div [ngClass]="{'translate-x-0 opacity-100': isOpen, '-translate-x-full opacity-0': !isOpen}" class="fixed inset-y-0 left-0 w-64 bg-white shadow-md z-50 transition-all duration-300 ease-in-out lg:translate-x-0 lg:opacity-100 font-gilroy">
+		<div class="flex flex-col h-full">
+			<div class="flex justify-center items-center py-6 border-b border-gray-100 bg-white sticky top-0 z-50">
+				<img src="assets/images/logo-green.png" alt="Logo" class="h-12 w-auto" />
 			</div>
-			<h2 class="text-lg font-bold text-[#191B19] mb-1">Hello, {{ userInfo.firstName }}</h2>
-			<p class="text-sm text-[#494949] mb-1">{{ userInfo.username }}</p>
-			<span class="inline-block bg-[#8DC63F] text-white text-xs px-2 py-1 rounded-full">{{ userInfo.role }}</span>
-		  </div>
-
-		  <!-- Navigation Menu -->
-		  <nav class="py-4">
-			<ul class="space-y-2 px-4">
-			  <li *ngFor="let item of menuItems" class="group">
-				<a
-				  [routerLink]="item.path"
-				  routerLinkActive="bg-[#8DC63F] text-white"
-				  [routerLinkActiveOptions]="{ exact: true }"
-				  class="flex items-center space-x-3 px-4 py-3 rounded-lg text-[#494949] hover:bg-[#8DC63F] hover:text-white transition-colors duration-300 ease-in-out"
-				>
-				  <!-- Adjust Icon Color Dynamically -->
-				  <i [class]="item.icon" [ngClass]="{
-					'text-[#8DC63F] group-hover:text-white text-lg': !isActive(item.path),
-					'text-white text-lg': isActive(item.path)
-				  }"></i>
-				  <span class="text-sm font-medium group-hover:text-white">{{ item.label }}</span>
-				</a>
-			  </li>
-			</ul>
-		  </nav>
-
-		  <!-- Logout Section -->
-		  <div class="p-4 border-t border-gray-100">
-			<button
-			  (click)="logout()"
-			  class="w-full flex items-center justify-center space-x-3 px-4 py-3 bg-gray-100 text-[#494949] rounded-lg hover:bg-[#8DC63F] hover:text-white transition-colors duration-300 ease-in-out shadow-sm"
-			>
-			  <i class="fas fa-sign-out-alt text-[#8DC63F] group-hover:text-white text-lg"></i>
-			  <span class="text-sm font-medium group-hover:text-white">Log out</span>
-			</button>
-		  </div>
+			<div class="overflow-y-auto flex-grow scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+				<div class="text-center py-6 border-b border-gray-100">
+					<div class="relative w-16 h-16 mx-auto mb-3 group">
+						<img src="assets/images/profile-placeholder.png" alt="Profile" class="absolute inset-0 h-full w-full object-cover rounded-full border-2 border-[#8DC63F]" />
+						<div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-full transition-all"></div>
+					</div>
+					<h2 class="text-lg font-bold text-[#191B19] mb-1">Hello, {{ userInfo.firstName }}</h2>
+					<p class="text-sm text-[#494949] mb-1">{{ userInfo.username }}</p>
+					<span class="inline-block bg-[#8DC63F] text-white text-xs px-2 py-1 rounded-full">{{ userInfo.role }}</span>
+				</div>
+				<nav class="py-4">
+					<ul class="space-y-2 px-4">
+						<li *ngFor="let item of menuItems" class="group">
+							<a [routerLink]="item.path" routerLinkActive="bg-[#8DC63F] text-white" [routerLinkActiveOptions]="{ exact: true }" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-[#494949] hover:bg-[#8DC63F] hover:text-white transition-colors duration-300 ease-in-out">
+								<i [class]="item.icon" [ngClass]="{'text-[#8DC63F] group-hover:text-white text-lg': !isActive(item.path), 'text-white text-lg': isActive(item.path)}"></i>
+								<span class="text-sm font-medium group-hover:text-white">{{ item.label }}</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+				<div class="p-4 border-t border-gray-100">
+					<button (click)="logout()" class="w-full flex items-center justify-center space-x-3 px-4 py-3 bg-gray-100 text-[#494949] rounded-lg hover:bg-[#8DC63F] hover:text-white transition-colors duration-300 ease-in-out shadow-sm">
+						<i class="fas fa-sign-out-alt text-[#8DC63F] group-hover:text-white text-lg"></i>
+						<span class="text-sm font-medium group-hover:text-white">Log out</span>
+					</button>
+				</div>
+			</div>
 		</div>
-	  </div>
 	</div>
-  </div>
+</div>

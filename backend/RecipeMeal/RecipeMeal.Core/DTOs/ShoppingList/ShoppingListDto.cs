@@ -2,7 +2,7 @@ namespace RecipeMeal.Core.DTOs.ShoppingList
 {
 	public class CreateUserShoppingListDto
 	{
-		public string Username { get; set; } // Add Username for list creation
+		public string Username { get; set; }
 		public int MealPlanId { get; set; }
 	}
 

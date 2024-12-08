@@ -25,7 +25,6 @@ namespace RecipeMeal.Core.Entities
 		[MaxLength(500)]
 		public string? Vitamins { get; set; }
 
-		// Navigation Property
 		public Recipe Recipe { get; set; }
 	}
 }

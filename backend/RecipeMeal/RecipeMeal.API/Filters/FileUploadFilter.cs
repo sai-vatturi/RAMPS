@@ -11,7 +11,6 @@ namespace RecipeMeal.API.Filters
 		{
 			if (operation == null || context == null) return;
 
-			// Check if the operation has an IFormFile parameter
 			var hasFileUploadParameter = context.ApiDescription.ParameterDescriptions
 				.Any(p => p.ModelMetadata?.ModelType == typeof(IFormFile));
 
@@ -33,10 +32,10 @@ namespace RecipeMeal.API.Filters
 										? new OpenApiSchema { Type = "string", Format = "binary" }
 										: new OpenApiSchema { Type = "string" }
 								)
-							}
 						}
 					}
-				};
+				}
+			};
 		}
 	}
 }

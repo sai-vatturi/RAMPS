@@ -67,7 +67,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpGet("pending")]
-		[Authorize(Roles = "Nutritionist,Admin")]
+		[Authorize(Roles = "Nutritionist,Admin,Chef")]
 		public async Task<IActionResult> GetPendingMeals()
 		{
 			var pendingMeals = await _nutritionService.GetPendingMealsAsync();
@@ -98,7 +98,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpDelete("recipe/{recipeId}")]
-		[Authorize(Roles = "Nutritionist,Admin")]
+		[Authorize(Roles = "Nutritionist,Admin,Chef")]
 		public async Task<IActionResult> DeleteNutritionByRecipeId(int recipeId)
 		{
 			try

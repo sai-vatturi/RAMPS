@@ -9,6 +9,6 @@ namespace RecipeMeal.Core.DTOs.Recipe
 		public string? Ingredients { get; set; }
 		public string? Steps { get; set; }
 		public string? Category { get; set; }
-		public IFormFile? Image { get; set; } // Optional, if updating the image
+		public IFormFile? Image { get; set; }
 	}
 }

@@ -8,9 +8,9 @@ import { routes } from './app/app.routes';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])), // Use functional interceptor
-    importProvidersFrom(BrowserAnimationsModule),
-  ],
-}).catch((err) => console.error(err));
+	providers: [
+		provideRouter(routes),
+		provideHttpClient(withInterceptors([authInterceptor])), // Use functional interceptor
+		importProvidersFrom(BrowserAnimationsModule)
+	]
+}).catch(err => console.error(err));

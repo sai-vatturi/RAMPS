@@ -31,12 +31,12 @@ namespace RecipeMeal.Core.Entities
 		public string PhoneNumber { get; set; }
 
 		[Required]
-		public Role Role { get; set; } // Enum-based role
+		public Role Role { get; set; }
 
 		public bool IsApproved { get; set; }
 		public bool IsActive { get; set; }
-		public bool IsEmailVerified { get; set; } // New field
-		public string? EmailVerificationToken { get; set; } // New field
+		public bool IsEmailVerified { get; set; }
+		public string? EmailVerificationToken { get; set; }
 		public string? PasswordResetToken { get; set; }
 		public DateTime? PasswordResetTokenExpiry { get; set; }
 

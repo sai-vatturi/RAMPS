@@ -9,39 +9,39 @@ using RecipeMeal.Core.Entities;
 
 namespace RecipeMeal.Core.Services
 {
-    public class JwtService
-    {
-        private readonly string _issuer;
-        private readonly string _audience;
-        private readonly string _secret;
+	public class JwtService
+	{
+		private readonly string _issuer;
+		private readonly string _audience;
+		private readonly string _secret;
 
-        public JwtService(IConfiguration configuration)
-        {
-            _issuer = configuration["Jwt:Issuer"];
-            _audience = configuration["Jwt:Audience"];
-            _secret = configuration["Jwt:Secret"];
-        }
+		public JwtService(IConfiguration configuration)
+		{
+			_issuer = configuration["Jwt:Issuer"];
+			_audience = configuration["Jwt:Audience"];
+			_secret = configuration["Jwt:Secret"];
+		}
 
-        public string GenerateJwtToken(User user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role.ToString()) // Convert enum to string for claims
-            };
+		public string GenerateJwtToken(User user)
+		{
+			var claims = new List<Claim>
+			{
+				new Claim(ClaimTypes.Name, user.Username),
+				new Claim(ClaimTypes.Role, user.Role.ToString())
+			};
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
+			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
-                issuer: _issuer,
-                audience: _audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: creds
-            );
+			var token = new JwtSecurityToken(
+				issuer: _issuer,
+				audience: _audience,
+				claims: claims,
+				expires: DateTime.UtcNow.AddHours(1),
+				signingCredentials: creds
+			);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-    }
+			return new JwtSecurityTokenHandler().WriteToken(token);
+		}
+	}
 }

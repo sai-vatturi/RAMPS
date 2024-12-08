@@ -9,10 +9,10 @@ namespace RecipeMeal.Core.Entities
 		public int UserShoppingListId { get; set; }
 
 		[Required]
-		public int UserId { get; set; } // Links to the user.
+		public int UserId { get; set; }
 
 		[Required]
-		public int MealPlanId { get; set; } // Links to the meal plan.
+		public int MealPlanId { get; set; }
 
 		public List<UserShoppingListItem> Items { get; set; } = new();
 	}

@@ -13,17 +13,16 @@ namespace RecipeMeal.Infrastructure.Data
 		public DbSet<MealPlanRecipe> MealPlanRecipes { get; set; }
 		public DbSet<UserShoppingList> UserShoppingLists { get; set; }
 		public DbSet<UserShoppingListItem> UserShoppingListItems { get; set; }
-		public DbSet<Review> Reviews { get; set; } // Include Reviews entity
-		public DbSet<Nutrition> Nutritions { get; set; } // Add this line
+		public DbSet<Review> Reviews { get; set; }
+		public DbSet<Nutrition> Nutritions { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
-			// User entity configuration
 			modelBuilder.Entity<User>()
 				.Property(u => u.Role)
-				.HasConversion<string>(); // Store the Role enum as a string in the database
+				.HasConversion<string>();
 
 			modelBuilder.Entity<User>()
 				.Property(u => u.Username)
@@ -39,7 +38,6 @@ namespace RecipeMeal.Infrastructure.Data
 				.Property(u => u.PasswordHash)
 				.IsRequired();
 
-			// Recipe entity configuration
 			modelBuilder.Entity<Recipe>()
 				.Property(r => r.Title)
 				.IsRequired()
@@ -68,7 +66,6 @@ namespace RecipeMeal.Infrastructure.Data
 				.HasForeignKey<Nutrition>(n => n.RecipeId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			// MealPlanRecipe configuration (junction table)
 			modelBuilder.Entity<MealPlanRecipe>()
 				.HasKey(mp => new { mp.MealPlanId, mp.RecipeId });
 
@@ -86,8 +83,7 @@ namespace RecipeMeal.Infrastructure.Data
 				.HasMany(sl => sl.Items)
 				.WithOne(i => i.UserShoppingList)
 				.HasForeignKey(i => i.UserShoppingListId)
-				.OnDelete(DeleteBehavior.Cascade); // Avoid cascading delete to prevent multiple paths to the same entity
-
+				.OnDelete(DeleteBehavior.Cascade);
 
 			modelBuilder.Entity<UserShoppingListItem>()
 				.Property(usi => usi.Ingredient)

@@ -16,7 +16,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpPost("upload")]
-		[Authorize] // Requires authenticated user
+		[Authorize]
 		public async Task<IActionResult> UploadFile(string description, DateTime clientDate, IFormFile file)
 		{
 			if (file == null)
@@ -25,7 +25,6 @@ namespace RecipeMeal.API.Controllers
 			if (string.IsNullOrWhiteSpace(description))
 				return BadRequest("Description is required.");
 
-			// Process the file and upload it
 			string imageUrl = await _imageService.UploadImageAsync(file);
 
 			return Ok(new

@@ -17,28 +17,26 @@ namespace RecipeMeal.Core.Entities
 		public string Description { get; set; } = string.Empty;
 
 		[Required]
-		public string Ingredients { get; set; } = string.Empty; // Stored as JSON or a delimited string
+		public string Ingredients { get; set; } = string.Empty;
 
 		[Required]
-		public string Steps { get; set; } = string.Empty; // Stored as JSON or a delimited string
+		public string Steps { get; set; } = string.Empty;
 
 		[MaxLength(50)]
-		public string Category { get; set; } = string.Empty; // E.g., Breakfast, Dinner, Vegan
+		public string Category { get; set; } = string.Empty;
 
 		[Required]
-		public string ImageUrl { get; set; } = string.Empty; // URL of the uploaded image
+		public string ImageUrl { get; set; } = string.Empty;
 
 		[Required]
-		public string CreatedBy { get; set; } = string.Empty; // User who created the recipe
+		public string CreatedBy { get; set; } = string.Empty;
 
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 		public DateTime? UpdatedAt { get; set; }
 
-		// One-to-Many Relationship with Reviews
 		public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
-		// One-to-One Relationship with Nutrition
 		public Nutrition Nutrition { get; set; }
 	}
 }

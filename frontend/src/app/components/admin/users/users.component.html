@@ -1,238 +1,115 @@
 <div class="min-h-screen font-sans p-6">
 	<h1 class="text-4xl font-bold text-[#191B19] mb-6">Admin Dashboard</h1>
 
-	<!-- Add New User Button -->
 	<div class="mb-6">
-		<button
-			(click)="openAddUserDialog()"
-			class="bg-[#4CAF50] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#388E3C] transition-colors"
-		>
-			Add New User
-		</button>
+		<button (click)="openAddUserDialog()" class="bg-[#4CAF50] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#388E3C] transition-colors">Add New User</button>
 	</div>
 
-	<!-- Approve New Users Section -->
 	<div class="mb-6">
 		<h2 class="text-2xl font-semibold text-[#494949] mb-4">Approve New Users</h2>
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-			<div
-				*ngFor="let user of pendingUsers"
-				class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
-			>
+			<div *ngFor="let user of pendingUsers" class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between">
 				<div>
-					<h3 class="text-xl font-bold text-[#191B19] mb-2">
-						{{ user.firstName }} {{ user.lastName }}
-					</h3>
+					<h3 class="text-xl font-bold text-[#191B19] mb-2">{{ user.firstName }} {{ user.lastName }}</h3>
 					<p class="text-sm text-[#494949]">Username: {{ user.username }}</p>
 					<p class="text-sm text-[#494949]">Email: {{ user.email }}</p>
 					<p class="text-sm text-[#494949]">Role: {{ user.role }}</p>
 				</div>
 				<div class="flex mt-4 space-x-2">
-					<button
-						(click)="openActionDialog(user, 'approve')"
-						class="bg-[#4CAF50] text-white px-4 py-2 rounded-md hover:bg-[#388E3C] transition-colors"
-					>
-						Approve
-					</button>
-					<button
-						(click)="openActionDialog(user, 'delete')"
-						class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-					>
-						Delete
-					</button>
+					<button (click)="openActionDialog(user, 'approve')" class="bg-[#4CAF50] text-white px-4 py-2 rounded-md hover:bg-[#388E3C] transition-colors">Approve</button>
+					<button (click)="openActionDialog(user, 'delete')" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">Delete</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Existing Users Section -->
 	<div class="mb-6">
 		<h2 class="text-2xl font-semibold text-[#494949] mb-4">Existing Users</h2>
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-			<div
-				*ngFor="let user of approvedUsers"
-				class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
-			>
+			<div *ngFor="let user of approvedUsers" class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between">
 				<div>
-					<h3 class="text-xl font-bold text-[#191B19] mb-2">
-						{{ user.firstName }} {{ user.lastName }}
-					</h3>
+					<h3 class="text-xl font-bold text-[#191B19] mb-2">{{ user.firstName }} {{ user.lastName }}</h3>
 					<p class="text-sm text-[#494949]">Username: {{ user.username }}</p>
 					<p class="text-sm text-[#494949]">Email: {{ user.email }}</p>
 					<p class="text-sm text-[#494949]">Role: {{ user.role }}</p>
 				</div>
 				<div class="flex mt-4 space-x-2">
-					<button
-						(click)="openChangeRoleDialog(user)"
-						class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-					>
-						Change Role
-					</button>
-					<button
-						(click)="openActionDialog(user, 'delete')"
-						class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-					>
-						Delete
-					</button>
+					<button (click)="openChangeRoleDialog(user)" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">Change Role</button>
+					<button (click)="openActionDialog(user, 'delete')" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">Delete</button>
 				</div>
 			</div>
 		</div>
 	</div>
-<!-- Add User Dialog -->
-<div
-    *ngIf="isAddUserDialogOpen"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
->
-    <div
-        class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg overflow-y-auto max-h-[80vh]"
-    >
-        <h2 class="text-2xl font-semibold text-[#494949] mb-6">Add New User</h2>
-        <form (ngSubmit)="addUser()" class="grid grid-cols-1 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-[#494949]">First Name</label>
-                <input
-                    type="text"
-                    [(ngModel)]="newUser.firstName"
-                    name="firstName"
-                    required
-                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-                />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-[#494949]">Last Name</label>
-                <input
-                    type="text"
-                    [(ngModel)]="newUser.lastName"
-                    name="lastName"
-                    required
-                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-                />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-[#494949]">Username</label>
-                <input
-                    type="text"
-                    [(ngModel)]="newUser.username"
-                    name="username"
-                    required
-                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-                />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-[#494949]">Email</label>
-                <input
-                    type="email"
-                    [(ngModel)]="newUser.email"
-                    name="email"
-                    required
-                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-                />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-[#494949]">Password</label>
-                <input
-                    type="password"
-                    [(ngModel)]="newUser.password"
-                    name="password"
-                    required
-                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-                />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-[#494949]">Phone Number</label>
-                <input
-                    type="text"
-                    [(ngModel)]="newUser.phoneNumber"
-                    name="phoneNumber"
-                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-                />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-[#494949]">Role</label>
-                <select
-                    [(ngModel)]="newUser.role"
-                    name="role"
-                    required
-                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]"
-                >
-                    <option value="Admin">Admin</option>
-                    <option value="Chef">Chef</option>
-                    <option value="Nutritionist">Nutritionist</option>
-                    <option value="MealPlanner">MealPlanner</option>
-                    <option value="User">User</option>
-                </select>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-                <button
-                    type="button"
-                    (click)="closeAddUserDialog()"
-                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    class="bg-[#4CAF50] text-white px-4 py-2 rounded-md hover:bg-[#388E3C] transition-colors"
-                >
-                    Add User
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+	<div *ngIf="isAddUserDialogOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+		<div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg overflow-y-auto max-h-[80vh]">
+			<h2 class="text-2xl font-semibold text-[#494949] mb-6">Add New User</h2>
+			<form (ngSubmit)="addUser()" class="grid grid-cols-1 gap-4">
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">First Name</label>
+					<input type="text" [(ngModel)]="newUser.firstName" name="firstName" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Last Name</label>
+					<input type="text" [(ngModel)]="newUser.lastName" name="lastName" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Username</label>
+					<input type="text" [(ngModel)]="newUser.username" name="username" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Email</label>
+					<input type="email" [(ngModel)]="newUser.email" name="email" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Password</label>
+					<input type="password" [(ngModel)]="newUser.password" name="password" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Phone Number</label>
+					<input type="text" [(ngModel)]="newUser.phoneNumber" name="phoneNumber" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Role</label>
+					<select [(ngModel)]="newUser.role" name="role" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4CAF50]">
+						<option value="Admin">Admin</option>
+						<option value="Chef">Chef</option>
+						<option value="Nutritionist">Nutritionist</option>
+						<option value="MealPlanner">MealPlanner</option>
+						<option value="User">User</option>
+					</select>
+				</div>
+				<div class="flex justify-end space-x-2 mt-4">
+					<button type="button" (click)="closeAddUserDialog()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+					<button type="submit" class="bg-[#4CAF50] text-white px-4 py-2 rounded-md hover:bg-[#388E3C] transition-colors">Add User</button>
+				</div>
+			</form>
+		</div>
+	</div>
 
-
-	<!-- Action Dialog (Approve/Delete) -->
-	<div
-		*ngIf="isActionDialogOpen && selectedUser && action"
-		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-	>
+	<div *ngIf="isActionDialogOpen && selectedUser && action" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 		<div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
 			<p class="text-[#494949] mb-6">
-				Are you sure you want to <strong>{{ action | titlecase }}</strong> the user
-				<strong>{{ selectedUser.username }}</strong>?
+				Are you sure you want to
+				<strong>{{ action | titlecase }}</strong>
+				the user
+				<strong>{{ selectedUser.username }}</strong>
+				?
 			</p>
 			<div class="flex justify-end space-x-2">
-				<button
-					*ngIf="action === 'approve'"
-					(click)="approveUser()"
-					class="bg-[#4CAF50] text-white px-4 py-2 rounded-md hover:bg-[#388E3C] transition-colors"
-				>
-					Approve
-				</button>
-				<button
-					*ngIf="action === 'delete'"
-					(click)="deleteUser()"
-					class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-				>
-					Delete
-				</button>
-				<button
-					(click)="closeActionDialog()"
-					class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
-				>
-					Cancel
-				</button>
+				<button *ngIf="action === 'approve'" (click)="approveUser()" class="bg-[#4CAF50] text-white px-4 py-2 rounded-md hover:bg-[#388E3C] transition-colors">Approve</button>
+				<button *ngIf="action === 'delete'" (click)="deleteUser()" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">Delete</button>
+				<button (click)="closeActionDialog()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Cancel</button>
 			</div>
 		</div>
 	</div>
 
-	<!-- Change Role Dialog -->
-	<div
-		*ngIf="isChangeRoleDialogOpen && selectedUser"
-		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-	>
+	<div *ngIf="isChangeRoleDialogOpen && selectedUser" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 		<div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
 			<h2 class="text-2xl font-semibold text-[#494949] mb-4">Change Role</h2>
 			<form (ngSubmit)="confirmChangeRole()" class="grid grid-cols-1 gap-4">
 				<div>
 					<label class="block text-sm font-medium text-[#494949]">Select New Role</label>
-					<select
-						[(ngModel)]="newRole"
-						name="newRole"
-						required
-						class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-					>
+					<select [(ngModel)]="newRole" name="newRole" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
 						<option value="Admin">Admin</option>
 						<option value="Chef">Chef</option>
 						<option value="Nutritionist">Nutritionist</option>
@@ -241,19 +118,8 @@
 					</select>
 				</div>
 				<div class="flex justify-end space-x-2">
-					<button
-						type="button"
-						(click)="closeChangeRoleDialog()"
-						class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
-					>
-						Cancel
-					</button>
-					<button
-						type="submit"
-						class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-					>
-						Update Role
-					</button>
+					<button type="button" (click)="closeChangeRoleDialog()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+					<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">Update Role</button>
 				</div>
 			</form>
 		</div>

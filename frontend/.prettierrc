@@ -1,0 +1,68 @@
+{
+	"tabWidth": 4,
+	"useTabs": true,
+	"printWidth": 1000,
+	"semi": true,
+	"singleQuote": true,
+	"trailingComma": "none",
+	"bracketSpacing": true,
+	"bracketSameLine": true,
+	"arrowParens": "avoid",
+	"proseWrap": "never",
+	"htmlWhitespaceSensitivity": "ignore",
+	"vueIndentScriptAndStyle": false,
+	"endOfLine": "lf",
+	"embeddedLanguageFormatting": "auto",
+	"singleAttributePerLine": false,
+	"jsxSingleQuote": false,
+	"quoteProps": "as-needed",
+	"overrides": [
+		{
+			"files": ["*.html", "*.jsx", "*.tsx"],
+			"options": {
+				"parser": "html",
+				"htmlWhitespaceSensitivity": "ignore",
+				"singleAttributePerLine": false,
+				"bracketSameLine": true
+			}
+		},
+		{
+			"files": "*.css",
+			"options": {
+				"parser": "css",
+				"singleQuote": false
+			}
+		},
+		{
+			"files": ["*.js", "*.jsx"],
+			"options": {
+				"parser": "babel"
+			}
+		},
+		{
+			"files": ["*.ts", "*.tsx"],
+			"options": {
+				"parser": "typescript"
+			}
+		},
+		{
+			"files": "*.json",
+			"options": {
+				"parser": "json"
+			}
+		},
+		{
+			"files": ["*.yml", "*.yaml"],
+			"options": {
+				"parser": "yaml"
+			}
+		},
+		{
+			"files": "*.md",
+			"options": {
+				"parser": "markdown",
+				"proseWrap": "never"
+			}
+		}
+	]
+}

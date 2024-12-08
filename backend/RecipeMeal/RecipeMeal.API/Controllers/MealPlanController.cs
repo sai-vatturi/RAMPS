@@ -19,7 +19,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpPost]
-		[Authorize(Roles = "MealPlanner,Admin")] // Restrict creation to MealPlanner and Admin
+		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> CreateMealPlan([FromBody] CreateMealPlanDto dto)
 		{
 			try
@@ -39,7 +39,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpPut("{id}")]
-		[Authorize(Roles = "MealPlanner,Admin")] // Restrict updating to MealPlanner and Admin
+		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> UpdateMealPlan(int id, [FromBody] CreateMealPlanDto dto)
 		{
 			try
@@ -63,16 +63,16 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpGet]
-		[Authorize] // Allow all authenticated users to access
+		[Authorize]
 		public async Task<IActionResult> GetMealPlans()
 		{
-			var mealPlans = await _mealPlanService.GetMealPlansAsync(); // Fetch all meal plans
+			var mealPlans = await _mealPlanService.GetMealPlansAsync();
 			return Ok(mealPlans);
 		}
 
 
 		[HttpGet("{id}")]
-		[Authorize] // Allow any authenticated user to fetch a specific meal plan
+		[Authorize]
 		public async Task<IActionResult> GetMealPlanById(int id)
 		{
 			try
@@ -93,7 +93,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		[Authorize(Roles = "MealPlanner,Admin")] // Restrict deletion to MealPlanner and Admin
+		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> DeleteMealPlan(int id)
 		{
 			try
@@ -114,7 +114,7 @@ namespace RecipeMeal.API.Controllers
 		}
 
 		[HttpPatch("{id}")]
-		[Authorize(Roles = "MealPlanner,Admin")] // Restrict patching to MealPlanner and Admin
+		[Authorize(Roles = "MealPlanner,Admin")]
 		public async Task<IActionResult> PatchMealPlan(int id, [FromBody] PatchMealPlanDto dto)
 		{
 			try

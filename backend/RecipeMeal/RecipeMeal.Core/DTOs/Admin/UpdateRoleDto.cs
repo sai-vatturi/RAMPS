@@ -8,7 +8,7 @@ namespace RecipeMeal.Core.DTOs.Admin
 		public string Username { get; set; }
 
 		[Required]
-		public string NewRole { get; set; } // Role as string
+		public string NewRole { get; set; }
 	}
 
 }

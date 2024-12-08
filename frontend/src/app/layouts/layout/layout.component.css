@@ -1,19 +1,10 @@
-/* layout.component.css */
-
-/* Ensure the main content respects the header when visible */
-.flex-1 {
-	margin-top: 4rem; /* Matches the height of the header */
-  }
-
-  /* Transition for the header */
-  header {
-	height: 4rem; /* Fixed header height */
+header {
+	height: 4rem;
 	transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-  }
+}
 
-  /* Hide the header by default on large screens */
-  @media (min-width: 1024px) {
+@media (min-width: 1024px) {
 	header {
-	  display: none;
+		display: none;
 	}
-  }
+}

@@ -24,12 +24,12 @@ namespace RecipeMeal.Core.DTOs
 		[StringLength(100, MinimumLength = 6)]
 		public string Password { get; set; }
 
-		[Required] // Ensure phone number is mandatory
+		[Required]
 		[Phone]
 		public string PhoneNumber { get; set; }
 
 		[Required]
-		public string Role { get; set; } // Role as a string
+		public string Role { get; set; }
 
 		public bool IsApproved { get; set; }
 	}

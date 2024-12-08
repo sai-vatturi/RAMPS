@@ -8,9 +8,9 @@ import { ReviewService } from '../../../services/review.service';
 	selector: 'app-recipe',
 	templateUrl: './recipe.component.html',
 	standalone: true,
-	imports: [CommonModule, FormsModule],
+	imports: [CommonModule, FormsModule]
 })
-export class RecipeComponent  implements OnInit  {
+export class RecipeComponent implements OnInit {
 	recipes: any[] = [];
 	sortedRecipes: any[] = [];
 	selectedRecipe: any = null;
@@ -20,8 +20,8 @@ export class RecipeComponent  implements OnInit  {
 	reviews: any[] = [];
 	newReview = { rating: 0, comment: '' };
 	mealTimeFilters: string[] = ['All', 'Snack', 'Lunch', 'Drink', 'Dinner', 'Breakfast', 'Dessert'];
-  selectedMealTime: string = 'All'; // Default filter (show all)
-  searchQuery: string = ''; // Search query for recipe name
+	selectedMealTime: string = 'All';
+	searchQuery: string = '';
 
 	sortOption: string = 'ratingDesc';
 
@@ -29,78 +29,71 @@ export class RecipeComponent  implements OnInit  {
 
 	currentUsername: string = 'currentUser';
 	ngOnInit(): void {
-		// Retrieve the role from localStorage
 		this.userRole = localStorage.getItem('userRole');
 		console.log('User Role:', this.userRole);
-	  }
-	constructor(
-		private recipeService: RecipeService,
-		private reviewService: ReviewService
-	) {
+	}
+	constructor(private recipeService: RecipeService, private reviewService: ReviewService) {
 		this.loadRecipes();
 	}
 
 	loadRecipes() {
 		this.recipeService.getAllRecipes().subscribe({
-		  next: (data) => {
-			const loadedRecipes = data?.$values || [];
-			let pendingRatings = loadedRecipes.map((recipe: any) =>
-			  this.reviewService.getAverageRating(recipe.recipeId).toPromise().then(avg => {
-				recipe.averageRating = avg?.averageRating ?? 0;
-			  })
-			);
+			next: data => {
+				const loadedRecipes = data?.$values || [];
+				let pendingRatings = loadedRecipes.map((recipe: any) =>
+					this.reviewService
+						.getAverageRating(recipe.recipeId)
+						.toPromise()
+						.then(avg => {
+							recipe.averageRating = avg?.averageRating ?? 0;
+						})
+				);
 
-			Promise.all(pendingRatings).then(() => {
-			  this.recipes = loadedRecipes;
-			  this.applyFilters();
-			});
-		  },
-		  error: (err) => alert(`Error loading recipes: ${err.error}`),
+				Promise.all(pendingRatings).then(() => {
+					this.recipes = loadedRecipes;
+					this.applyFilters();
+				});
+			},
+			error: err => alert(`Error loading recipes: ${err.error}`)
 		});
-	  }
+	}
 
-	  applyFilters() {
+	applyFilters() {
 		let filteredRecipes = [...this.recipes];
 
-		// Filter by meal time if not "All"
 		if (this.selectedMealTime !== 'All') {
-		  filteredRecipes = filteredRecipes.filter(recipe => recipe.category === this.selectedMealTime);
+			filteredRecipes = filteredRecipes.filter(recipe => recipe.category === this.selectedMealTime);
 		}
 
-		// Filter by search query if not empty
 		if (this.searchQuery.trim() !== '') {
-		  const lowerCaseQuery = this.searchQuery.toLowerCase();
-		  filteredRecipes = filteredRecipes.filter(recipe =>
-			recipe.title.toLowerCase().includes(lowerCaseQuery)
-		  );
+			const lowerCaseQuery = this.searchQuery.toLowerCase();
+			filteredRecipes = filteredRecipes.filter(recipe => recipe.title.toLowerCase().includes(lowerCaseQuery));
 		}
 
-		// Apply sorting
 		this.sortedRecipes = this.sortRecipes(filteredRecipes);
-	  }
+	}
 
-	  sortRecipes(recipes: any[]) {
+	sortRecipes(recipes: any[]) {
 		if (this.sortOption === 'ratingDesc') {
-		  return recipes.sort((a, b) => b.averageRating - a.averageRating);
+			return recipes.sort((a, b) => b.averageRating - a.averageRating);
 		} else if (this.sortOption === 'ratingAsc') {
-		  return recipes.sort((a, b) => a.averageRating - b.averageRating);
+			return recipes.sort((a, b) => a.averageRating - b.averageRating);
 		} else if (this.sortOption === 'createdAtDesc') {
-		  return recipes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+			return recipes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 		} else if (this.sortOption === 'createdAtAsc') {
-		  return recipes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+			return recipes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 		}
 		return recipes;
-	  }
+	}
 
-	  applySorting() {
-		this.applyFilters(); // Reapply filters and sort after changing the sorting option
-	  }
+	applySorting() {
+		this.applyFilters();
+	}
 
-	  applyMealTimeFilter(filter: string) {
+	applyMealTimeFilter(filter: string) {
 		this.selectedMealTime = filter;
 		this.applyFilters();
-	  }
-
+	}
 
 	openAddDialog() {
 		this.isEditMode = true;
@@ -121,10 +114,10 @@ export class RecipeComponent  implements OnInit  {
 		this.selectedRecipe = { ...recipe };
 		this.loadReviews(recipe.recipeId);
 		this.reviewService.getAverageRating(recipe.recipeId).subscribe({
-			next: (res) => {
+			next: res => {
 				this.selectedRecipe.averageRating = res?.averageRating ?? 0;
 			},
-			error: () => { }
+			error: () => {}
 		});
 	}
 
@@ -142,10 +135,10 @@ export class RecipeComponent  implements OnInit  {
 
 	loadReviews(recipeId: number) {
 		this.reviewService.getReviewsByRecipeId(recipeId).subscribe({
-			next: (data) => {
+			next: data => {
 				this.reviews = data?.$values || [];
 			},
-			error: (err) => alert(`Error loading reviews: ${err.error}`),
+			error: err => alert(`Error loading reviews: ${err.error}`)
 		});
 	}
 
@@ -170,17 +163,17 @@ export class RecipeComponent  implements OnInit  {
 					this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
 				});
 			},
-			error: (err) => alert(`Error adding review: ${err.error}`),
+			error: err => alert(`Error adding review: ${err.error}`)
 		});
 	}
 
 	editReview(review: any) {
-		const newComment = prompt("Edit your comment:", review.comment);
+		const newComment = prompt('Edit your comment:', review.comment);
 		if (newComment === null) return;
 
-		const newRating = Number(prompt("Edit your rating (1-5):", review.rating));
+		const newRating = Number(prompt('Edit your rating (1-5):', review.rating));
 		if (!newRating || newRating < 1 || newRating > 5) {
-			alert("Invalid rating.");
+			alert('Invalid rating.');
 			return;
 		}
 
@@ -193,7 +186,7 @@ export class RecipeComponent  implements OnInit  {
 					this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
 				});
 			},
-			error: (err) => alert(`Error updating review: ${err.error}`),
+			error: err => alert(`Error updating review: ${err.error}`)
 		});
 	}
 
@@ -207,7 +200,7 @@ export class RecipeComponent  implements OnInit  {
 						this.selectedRecipe.averageRating = avgRes?.averageRating ?? 0;
 					});
 				},
-				error: (err) => alert(`Error deleting review: ${err.error}`),
+				error: err => alert(`Error deleting review: ${err.error}`)
 			});
 		}
 	}
@@ -248,7 +241,7 @@ export class RecipeComponent  implements OnInit  {
 				this.loadRecipes();
 				this.cancelEdit();
 			},
-			error: (err) => alert(`Error adding recipe: ${err.error}`),
+			error: err => alert(`Error adding recipe: ${err.error}`)
 		});
 	}
 
@@ -271,7 +264,7 @@ export class RecipeComponent  implements OnInit  {
 				this.loadRecipes();
 				this.cancelEdit();
 			},
-			error: (err) => alert(`Error updating recipe: ${err.error}`),
+			error: err => alert(`Error updating recipe: ${err.error}`)
 		});
 	}
 
@@ -285,7 +278,7 @@ export class RecipeComponent  implements OnInit  {
 						this.cancelEdit();
 					}
 				},
-				error: (err) => alert(`Error deleting recipe: ${err.error}`),
+				error: err => alert(`Error deleting recipe: ${err.error}`)
 			});
 		}
 	}

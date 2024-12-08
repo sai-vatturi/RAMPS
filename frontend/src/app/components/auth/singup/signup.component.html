@@ -1,165 +1,91 @@
 <div class="flex flex-col md:flex-row min-h-screen">
-	<!-- Right Section (Image) - Hidden on mobile -->
 	<div class="w-full md:w-1/2 bg-gradient-to-r from-[#8DC63F] to-[#7FC520] flex items-center justify-center hidden md:flex order-2">
-	  <img src="assets/images/logo-white.png" alt="Signup Image" class="max-w-[300px] h-auto" />
+		<img src="assets/images/logo-white.png" alt="Signup Image" class="max-w-[300px] h-auto" />
 	</div>
 
-	<!-- Left Section (Signup Form) -->
 	<div class="w-full md:w-1/2 p-6 bg-white flex flex-col justify-center space-y-4 order-1">
-	  <!-- Mobile Logo -->
-	  <div class="md:hidden flex justify-center mb-4">
-		<img src="assets/images/logo-black.png" alt="Mobile Logo" class="max-w-[150px] h-auto" />
-	  </div>
+		<div class="md:hidden flex justify-center mb-4">
+			<img src="assets/images/logo-black.png" alt="Mobile Logo" class="max-w-[150px] h-auto" />
+		</div>
 
-	  <!-- Alert Box (Moved to top center) -->
-	  <div *ngIf="alertMessage"
-		[ngClass]="{
+		<div
+			*ngIf="alertMessage"
+			[ngClass]="{
 		  'bg-green-100 border-green-400 text-green-700': alertMessage.severity === 'success',
 		  'bg-red-100 border-red-400 text-red-700': alertMessage.severity === 'error',
 		  'bg-blue-100 border-blue-400 text-blue-700': alertMessage.severity === 'info',
 		  'bg-yellow-100 border-yellow-400 text-yellow-700': alertMessage.severity === 'warning'
 		}"
-		class="fixed top-4 left-1/2 transform -translate-x-1/2 p-4 border-l-4 rounded-lg shadow-md mb-4 w-[90%] max-w-lg transition-all duration-300 z-50"
-	  >
-		<p class="font-bold">{{ alertMessage.summary }}</p>
-		<p>{{ alertMessage.detail }}</p>
-		<button
-		  (click)="clearAlert()"
-		  class="mt-2 text-sm underline"
-		>
-		  Dismiss
-		</button>
-	  </div>
-
-	  <!-- Title and description -->
-	  <h2 class="text-lg font-semibold text-[#1a1d17]">Create <span class="text-[#5B6056]">Account</span></h2>
-	  <p class="text-sm text-[#5B6056]">Sign up to get started</p>
-
-	  <!-- Signup Form -->
-	  <form (ngSubmit)="onSubmit()" class="space-y-4">
-		<div class="grid grid-cols-2 gap-4">
-		  <!-- First Name -->
-		  <div class="flex flex-col">
-			<label class="text-sm text-[#5B6056] mb-1">First Name</label>
-			<input
-			  type="text"
-			  [(ngModel)]="signupData.firstName"
-			  name="firstName"
-			  required
-			  placeholder="Enter first name"
-			  class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300"
-			/>
-		  </div>
-
-		  <!-- Last Name -->
-		  <div class="flex flex-col">
-			<label class="text-sm text-[#5B6056] mb-1">Last Name</label>
-			<input
-			  type="text"
-			  [(ngModel)]="signupData.lastName"
-			  name="lastName"
-			  required
-			  placeholder="Enter last name"
-			  class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300"
-			/>
-		  </div>
+			class="fixed top-4 left-1/2 transform -translate-x-1/2 p-4 border-l-4 rounded-lg shadow-md mb-4 w-[90%] max-w-lg transition-all duration-300 z-50">
+			<p class="font-bold">{{ alertMessage.summary }}</p>
+			<p>{{ alertMessage.detail }}</p>
+			<button (click)="clearAlert()" class="mt-2 text-sm underline">Dismiss</button>
 		</div>
 
-		<!-- Username -->
-		<div class="flex flex-col">
-		  <label class="text-sm text-[#5B6056] mb-1">Username</label>
-		  <input
-			type="text"
-			[(ngModel)]="signupData.username"
-			name="username"
-			required
-			placeholder="Choose a username"
-			class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300"
-		  />
-		</div>
+		<h2 class="text-lg font-semibold text-[#1a1d17]">
+			Create
+			<span class="text-[#5B6056]">Account</span>
+		</h2>
+		<p class="text-sm text-[#5B6056]">Sign up to get started</p>
 
-		<!-- Email -->
-		<div class="flex flex-col">
-		  <label class="text-sm text-[#5B6056] mb-1">Email</label>
-		  <input
-			type="email"
-			[(ngModel)]="signupData.email"
-			name="email"
-			required
-			placeholder="Enter your email"
-			class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300"
-		  />
-		</div>
+		<form (ngSubmit)="onSubmit()" class="space-y-4">
+			<div class="grid grid-cols-2 gap-4">
+				<div class="flex flex-col">
+					<label class="text-sm text-[#5B6056] mb-1">First Name</label>
+					<input type="text" [(ngModel)]="signupData.firstName" name="firstName" required placeholder="Enter first name" class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300" />
+				</div>
 
-		<!-- Password -->
-		<div class="flex flex-col">
-		  <label class="text-sm text-[#5B6056] mb-1">Password</label>
-		  <div class="relative">
-			<input
-			  [type]="showPassword ? 'text' : 'password'"
-			  [(ngModel)]="signupData.password"
-			  name="password"
-			  required
-			  placeholder="Create a password"
-			  class="w-full px-3 py-2 border border-[#5B6056] rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300"
-			/>
-			<button
-			  type="button"
-			  (click)="togglePasswordVisibility()"
-			  class="absolute inset-y-0 right-0 flex items-center px-3 text-[#5B6056]"
-			>
-			  <i class="pi" [class]="showPassword ? 'pi-eye-slash' : 'pi-eye'"></i>
+				<div class="flex flex-col">
+					<label class="text-sm text-[#5B6056] mb-1">Last Name</label>
+					<input type="text" [(ngModel)]="signupData.lastName" name="lastName" required placeholder="Enter last name" class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300" />
+				</div>
+			</div>
+
+			<div class="flex flex-col">
+				<label class="text-sm text-[#5B6056] mb-1">Username</label>
+				<input type="text" [(ngModel)]="signupData.username" name="username" required placeholder="Choose a username" class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300" />
+			</div>
+
+			<div class="flex flex-col">
+				<label class="text-sm text-[#5B6056] mb-1">Email</label>
+				<input type="email" [(ngModel)]="signupData.email" name="email" required placeholder="Enter your email" class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300" />
+			</div>
+
+			<div class="flex flex-col">
+				<label class="text-sm text-[#5B6056] mb-1">Password</label>
+				<div class="relative">
+					<input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="signupData.password" name="password" required placeholder="Create a password" class="w-full px-3 py-2 border border-[#5B6056] rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300" />
+					<button type="button" (click)="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center px-3 text-[#5B6056]">
+						<i class="pi" [class]="showPassword ? 'pi-eye-slash' : 'pi-eye'"></i>
+					</button>
+				</div>
+			</div>
+
+			<div class="flex flex-col">
+				<label class="text-sm text-[#5B6056] mb-1">Phone Number (Add country code, e.g. +91)</label>
+				<div class="flex flex-row items-center">
+					<input type="text" [(ngModel)]="signupData.phoneNumber" name="phoneNumber" placeholder="Enter phone number" class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300" />
+				</div>
+			</div>
+
+			<div class="flex flex-col">
+				<label class="text-sm text-[#5B6056] mb-1">Role</label>
+				<select [(ngModel)]="signupData.role" name="role" required class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300">
+					<option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+				</select>
+			</div>
+
+			<button type="submit" [disabled]="isLoading" class="w-full bg-[#80C522] text-white p-3 rounded-lg mt-4 hover:bg-[#6ba720] focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300 flex items-center justify-center">
+				<div *ngIf="isLoading" class="mr-2 animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+				{{ isLoading ? 'Creating Account...' : 'Sign Up' }}
 			</button>
-		  </div>
+		</form>
+
+		<div class="text-center mt-6 text-sm text-[#5B6056]">
+			<p>
+				Already have an account?
+				<a (click)="navigateToLogin()" class="text-[#80C522] hover:underline cursor-pointer">Back to Login</a>
+			</p>
 		</div>
-
-		<!-- Phone Number -->
-		<div class="flex flex-col">
-		  <label class="text-sm text-[#5B6056] mb-1">Phone Number (Add country code, e.g. +91)</label>
-		  <div class="flex flex-row items-center">
-			<input
-			  type="text"
-			  [(ngModel)]="signupData.phoneNumber"
-			  name="phoneNumber"
-			  placeholder="Enter phone number"
-			  class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300"
-			/>
-		  </div>
-		</div>
-
-		<!-- Role -->
-		<div class="flex flex-col">
-		  <label class="text-sm text-[#5B6056] mb-1">Role</label>
-		  <select
-			[(ngModel)]="signupData.role"
-			name="role"
-			required
-			class="w-full px-3 py-2 border border-[#5B6056] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300"
-		  >
-			<option *ngFor="let role of roles" [value]="role.value">
-			  {{ role.label }}
-			</option>
-		  </select>
-		</div>
-
-		<!-- Signup Button -->
-		<button
-		  type="submit"
-		  [disabled]="isLoading"
-		  class="w-full bg-[#80C522] text-white p-3 rounded-lg mt-4 hover:bg-[#6ba720] focus:outline-none focus:ring-2 focus:ring-[#80C522] transition-all duration-300 flex items-center justify-center"
-		>
-		  <div *ngIf="isLoading" class="mr-2 animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-		  {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
-		</button>
-	  </form>
-
-	  <!-- Additional Information -->
-	  <div class="text-center mt-6 text-sm text-[#5B6056]">
-		<p>Already have an account?
-		  <a (click)="navigateToLogin()" class="text-[#80C522] hover:underline cursor-pointer">
-			Back to Login
-		  </a>
-		</p>
-	  </div>
 	</div>
-  </div>
+</div>

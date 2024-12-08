@@ -1,308 +1,152 @@
-<div
-  *ngIf="userRole === 'Admin' || userRole === 'Chef'"
-  class="container mx-auto p-6"
->
-  <!-- Heading -->
-  <h1 class="text-4xl font-bold text-[#191B19] mb-6">Chef Recipe Management</h1>
+<div *ngIf="userRole === 'Admin' || userRole === 'Chef'" class="container mx-auto p-6">
+	<h1 class="text-4xl font-bold text-[#191B19] mb-6">Chef Recipe Management</h1>
 
-  <!-- Add Recipe Button -->
-  <button
-    (click)="openAddDialog()"
-    class="mb-6 bg-[#88C533] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#76b02e] transition-colors"
-  >
-    Add Recipe
-  </button>
+	<button (click)="openAddDialog()" class="mb-6 bg-[#88C533] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#76b02e] transition-colors">Add Recipe</button>
 </div>
 
-
-	<!-- Recipes List as Cards -->
-	<h2 class="text-2xl font-semibold text-[#494949] mt-8 mb-4">All Recipes</h2>
-	<!-- Search Bar -->
+<h2 class="text-2xl font-semibold text-[#494949] mt-8 mb-4">All Recipes</h2>
 <div class="mb-4">
-	<input
-	  type="text"
-	  [(ngModel)]="searchQuery"
-	  (input)="applyFilters()"
-	  placeholder="Search recipes by name..."
-	  class="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-	/>
-  </div>
+	<input type="text" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Search recipes by name..." class="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]" />
+</div>
 
-	<!-- Meal Time Filters -->
 <div class="flex flex-wrap gap-2 mb-4">
-	<button
-	  *ngFor="let filter of mealTimeFilters"
-	  [class.bg-[#88C533]]="selectedMealTime === filter"
-	  [class.text-white]="selectedMealTime === filter"
-	  class="px-4 py-2 rounded-md border border-[#88C533] text-[#494949] hover:bg-[#76b02e] hover:text-white transition-colors"
-	  (click)="applyMealTimeFilter(filter)"
-	>
-	  {{ filter }}
-	</button>
-  </div>
+	<button *ngFor="let filter of mealTimeFilters" [class.bg-[#88C533]]="selectedMealTime === filter" [class.text-white]="selectedMealTime === filter" class="px-4 py-2 rounded-md border border-[#88C533] text-[#494949] hover:bg-[#76b02e] hover:text-white transition-colors" (click)="applyMealTimeFilter(filter)">{{ filter }}</button>
+</div>
 
-	<!-- Sorting Options -->
-	<div class="flex justify-end mb-4 space-x-2">
-		<p class="self-center">Sort By:</p>
-		<select
-		  id="sort"
-		  [(ngModel)]="sortOption"
-		  (change)="applySorting()"
-		  class="border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-		>
-		  <option value="ratingDesc">Rating (High to Low)</option>
-		  <option value="ratingAsc">Rating (Low to High)</option>
-		  <option value="createdAtDesc">Created At (Newest First)</option>
-		  <option value="createdAtAsc">Created At (Oldest First)</option>
-		</select>
-	  </div>
+<div class="flex justify-end mb-4 space-x-2">
+	<p class="self-center">Sort By:</p>
+	<select id="sort" [(ngModel)]="sortOption" (change)="applySorting()" class="border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#88C533]">
+		<option value="ratingDesc">Rating (High to Low)</option>
+		<option value="ratingAsc">Rating (Low to High)</option>
+		<option value="createdAtDesc">Created At (Newest First)</option>
+		<option value="createdAtAsc">Created At (Oldest First)</option>
+	</select>
+</div>
 
-	  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-		<div
-		  *ngFor="let recipe of sortedRecipes"
-		  class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform transform hover:scale-105 cursor-pointer border border-gray-200 overflow-hidden"
-		  (click)="openViewDialog(recipe)"
-		>
-		  <div class="relative w-full h-48">
-			<img
-			  [src]="recipe.imageUrl"
-			  alt="Recipe Image"
-			  class="w-full h-full object-cover transition-transform transform hover:scale-110"
-			/>
-			<div class="absolute top-2 right-2 bg-white/80 backdrop-blur-sm text-gray-800 text-sm px-3 py-1 rounded-full shadow-sm">
-			  {{ recipe.category }}
-			</div>
-		  </div>
-		  <div class="p-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+	<div *ngFor="let recipe of sortedRecipes" class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-transform transform hover:scale-105 cursor-pointer border border-gray-200 overflow-hidden" (click)="openViewDialog(recipe)">
+		<div class="relative w-full h-48">
+			<img [src]="recipe.imageUrl" alt="Recipe Image" class="w-full h-full object-cover transition-transform transform hover:scale-110" />
+			<div class="absolute top-2 right-2 bg-white/80 backdrop-blur-sm text-gray-800 text-sm px-3 py-1 rounded-full shadow-sm">{{ recipe.category }}</div>
+		</div>
+		<div class="p-6">
 			<h3 class="text-xl font-bold text-[#191B19] mb-2">{{ recipe.title }}</h3>
 			<p class="text-sm text-gray-600 mb-2">{{ recipe.description | slice:0:100 }}...</p>
 			<div class="flex items-center mb-2">
-			  <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-				<span
-				  [class.text-yellow-500]="star <= recipe.averageRating"
-				  class="text-gray-300 text-lg transition-colors"
-				>
-				  ★
-				</span>
-			  </ng-container>
-			  <span class="text-sm text-gray-500 ml-2">({{ recipe.averageRating.toFixed(1) }})</span>
+				<ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+					<span [class.text-yellow-500]="star <= recipe.averageRating" class="text-gray-300 text-lg transition-colors">★</span>
+				</ng-container>
+				<span class="text-sm text-gray-500 ml-2">({{ recipe.averageRating.toFixed(1) }})</span>
 			</div>
 			<div class="text-sm text-gray-500">
-			  <p>Created At: {{ recipe.createdAt | date: 'medium' }}</p>
+				<p>Created At: {{ recipe.createdAt | date: 'medium' }}</p>
 			</div>
-		  </div>
 		</div>
 	</div>
-
-
-
-
-	<!-- Recipe Detail / Add-Edit Dialog -->
-	<div
-	  *ngIf="selectedRecipe"
-	  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-	>
-	  <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative max-h-screen overflow-auto">
-		<button
-		  (click)="cancelEdit()"
-		  class="absolute top-2 right-2 bg-gray-300 text-gray-600 px-2 py-1 rounded-md hover:bg-gray-400"
-		>
-		  ✕
-		</button>
-
-		<!-- If in Edit Mode: Show Form for Add/Edit -->
-		<form
-		  *ngIf="isEditMode"
-		  (ngSubmit)="saveChanges()"
-		  class="space-y-4"
-		>
-		  <h2 class="text-2xl font-semibold text-[#494949] mb-4">
-			{{ selectedRecipe.recipeId ? 'Edit Recipe' : 'Add New Recipe' }}
-		  </h2>
-
-		  <div>
-			<label class="block text-sm font-medium text-[#494949]">Title</label>
-			<input
-			  type="text"
-			  [(ngModel)]="selectedRecipe.title"
-			  name="title"
-			  required
-			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			/>
-		  </div>
-
-		  <div>
-			<label class="block text-sm font-medium text-[#494949]">Description</label>
-			<textarea
-			  [(ngModel)]="selectedRecipe.description"
-			  name="description"
-			  required
-			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			></textarea>
-		  </div>
-
-		  <div>
-			<label class="block text-sm font-medium text-[#494949]">Ingredients</label>
-			<textarea
-			  [(ngModel)]="selectedRecipe.ingredients"
-			  name="ingredients"
-			  required
-			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			></textarea>
-		  </div>
-
-		  <div>
-			<label class="block text-sm font-medium text-[#494949]">Steps</label>
-			<textarea
-			  [(ngModel)]="selectedRecipe.steps"
-			  name="steps"
-			  required
-			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			></textarea>
-		  </div>
-
-		  <div>
-			<label class="block text-sm font-medium text-[#494949]">Category</label>
-			<input
-			  type="text"
-			  [(ngModel)]="selectedRecipe.category"
-			  name="category"
-			  required
-			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			/>
-		  </div>
-
-		  <div>
-			<label class="block text-sm font-medium text-[#494949]">Image</label>
-			<input
-			  type="file"
-			  (change)="onFileSelected($event)"
-			  [required]="!selectedRecipe.recipeId"
-			  class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			/>
-		  </div>
-
-		  <div class="flex justify-end space-x-2">
-			<button
-			  type="submit"
-			  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-			>
-			  Save
-			</button>
-			<button
-			  type="button"
-			  (click)="cancelEdit()"
-			  class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
-			>
-			  Cancel
-			</button>
-		  </div>
-		</form>
-
-		<!-- If not in Edit Mode: Show Recipe Details & Reviews -->
-		<div *ngIf="!isEditMode">
-		  <!-- Recipe Details -->
-		  <h2 class="text-2xl font-semibold text-[#494949] mb-4">{{ selectedRecipe.title }}</h2>
-		  <img
-			[src]="selectedRecipe.imageUrl"
-			alt="Recipe Image"
-			class="w-full h-48 object-cover rounded-md mb-4"
-		  />
-		  <p class="text-sm text-[#494949] mb-2"><strong>Description:</strong> {{ selectedRecipe.description }}</p>
-		  <p class="text-sm text-[#494949] mb-2"><strong>Ingredients:</strong> {{ selectedRecipe.ingredients }}</p>
-		  <p class="text-sm text-[#494949] mb-2"><strong>Steps:</strong> {{ selectedRecipe.steps }}</p>
-		  <p class="text-sm text-gray-500 mb-2">Category: {{ selectedRecipe.category }}</p>
-
-		  <!-- Display Stars -->
-		  <div class="flex items-center mb-4">
-			<ng-container *ngFor="let star of [1,2,3,4,5]">
-			  <span [class.text-yellow-500]="star <= selectedRecipe.averageRating" class="text-gray-300 text-xl">
-				★
-			  </span>
-			</ng-container>
-			<span class="text-sm text-gray-500 ml-2">({{ selectedRecipe.averageRating.toFixed(1) }})</span>
-		  </div>
-
-		 <!-- Edit/Delete Recipe Buttons -->
-<div
-*ngIf="userRole === 'Admin' || userRole === 'Chef'"
-class="flex justify-end space-x-2 mt-4"
->
-<button
-  (click)="openEditDialog(selectedRecipe)"
-  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
->
-  Edit
-</button>
-<button
-  (click)="deleteRecipe(selectedRecipe.recipeId)"
-  class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
->
-  Delete
-</button>
 </div>
 
+<div *ngIf="selectedRecipe" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+	<div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative max-h-screen overflow-auto">
+		<button (click)="cancelEdit()" class="absolute top-2 right-2 bg-gray-300 text-gray-600 px-2 py-1 rounded-md hover:bg-gray-400">✕</button>
 
-		  <!-- Reviews Section -->
-		  <h3 class="text-xl font-semibold text-[#494949] mt-6 mb-4">Reviews</h3>
-		  <div *ngIf="reviews.length > 0; else noReviews">
-			<div *ngFor="let review of reviews" class="bg-gray-100 p-4 rounded-lg shadow-md mb-4">
-			  <div class="flex justify-between items-center mb-2">
-				<h4 class="text-sm font-bold text-[#494949]">{{ review.userName }}</h4>
-				<p class="text-sm text-gray-500">Rating: {{ review.rating }}</p>
-			  </div>
-			  <p class="text-sm text-[#494949] mb-2">{{ review.comment }}</p>
-			  <!-- Edit/Delete Options for the review author -->
-			  <div class="flex space-x-2" *ngIf="review.userName === currentUsername">
-				<button
-				  class="text-sm text-blue-500 hover:underline"
-				  (click)="editReview(review)"
-				>
-				  Edit
-				</button>
-				<button
-				  class="text-sm text-red-500 hover:underline"
-				  (click)="deleteReview(review)"
-				>
-				  Delete
-				</button>
-			  </div>
-			</div>
-		  </div>
-		  <ng-template #noReviews>
-			<p class="text-sm text-gray-500">No reviews yet. Be the first to add one!</p>
-		  </ng-template>
+		<form *ngIf="isEditMode" (ngSubmit)="saveChanges()" class="space-y-4">
+			<h2 class="text-2xl font-semibold text-[#494949] mb-4">{{ selectedRecipe.recipeId ? 'Edit Recipe' : 'Add New Recipe' }}</h2>
 
-		  <!-- Add Review Form -->
-		  <form (ngSubmit)="addReview()" class="space-y-4 mt-4 bg-gray-50 p-4 rounded-lg shadow-md">
-			<h4 class="text-lg font-semibold text-[#494949]">Add Your Review</h4>
 			<div>
-			  <label class="block text-sm font-medium text-[#494949]">Rating (1-5)</label>
-			  <input
-				type="number"
-				[(ngModel)]="newReview.rating"
-				name="rating"
-				required
-				min="1"
-				max="5"
-				class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			  />
+				<label class="block text-sm font-medium text-[#494949]">Title</label>
+				<input type="text" [(ngModel)]="selectedRecipe.title" name="title" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]" />
 			</div>
+
 			<div>
-			  <label class="block text-sm font-medium text-[#494949]">Comment</label>
-			  <textarea
-				[(ngModel)]="newReview.comment"
-				name="comment"
-				class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"
-			  ></textarea>
+				<label class="block text-sm font-medium text-[#494949]">Description</label>
+				<textarea [(ngModel)]="selectedRecipe.description" name="description" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"></textarea>
 			</div>
-			<button
-			  type="submit"
-			  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-			>
-			  Submit Review
-			</button>
-		  </form>
+
+			<div>
+				<label class="block text-sm font-medium text-[#494949]">Ingredients</label>
+				<textarea [(ngModel)]="selectedRecipe.ingredients" name="ingredients" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"></textarea>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium text-[#494949]">Steps</label>
+				<textarea [(ngModel)]="selectedRecipe.steps" name="steps" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"></textarea>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium text-[#494949]">Category</label>
+				<input type="text" [(ngModel)]="selectedRecipe.category" name="category" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]" />
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium text-[#494949]">Image</label>
+				<input type="file" (change)="onFileSelected($event)" [required]="!selectedRecipe.recipeId" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]" />
+			</div>
+
+			<div class="flex justify-end space-x-2">
+				<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">Save</button>
+				<button type="button" (click)="cancelEdit()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Cancel</button>
+			</div>
+		</form>
+
+		<div *ngIf="!isEditMode">
+			<h2 class="text-2xl font-semibold text-[#494949] mb-4">{{ selectedRecipe.title }}</h2>
+			<img [src]="selectedRecipe.imageUrl" alt="Recipe Image" class="w-full h-48 object-cover rounded-md mb-4" />
+			<p class="text-sm text-[#494949] mb-2">
+				<strong>Description:</strong>
+				{{ selectedRecipe.description }}
+			</p>
+			<p class="text-sm text-[#494949] mb-2">
+				<strong>Ingredients:</strong>
+				{{ selectedRecipe.ingredients }}
+			</p>
+			<p class="text-sm text-[#494949] mb-2">
+				<strong>Steps:</strong>
+				{{ selectedRecipe.steps }}
+			</p>
+			<p class="text-sm text-gray-500 mb-2">Category: {{ selectedRecipe.category }}</p>
+
+			<div class="flex items-center mb-4">
+				<ng-container *ngFor="let star of [1,2,3,4,5]">
+					<span [class.text-yellow-500]="star <= selectedRecipe.averageRating" class="text-gray-300 text-xl">★</span>
+				</ng-container>
+				<span class="text-sm text-gray-500 ml-2">({{ selectedRecipe.averageRating.toFixed(1) }})</span>
+			</div>
+
+			<div *ngIf="userRole === 'Admin' || userRole === 'Chef'" class="flex justify-end space-x-2 mt-4">
+				<button (click)="openEditDialog(selectedRecipe)" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Edit</button>
+				<button (click)="deleteRecipe(selectedRecipe.recipeId)" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
+			</div>
+
+			<h3 class="text-xl font-semibold text-[#494949] mt-6 mb-4">Reviews</h3>
+			<div *ngIf="reviews.length > 0; else noReviews">
+				<div *ngFor="let review of reviews" class="bg-gray-100 p-4 rounded-lg shadow-md mb-4">
+					<div class="flex justify-between items-center mb-2">
+						<h4 class="text-sm font-bold text-[#494949]">{{ review.userName }}</h4>
+						<p class="text-sm text-gray-500">Rating: {{ review.rating }}</p>
+					</div>
+					<p class="text-sm text-[#494949] mb-2">{{ review.comment }}</p>
+					<div class="flex space-x-2" *ngIf="review.userName === currentUsername">
+						<button class="text-sm text-blue-500 hover:underline" (click)="editReview(review)">Edit</button>
+						<button class="text-sm text-red-500 hover:underline" (click)="deleteReview(review)">Delete</button>
+					</div>
+				</div>
+			</div>
+			<ng-template #noReviews>
+				<p class="text-sm text-gray-500">No reviews yet. Be the first to add one!</p>
+			</ng-template>
+
+			<form (ngSubmit)="addReview()" class="space-y-4 mt-4 bg-gray-50 p-4 rounded-lg shadow-md">
+				<h4 class="text-lg font-semibold text-[#494949]">Add Your Review</h4>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Rating (1-5)</label>
+					<input type="number" [(ngModel)]="newReview.rating" name="rating" required min="1" max="5" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Comment</label>
+					<textarea [(ngModel)]="newReview.comment" name="comment" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"></textarea>
+				</div>
+				<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Submit Review</button>
+			</form>
 		</div>
-	  </div>
 	</div>
+</div>

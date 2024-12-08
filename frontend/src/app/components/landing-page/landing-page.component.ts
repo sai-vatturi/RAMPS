@@ -1,14 +1,9 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { MenubarModule } from 'primeng/menubar';
-import { RatingModule } from 'primeng/rating';
 
 @Component({
 	standalone: true,
-	imports: [MenubarModule, ButtonModule, CardModule, RatingModule, InputTextModule, FormsModule],
+	imports: [FormsModule],
 	selector: 'app-landing-page',
 	templateUrl: './landing-page.component.html',
 	styleUrls: ['./landing-page.component.css']

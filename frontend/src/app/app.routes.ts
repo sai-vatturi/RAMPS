@@ -1,17 +1,4 @@
 import { Routes } from '@angular/router';
-import { UsersComponent } from './components/admin/users/users.component';
-import { LoginComponent } from './components/auth/login/login.component';
-import { RequestPasswordResetComponent } from './components/auth/reset-password/request-password-reset.component';
-import { ResetPasswordComponent } from './components/auth/reset-password/reset-password.component';
-import { SignupComponent } from './components/auth/singup/signup.component';
-import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
-import { RecipeComponent } from './components/chef/recipe/recipe.component';
-import { FaqComponent } from './components/faq/faq.component';
-import { LandingPageComponent } from './components/landing-page/landing-page.component';
-import { MealPlanComponent } from './components/mealplanner/meal-plan/meal-plan.component';
-import { NutritionComponent } from './components/nutritionist/nutrition/nutrition.component';
-import { ShoppingComponent } from './components/shopping-list/shopping-list.component';
-import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LayoutComponent } from './layouts/layout/layout.component';
 
@@ -21,20 +8,59 @@ export const routes: Routes = [
 		component: LayoutComponent,
 		canActivate: [AuthGuard],
 		children: [
-			{ path: 'user-dashboard', component: UserDashboardComponent },
-			{ path: 'recipes', component: RecipeComponent },
-			{ path: 'nutrition', component: NutritionComponent },
-			{ path: 'meal-plan', component: MealPlanComponent },
-			{ path: 'shopping-lists', component: ShoppingComponent },
-			{ path: 'users', component: UsersComponent },
-			{ path: 'faq', component: FaqComponent }
+			{
+				path: 'user-dashboard',
+				loadComponent: () => import('./components/user-dashboard/user-dashboard.component').then(m => m.UserDashboardComponent)
+			},
+			{
+				path: 'recipes',
+				loadComponent: () => import('./components/chef/recipe/recipe.component').then(m => m.RecipeComponent)
+			},
+			{
+				path: 'nutrition',
+				loadComponent: () => import('./components/nutritionist/nutrition/nutrition.component').then(m => m.NutritionComponent)
+			},
+			{
+				path: 'meal-plan',
+				loadComponent: () => import('./components/mealplanner/meal-plan/meal-plan.component').then(m => m.MealPlanComponent)
+			},
+			{
+				path: 'shopping-lists',
+				loadComponent: () => import('./components/shopping-list/shopping-list.component').then(m => m.ShoppingComponent)
+			},
+			{
+				path: 'users',
+				loadComponent: () => import('./components/admin/users/users.component').then(m => m.UsersComponent)
+			},
+			{
+				path: 'faq',
+				loadComponent: () => import('./components/faq/faq.component').then(m => m.FaqComponent)
+			}
 		]
 	},
-	{ path: 'signup', component: SignupComponent },
-	{ path: 'landing-page', component: LandingPageComponent },
-	{ path: 'login', component: LoginComponent },
-	{ path: 'verify-email', component: VerifyEmailComponent },
-	{ path: 'reset-password', component: ResetPasswordComponent },
-	{ path: 'request-password-reset', component: RequestPasswordResetComponent },
+	{
+		path: 'signup',
+		loadComponent: () => import('./components/auth/singup/signup.component').then(m => m.SignupComponent)
+	},
+	{
+		path: 'landing-page',
+		loadComponent: () => import('./components/landing-page/landing-page.component').then(m => m.LandingPageComponent)
+	},
+	{
+		path: 'login',
+		loadComponent: () => import('./components/auth/login/login.component').then(m => m.LoginComponent)
+	},
+	{
+		path: 'verify-email',
+		loadComponent: () => import('./components/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent)
+	},
+	{
+		path: 'reset-password',
+		loadComponent: () => import('./components/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
+	},
+	{
+		path: 'request-password-reset',
+		loadComponent: () => import('./components/auth/reset-password/request-password-reset.component').then(m => m.RequestPasswordResetComponent)
+	},
 	{ path: '**', redirectTo: 'login' }
 ];

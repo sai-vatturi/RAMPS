@@ -20,6 +20,6 @@ namespace RecipeMeal.Core.DTOs.Recipe
         public string Category { get; set; }
 
         [Required]
-        public IFormFile Image { get; set; } // Required for creation
+        public IFormFile Image { get; set; } 
     }
 }

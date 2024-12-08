@@ -19,7 +19,7 @@ export const routes: Routes = [
 	{
 		path: '',
 		component: LayoutComponent,
-		canActivate: [AuthGuard], // Protect the LayoutComponent itself
+		canActivate: [AuthGuard],
 		children: [
 			{ path: 'user-dashboard', component: UserDashboardComponent },
 			{ path: 'recipes', component: RecipeComponent },
@@ -27,14 +27,14 @@ export const routes: Routes = [
 			{ path: 'meal-plan', component: MealPlanComponent },
 			{ path: 'shopping-lists', component: ShoppingComponent },
 			{ path: 'users', component: UsersComponent },
-			{ path: 'faq', component: FaqComponent },
-		],
+			{ path: 'faq', component: FaqComponent }
+		]
 	},
-	{ path: 'signup', component: SignupComponent }, // Public
-	{ path: 'landing-page', component: LandingPageComponent }, // Public
-	{ path: 'login', component: LoginComponent }, // Public
-	{ path: 'verify-email', component: VerifyEmailComponent }, // Public
-	{ path: 'reset-password', component: ResetPasswordComponent }, // Public
-	{ path: 'request-password-reset', component: RequestPasswordResetComponent }, // Public
-	{ path: '**', redirectTo: 'login' }, // Redirect unmatched paths to login
+	{ path: 'signup', component: SignupComponent },
+	{ path: 'landing-page', component: LandingPageComponent },
+	{ path: 'login', component: LoginComponent },
+	{ path: 'verify-email', component: VerifyEmailComponent },
+	{ path: 'reset-password', component: ResetPasswordComponent },
+	{ path: 'request-password-reset', component: RequestPasswordResetComponent },
+	{ path: '**', redirectTo: 'login' }
 ];

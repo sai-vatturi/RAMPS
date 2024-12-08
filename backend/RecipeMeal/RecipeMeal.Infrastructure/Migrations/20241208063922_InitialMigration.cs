@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RecipeMeal.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FixShoppingListRelationship : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -179,7 +179,7 @@ namespace RecipeMeal.Infrastructure.Migrations
                         column: x => x.UserShoppingListId,
                         principalTable: "UserShoppingLists",
                         principalColumn: "UserShoppingListId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

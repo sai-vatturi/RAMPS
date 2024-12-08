@@ -12,8 +12,8 @@ using RecipeMeal.Infrastructure.Data;
 namespace RecipeMeal.Infrastructure.Migrations
 {
     [DbContext(typeof(RecipeMealDbContext))]
-    [Migration("20241206133249_FixShoppingListRelationship")]
-    partial class FixShoppingListRelationship
+    [Migration("20241208063922_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -351,7 +351,7 @@ namespace RecipeMeal.Infrastructure.Migrations
                     b.HasOne("RecipeMeal.Core.Entities.UserShoppingList", "UserShoppingList")
                         .WithMany("Items")
                         .HasForeignKey("UserShoppingListId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("UserShoppingList");

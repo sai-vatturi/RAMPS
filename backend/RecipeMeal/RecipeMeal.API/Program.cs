@@ -49,25 +49,23 @@ builder.Services.AddSwaggerGen(c =>
 	});
 });
 
-// Enable CORS for Angular frontend
+// Enable CORS for unrestricted access
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowFrontend", policy =>
+	options.AddPolicy("AllowAll", policy =>
 	{
-		policy.WithOrigins("http://localhost:4200") // Frontend origin
-			  .AllowAnyHeader()
-			  .AllowAnyMethod();
+		policy.AllowAnyOrigin()   // Allow requests from any origin
+			  .AllowAnyHeader()   // Allow any HTTP headers
+			  .AllowAnyMethod();  // Allow any HTTP methods (GET, POST, etc.)
 	});
 });
 
-// serialize enums as strings in JSON
+// Serialize enums as strings in JSON
 builder.Services.AddControllers()
 	.AddJsonOptions(options =>
 	{
 		options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 	});
-
-
 
 // Configure JSON serialization options to handle circular references
 builder.Services.AddControllers()
@@ -89,7 +87,6 @@ builder.Services.AddScoped<IShoppingService, ShoppingService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<UserValidationService>();
-
 
 // Configure Entity Framework and database context
 builder.Services.AddDbContext<RecipeMealDbContext>(options =>
@@ -114,19 +111,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 
 // Configure middleware pipeline
-if (app.Environment.IsDevelopment())
-{
-	app.UseSwagger();
-	app.UseSwaggerUI(c =>
-	{
-		c.SwaggerEndpoint("/swagger/v1/swagger.json", "RecipeMeal API v1");
-	});
-}
 
-app.UseHttpsRedirection();
+// Enable Swagger UI for all environments
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+	c.SwaggerEndpoint("/swagger/v1/swagger.json", "RecipeMeal API v1");
+});
+
+// Remove HTTPS redirection to use HTTP only
+// app.UseHttpsRedirection();
 
 // Enable CORS middleware
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 
 // Enable authentication and authorization middleware
 app.UseAuthentication();
@@ -135,4 +132,8 @@ app.UseAuthorization();
 // Map controllers
 app.MapControllers();
 
+// Ensure the app listens on all interfaces on port 80
+app.Urls.Add("http://0.0.0.0:80");
+
+// Run the application
 app.Run();

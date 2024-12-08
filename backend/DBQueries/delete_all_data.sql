@@ -6,10 +6,10 @@ BEGIN TRANSACTION;
 
 BEGIN TRY
     -- 1. Delete from ShoppingListItems (Child of ShoppingLists)
-    DELETE FROM ShoppingListItems;
+    DELETE FROM UserShoppingListItems;
 
     -- 2. Delete from ShoppingLists (Child of MealPlans)
-    DELETE FROM ShoppingLists;
+    DELETE FROM UserShoppingLists;
 
     -- 3. Delete from MealPlanRecipes (Child of MealPlans and Recipes)
     DELETE FROM MealPlanRecipes;

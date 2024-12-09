@@ -1,9 +1,12 @@
 
 # Recipe and Meal Planning Management System
 
+
+<img width="1333" alt="Screenshot 2024-12-09 at 11 28 10 AM" src="https://github.com/user-attachments/assets/914f9d9a-75cd-4f99-b1c1-468a204b11fd">
+
+Host link: https://sai-vatturi.github.io/host-link/ (Dont change admin user role)
 ## Overview
 The Recipe and Meal Planning Management System is a modern web application that simplifies meal planning, recipe management, and dietary tracking for various users, including Admins, Chefs, Nutritionists, and Customers. Built using ASP.NET Core and Angular, it provides a seamless and interactive experience for users.
-
 ## Features
 
 ### Backend Features

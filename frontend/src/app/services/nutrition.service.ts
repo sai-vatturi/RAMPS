@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
 	providedIn: 'root'
 })
 export class NutritionService {
-	private baseUrl = 'http://localhost:5228/api/Nutrition';
-	private nutritionDetailsBaseUrl = 'http://localhost:5228/api/NutritionDetails';
+	private baseUrl = 'http://15.207.100.163:8080/api/Nutrition';
+	private nutritionDetailsBaseUrl = 'http://15.207.100.163:8080/api/NutritionDetails';
 
 	constructor(private http: HttpClient) {}
 

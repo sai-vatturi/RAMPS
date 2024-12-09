@@ -36,6 +36,12 @@ export class NutritionComponent implements OnInit {
 	selectedNutritionFilter: string = 'All';
 	nutritionSearchQuery: string = '';
 
+	// Loading Flags
+	isLoadingPendingMeals: boolean = false;
+	isLoadingNutrition: boolean = false;
+	isLoadingRecipeDetails: boolean = false;
+	isLoadingNutritionDetails: boolean = false;
+
 	constructor(private nutritionService: NutritionService, private recipeService: RecipeService) {}
 
 	ngOnInit() {
@@ -46,25 +52,38 @@ export class NutritionComponent implements OnInit {
 		this.loadAllNutrition();
 	}
 
+	// Load Pending Meals
 	loadPendingMeals() {
+		this.isLoadingPendingMeals = true; // Start loading
 		this.nutritionService.getPendingMeals().subscribe({
 			next: data => {
 				this.pendingMeals = Array.isArray(data) ? data : data.$values || [];
+				this.isLoadingPendingMeals = false; // Loading finished
 			},
-			error: err => this.showError('Error loading pending meals.')
+			error: err => {
+				this.showError('Error loading pending meals.');
+				this.isLoadingPendingMeals = false; // Ensure loading is stopped on error
+			}
 		});
 	}
 
+	// Load All Nutrition
 	loadAllNutrition() {
+		this.isLoadingNutrition = true; // Start loading
 		this.nutritionService.getAllNutrition().subscribe({
 			next: data => {
 				this.existingNutrition = Array.isArray(data) ? data : data.$values || [];
 				this.applyNutritionFilters();
+				this.isLoadingNutrition = false; // Loading finished
 			},
-			error: err => this.showError('Error loading existing nutrition.')
+			error: err => {
+				this.showError('Error loading existing nutrition.');
+				this.isLoadingNutrition = false; // Ensure loading is stopped on error
+			}
 		});
 	}
 
+	// Apply Nutrition Filters
 	applyNutritionFilters() {
 		let filtered = [...this.existingNutrition];
 
@@ -93,6 +112,7 @@ export class NutritionComponent implements OnInit {
 		this.filteredNutrition = filtered;
 	}
 
+	// Sort Nutrition Data
 	sortNutrition(nutritionData: any[]): any[] {
 		switch (this.selectedSortOption) {
 			case 'caloriesAsc':
@@ -115,37 +135,51 @@ export class NutritionComponent implements OnInit {
 				return nutritionData;
 		}
 	}
+
+	// Apply Nutrition Filter
 	applyNutritionFilter(filter: string) {
 		this.selectedNutritionFilter = filter;
 		this.applyNutritionFilters();
 	}
 
+	// Select a Recipe to View Details
 	selectRecipe(recipeId: number) {
 		this.fetchRecipeDetails(recipeId);
 		this.fetchNutritionDetails(recipeId);
 		this.nutritionData.recipeId = recipeId;
 	}
 
+	// Fetch Recipe Details
 	fetchRecipeDetails(recipeId: number) {
+		this.isLoadingRecipeDetails = true; // Start loading
 		this.recipeService.getRecipeById(recipeId).subscribe({
 			next: data => {
 				this.selectedRecipeDetails = data;
-			},
-			error: err => this.showError('Error fetching recipe details.')
-		});
-	}
-
-	fetchNutritionDetails(recipeId: number) {
-		this.nutritionService.getNutritionDetailsByRecipe(recipeId).subscribe({
-			next: data => {
-				this.selectedNutritionDetails = data;
+				this.isLoadingRecipeDetails = false; // Loading finished
 			},
 			error: err => {
-				this.selectedNutritionDetails = null;
+				this.showError('Error fetching recipe details.');
+				this.isLoadingRecipeDetails = false; // Ensure loading is stopped on error
 			}
 		});
 	}
 
+	// Fetch Nutrition Details
+	fetchNutritionDetails(recipeId: number) {
+		this.isLoadingNutritionDetails = true; // Start loading
+		this.nutritionService.getNutritionDetailsByRecipe(recipeId).subscribe({
+			next: data => {
+				this.selectedNutritionDetails = data;
+				this.isLoadingNutritionDetails = false; // Loading finished
+			},
+			error: err => {
+				this.selectedNutritionDetails = null;
+				this.isLoadingNutritionDetails = false; // Ensure loading is stopped on error
+			}
+		});
+	}
+
+	// Add Nutrition Entry
 	addNutrition() {
 		if (!this.nutritionData.recipeId) {
 			this.showError('Recipe ID is required!');
@@ -163,6 +197,7 @@ export class NutritionComponent implements OnInit {
 		});
 	}
 
+	// Open Edit Modal
 	openEditModal(nutrition: any) {
 		this.isEditMode = true;
 		this.selectedMeal = nutrition;
@@ -170,6 +205,7 @@ export class NutritionComponent implements OnInit {
 		this.showEditModal = true;
 	}
 
+	// Close Edit Modal
 	closeEditModal() {
 		this.showEditModal = false;
 		this.isEditMode = false;
@@ -177,6 +213,7 @@ export class NutritionComponent implements OnInit {
 		this.selectedMeal = null;
 	}
 
+	// Update Nutrition Entry
 	updateNutrition() {
 		if (!this.selectedMeal?.nutritionId) {
 			this.showError('No nutrition selected for editing!');
@@ -193,11 +230,13 @@ export class NutritionComponent implements OnInit {
 		});
 	}
 
+	// Confirm Delete Nutrition
 	confirmDelete(nutritionId: number) {
 		this.confirmNutritionId = nutritionId;
 		this.showDeleteModal = true;
 	}
 
+	// Delete Nutrition Entry
 	deleteNutrition(nutritionId: number) {
 		if (nutritionId === null) return;
 
@@ -211,15 +250,18 @@ export class NutritionComponent implements OnInit {
 		});
 	}
 
+	// Close Delete Modal
 	closeDeleteModal() {
 		this.showDeleteModal = false;
 		this.confirmNutritionId = null;
 	}
 
+	// Reset Form
 	resetForm() {
 		this.nutritionData = {};
 	}
 
+	// Show Success Alert
 	showSuccess(message: string) {
 		this.successMessage = message;
 		this.showSuccessAlert = true;
@@ -229,6 +271,7 @@ export class NutritionComponent implements OnInit {
 		}, 3000);
 	}
 
+	// Show Error Alert
 	showError(message: string) {
 		this.errorMessage = message;
 		this.showErrorAlert = true;

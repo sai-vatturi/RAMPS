@@ -133,7 +133,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Ensure the app listens on all interfaces on port 80
-app.Urls.Add("http://0.0.0.0:80");
+// app.Urls.Add("http://0.0.0.0:80");
 
 // Run the application
 app.Run();

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 	providedIn: 'root'
 })
 export class ShoppingService {
-	private baseUrl = 'http://localhost:5228/api';
+	private baseUrl = 'http://15.207.100.163:8080/api';
 
 	constructor(private http: HttpClient) {}
 

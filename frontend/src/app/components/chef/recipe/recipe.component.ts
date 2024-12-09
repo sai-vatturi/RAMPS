@@ -28,15 +28,20 @@ export class RecipeComponent implements OnInit {
 	selectedImage: File | null = null;
 
 	currentUsername: string = 'currentUser';
+
+	// Add the loading flag
+	isLoading: boolean = false;
+
+	constructor(private recipeService: RecipeService, private reviewService: ReviewService) {}
+
 	ngOnInit(): void {
 		this.userRole = localStorage.getItem('userRole');
 		console.log('User Role:', this.userRole);
-	}
-	constructor(private recipeService: RecipeService, private reviewService: ReviewService) {
-		this.loadRecipes();
+		this.loadRecipes(); // Move loadRecipes here to ensure it's called after initialization
 	}
 
 	loadRecipes() {
+		this.isLoading = true; // Start loading
 		this.recipeService.getAllRecipes().subscribe({
 			next: data => {
 				const loadedRecipes = data?.$values || [];
@@ -49,12 +54,22 @@ export class RecipeComponent implements OnInit {
 						})
 				);
 
-				Promise.all(pendingRatings).then(() => {
-					this.recipes = loadedRecipes;
-					this.applyFilters();
-				});
+				Promise.all(pendingRatings)
+					.then(() => {
+						this.recipes = loadedRecipes;
+						this.applyFilters();
+						this.isLoading = false; // Loading finished
+					})
+					.catch(err => {
+						console.error('Error processing ratings:', err);
+						alert(`Error processing ratings: ${err.message}`);
+						this.isLoading = false; // Ensure loading is stopped on error
+					});
 			},
-			error: err => alert(`Error loading recipes: ${err.error}`)
+			error: err => {
+				alert(`Error loading recipes: ${err.error}`);
+				this.isLoading = false; // Ensure loading is stopped on error
+			}
 		});
 	}
 

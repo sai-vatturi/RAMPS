@@ -5,17 +5,16 @@
 	"projects": {
 		"RecipeMealApp": {
 			"projectType": "application",
-			"schematics": {},
 			"root": "",
 			"sourceRoot": "src",
 			"prefix": "app",
 			"architect": {
 				"build": {
-					"builder": "@angular-devkit/build-angular:application",
+					"builder": "@angular-devkit/build-angular:browser",
 					"options": {
 						"outputPath": "dist/recipe-meal-app",
 						"index": "src/index.html",
-						"browser": "src/main.ts",
+						"main": "src/main.ts",
 						"polyfills": ["zone.js"],
 						"tsConfig": "tsconfig.app.json",
 						"assets": ["src/favicon.ico", "src/assets"],
@@ -24,6 +23,18 @@
 					},
 					"configurations": {
 						"production": {
+							"optimization": true,
+							"outputHashing": "all",
+							"sourceMap": false,
+							"extractLicenses": true,
+							"vendorChunk": false,
+							"buildOptimizer": true,
+							"fileReplacements": [
+								{
+									"replace": "src/environments/environment.ts",
+									"with": "src/environments/environment.prod.ts"
+								}
+							],
 							"budgets": [
 								{
 									"type": "initial",
@@ -35,13 +46,14 @@
 									"maximumWarning": "30kb",
 									"maximumError": "50kb"
 								}
-							],
-							"outputHashing": "all"
+							]
 						},
 						"development": {
 							"optimization": false,
+							"sourceMap": true,
 							"extractLicenses": false,
-							"sourceMap": true
+							"vendorChunk": true,
+							"buildOptimizer": false
 						}
 					},
 					"defaultConfiguration": "production"
@@ -57,22 +69,6 @@
 						}
 					},
 					"defaultConfiguration": "development"
-				},
-				"extract-i18n": {
-					"builder": "@angular-devkit/build-angular:extract-i18n",
-					"options": {
-						"buildTarget": "RecipeMealApp:build"
-					}
-				},
-				"test": {
-					"builder": "@angular-devkit/build-angular:karma",
-					"options": {
-						"polyfills": ["zone.js", "zone.js/testing"],
-						"tsConfig": "tsconfig.spec.json",
-						"assets": ["src/favicon.ico", "src/assets"],
-						"styles": ["src/styles.css"],
-						"scripts": []
-					}
 				}
 			}
 		}

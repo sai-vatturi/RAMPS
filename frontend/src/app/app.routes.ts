@@ -9,10 +9,6 @@ export const routes: Routes = [
 		canActivate: [AuthGuard],
 		children: [
 			{
-				path: 'user-dashboard',
-				loadComponent: () => import('./components/user-dashboard/user-dashboard.component').then(m => m.UserDashboardComponent)
-			},
-			{
 				path: 'recipes',
 				loadComponent: () => import('./components/chef/recipe/recipe.component').then(m => m.RecipeComponent)
 			},

@@ -68,7 +68,7 @@
 		</div>
 
 		<!-- Actual Meal Plans -->
-		<div *ngFor="let plan of mealPlans" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-transform transform hover:scale-105">
+		<div *ngFor="let plan of mealPlans" class="bg-white rounded-xl p-6 flex flex-col shadow-sm transition-transform transform hover:scale-105 hover:shadow-md" style="border: 1px solid rgba(0, 0, 0, 0.1)">
 			<h2 class="text-xl font-semibold mb-2">{{ plan.name }}</h2>
 			<p class="text-[#494949]">
 				<strong>Start Date:</strong>

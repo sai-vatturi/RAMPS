@@ -33,7 +33,7 @@ export class NutritionService {
 	}
 
 	deleteNutrition(nutritionId: number): Observable<any> {
-		return this.http.delete(`${this.baseUrl}/nutrition/${nutritionId}`);
+		return this.http.delete(`${this.baseUrl}/recipe/${nutritionId}`);
 	}
 
 	// New Method to Fetch Combined Recipe and Nutrition Details

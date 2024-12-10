@@ -52,6 +52,11 @@ export class NutritionComponent implements OnInit {
 		this.loadAllNutrition();
 	}
 
+	// Check if the user is allowed to add nutrition
+	isUserAllowedToAddNutrition(): boolean {
+		return ['Admin', 'Chef', 'Nutritionist'].includes(this.userRole || '');
+	}
+
 	// Load Pending Meals
 	loadPendingMeals() {
 		this.isLoadingPendingMeals = true; // Start loading
@@ -186,10 +191,17 @@ export class NutritionComponent implements OnInit {
 			return;
 		}
 
+		// Validate required fields
+		if (this.nutritionData.calories === null || this.nutritionData.calories === undefined) {
+			this.showError('Calories are required!');
+			return;
+		}
+
 		this.nutritionService.addNutrition(this.nutritionData).subscribe({
 			next: () => {
 				this.showSuccess('Nutrition added successfully!');
 				this.nutritionData = {};
+				this.closeNutritionModal();
 				this.loadPendingMeals();
 				this.loadAllNutrition();
 			},
@@ -205,8 +217,15 @@ export class NutritionComponent implements OnInit {
 		this.showEditModal = true;
 	}
 
-	// Close Edit Modal
-	closeEditModal() {
+	// Open Add Nutrition Modal
+	openAddModal(recipeId: number) {
+		this.isEditMode = false;
+		this.nutritionData = { recipeId: recipeId, calories: null, protein: null, carbs: null, fat: null, vitamins: '' };
+		this.showEditModal = true;
+	}
+
+	// Close Nutrition Modal (Both Add and Edit)
+	closeNutritionModal() {
 		this.showEditModal = false;
 		this.isEditMode = false;
 		this.nutritionData = {};
@@ -223,7 +242,7 @@ export class NutritionComponent implements OnInit {
 		this.nutritionService.updateNutrition(this.selectedMeal.nutritionId, this.nutritionData).subscribe({
 			next: () => {
 				this.showSuccess('Nutrition updated successfully!');
-				this.closeEditModal();
+				this.closeNutritionModal();
 				this.loadAllNutrition();
 			},
 			error: err => this.showError('Error updating nutrition.')

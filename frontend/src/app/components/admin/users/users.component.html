@@ -1,5 +1,6 @@
 <div class="min-h-screen font-sans p-6">
 	<h1 class="text-4xl font-bold text-[#191B19] mb-6">Admin Dashboard</h1>
+	<p class="text-sm text-[#494949] mb-6">Welcome to the Admin Dashboard. Here, you can manage user accounts, approve new user requests, assign roles, and monitor user activity. Use the buttons below to add new users or review pending user approvals. Stay in control of your platform's access and permissions with ease.</p>
 
 	<div class="mb-6">
 		<button (click)="openAddUserDialog()" class="bg-[#4CAF50] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#388E3C] transition-colors">Add New User</button>
@@ -26,7 +27,7 @@
 	<div class="mb-6">
 		<h2 class="text-2xl font-semibold text-[#494949] mb-4">Existing Users</h2>
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-			<div *ngFor="let user of approvedUsers" class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between">
+			<div *ngFor="let user of approvedUsers" class="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between hover:scale-105 transition duration-200">
 				<div>
 					<h3 class="text-xl font-bold text-[#191B19] mb-2">{{ user.firstName }} {{ user.lastName }}</h3>
 					<p class="text-sm text-[#494949]">Username: {{ user.username }}</p>

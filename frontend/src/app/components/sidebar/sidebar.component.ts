@@ -26,7 +26,8 @@ export class SidebarComponent implements OnInit {
 			{ label: 'Recipes', icon: 'fas fa-utensils', path: 'recipes' },
 			{ label: 'Nutritions', icon: 'fas fa-leaf', path: 'nutrition' },
 			{ label: 'Meal Plans', icon: 'fas fa-calendar-alt', path: 'meal-plan' },
-			{ label: 'Shopping Lists', icon: 'fas fa-shopping-cart', path: 'shopping-lists' }
+			{ label: 'Shopping Lists', icon: 'fas fa-shopping-cart', path: 'shopping-lists' },
+			{ label: 'Dietary Preferences', icon: 'fas fa-note-sticky', path: 'dietary-preferences' }
 		],
 		admin: [{ label: 'Users', icon: 'fas fa-users', path: 'users' }]
 	};

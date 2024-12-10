@@ -58,5 +58,5 @@ export const routes: Routes = [
 		path: 'request-password-reset',
 		loadComponent: () => import('./components/auth/reset-password/request-password-reset.component').then(m => m.RequestPasswordResetComponent)
 	},
-	{ path: '**', redirectTo: 'login' }
+	{ path: '**', redirectTo: '' }
 ];

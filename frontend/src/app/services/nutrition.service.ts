@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class NutritionService {
-	private baseUrl = 'http://15.207.100.163:8080/api/Nutrition';
-	private nutritionDetailsBaseUrl = 'http://15.207.100.163:8080/api/NutritionDetails';
+	private baseUrl = `${environment.apiUrl}api/Nutrition`;
+	private nutritionDetailsBaseUrl = `${environment.apiUrl}api/NutritionDetails`;
 
 	constructor(private http: HttpClient) {}
 

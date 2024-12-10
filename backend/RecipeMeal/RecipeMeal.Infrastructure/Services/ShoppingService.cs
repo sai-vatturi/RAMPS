@@ -122,5 +122,14 @@ namespace RecipeMeal.Infrastructure.Services
 
 			return "Shopping list deleted successfully.";
 		}
+
+		public async Task<string> GetUserEmailAsync(int userId)
+		{
+			var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+			if (user == null)
+				throw new KeyNotFoundException("User not found.");
+
+			return user.Email; // Assuming the User entity has an Email property
+		}
 	}
 }

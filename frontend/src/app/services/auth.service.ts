@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AuthService {
-	private baseUrl = 'http://15.207.100.163:8080/api/Auth';
+	private baseUrl = `${environment.apiUrl}api/Auth`;
 
 	private userRoleSubject = new BehaviorSubject<string>('User');
 	userRole$: Observable<string> = this.userRoleSubject.asObservable();
@@ -76,7 +77,7 @@ export class AuthService {
 	logout(message?: string): void {
 		localStorage.removeItem('token');
 		localStorage.removeItem('tokenExpiry');
-		window.location.href = '/login';
+		window.location.href = '';
 	}
 
 	requestPasswordReset(email: string): Observable<string> {

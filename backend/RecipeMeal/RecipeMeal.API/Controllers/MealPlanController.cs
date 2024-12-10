@@ -54,7 +54,7 @@ namespace RecipeMeal.API.Controllers
 			}
 			catch (UnauthorizedAccessException ex)
 			{
-				return Forbid(ex.Message);
+				return StatusCode(403, new { message = ex.Message });
 			}
 			catch (Exception ex)
 			{
@@ -69,7 +69,6 @@ namespace RecipeMeal.API.Controllers
 			var mealPlans = await _mealPlanService.GetMealPlansAsync();
 			return Ok(mealPlans);
 		}
-
 
 		[HttpGet("{id}")]
 		[Authorize]
@@ -88,7 +87,8 @@ namespace RecipeMeal.API.Controllers
 			}
 			catch (UnauthorizedAccessException ex)
 			{
-				return Forbid(ex.Message);
+				// Changed from Forbid(ex.Message) to StatusCode with message
+				return StatusCode(403, new { message = ex.Message });
 			}
 		}
 
@@ -109,7 +109,8 @@ namespace RecipeMeal.API.Controllers
 			}
 			catch (UnauthorizedAccessException ex)
 			{
-				return Forbid(ex.Message);
+				// Changed from Forbid(ex.Message) to StatusCode with message
+				return StatusCode(403, new { message = ex.Message });
 			}
 		}
 
@@ -130,7 +131,7 @@ namespace RecipeMeal.API.Controllers
 			}
 			catch (UnauthorizedAccessException ex)
 			{
-				return Forbid(ex.Message);
+				return StatusCode(403, new { message = ex.Message });
 			}
 			catch (Exception ex)
 			{

@@ -45,9 +45,6 @@ namespace RecipeMeal.Infrastructure.Services
 			if (mealPlan == null)
 				throw new Exception("Meal Plan not found.");
 
-			if (mealPlan.CreatedBy != updatedBy)
-				throw new UnauthorizedAccessException("You are not authorized to update this meal plan.");
-
 			mealPlan.Name = dto.Name;
 			mealPlan.StartDate = dto.StartDate;
 			mealPlan.EndDate = dto.EndDate;

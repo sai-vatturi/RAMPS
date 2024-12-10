@@ -1,0 +1,86 @@
+<div class="container mx-auto p-4 text-[#494949]">
+	<!-- Button to Open BMI Dialog -->
+	<div class="mb-6 text-center">
+		<button (click)="openBMRDialog()" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">Calculate BMR</button>
+	</div>
+
+	<!-- BMI Dialog -->
+	<div *ngIf="showBMRDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+		<div class="bg-white rounded-lg shadow-lg w-11/12 max-w-md p-6">
+			<h3 class="text-xl font-semibold text-[#191B19] mb-4">Calculate Your BMR</h3>
+			<form (ngSubmit)="calculateBMR()" class="space-y-4">
+				<div class="flex flex-col">
+					<label class="mb-1 text-sm font-medium" for="weight">Weight (kg):</label>
+					<input id="weight" [(ngModel)]="weight" name="weight" type="number" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+				</div>
+				<div class="flex flex-col">
+					<label class="mb-1 text-sm font-medium" for="height">Height (cm):</label>
+					<input id="height" [(ngModel)]="height" name="height" type="number" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+				</div>
+				<div class="flex flex-col">
+					<label class="mb-1 text-sm font-medium" for="age">Age:</label>
+					<input id="age" [(ngModel)]="age" name="age" type="number" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+				</div>
+				<div class="flex flex-col">
+					<label class="mb-1 text-sm font-medium" for="gender">Gender:</label>
+					<select id="gender" [(ngModel)]="gender" name="gender" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+						<option value="Male">Male</option>
+						<option value="Female">Female</option>
+						<option value="Other">Other</option>
+					</select>
+				</div>
+				<div class="flex flex-col">
+					<label class="mb-1 text-sm font-medium" for="activityLevel">Activity Level:</label>
+					<select id="activityLevel" [(ngModel)]="activityLevel" name="activityLevel" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+						<option value="Sedentary">Sedentary</option>
+						<option value="Light">Light</option>
+						<option value="Moderate">Moderate</option>
+						<option value="Active">Active</option>
+						<option value="VeryActive">Very Active</option>
+					</select>
+				</div>
+				<div class="flex justify-end space-x-4">
+					<button type="submit" class="bg-[#88C533] text-white px-4 py-2 rounded-lg hover:bg-[#6da32a] transition-colors">Calculate</button>
+					<button type="button" (click)="resetBMR()" class="bg-[#C53333] text-white px-4 py-2 rounded-lg hover:bg-[#a12e2e] transition-colors">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Display BMI and Category -->
+	<div *ngIf="bmi !== null" class="mb-6 text-center">
+		<h2 class="text-2xl font-bold text-[#191B19]">Your BMI: {{ bmi | number:'1.0-2' }}</h2>
+		<p class="text-lg">Category: {{ bmiCategory }}</p>
+		<button (click)="resetBMR()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">Recalculate BMI</button>
+	</div>
+
+	<!-- Good to Eat Recipes -->
+	<section *ngIf="bmi !== null && goodToEatNutrition.length > 0" class="mb-8">
+		<h2 class="text-2xl font-bold text-[#191B19] mb-4">Good to Eat</h2>
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div *ngFor="let nutrition of goodToEatNutrition" class="bg-white rounded-lg shadow-lg p-4 flex flex-col transition-transform transform hover:scale-105">
+				<img [src]="nutrition.imageUrl" alt="{{ nutrition.recipeTitle }}" class="h-40 w-full object-cover rounded mb-4" />
+				<h3 class="text-xl font-semibold mb-2 text-[#191B19]">{{ nutrition.recipeTitle }}</h3>
+				<p class="text-sm text-[#82867E]">Calories: {{ nutrition.calories }}</p>
+				<p class="text-sm text-[#82867E]">Protein: {{ nutrition.protein }}g</p>
+				<p class="text-sm text-[#82867E]">Carbs: {{ nutrition.carbs }}g</p>
+				<p class="text-sm text-[#82867E]">Fat: {{ nutrition.fat }}g</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Bad to Eat Recipes -->
+	<section *ngIf="bmi !== null && badToEatNutrition.length > 0" class="mb-8">
+		<h2 class="text-2xl font-bold text-[#191B19] mb-4">Bad to Eat</h2>
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div *ngFor="let nutrition of badToEatNutrition" class="bg-white rounded-lg shadow-lg p-4 flex flex-col transition-transform transform hover:scale-105">
+				<img [src]="nutrition.imageUrl" alt="{{ nutrition.recipeTitle }}" class="h-40 w-full object-cover rounded mb-4" />
+				<h3 class="text-xl font-semibold mb-2 text-[#191B19]">{{ nutrition.recipeTitle }}</h3>
+				<p class="text-sm text-[#82867E]">Calories: {{ nutrition.calories }}</p>
+				<p class="text-sm text-[#82867E]">Protein: {{ nutrition.protein }}g</p>
+				<p class="text-sm text-[#82867E]">Carbs: {{ nutrition.carbs }}g</p>
+				<p class="text-sm text-[#82867E]">Fat: {{ nutrition.fat }}g</p>
+			</div>
+		</div>
+	</section>
+</div>

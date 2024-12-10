@@ -15,11 +15,13 @@ namespace RecipeMeal.Infrastructure.Services
 	{
 		private readonly RecipeMealDbContext _dbContext;
 		private readonly IImageService _imageService;
+		private readonly IEmailService _emailService;
 
-		public RecipeService(RecipeMealDbContext dbContext, IImageService imageService)
+		public RecipeService(RecipeMealDbContext dbContext, IImageService imageService, IEmailService emailService)
 		{
 			_dbContext = dbContext;
 			_imageService = imageService;
+			_emailService = emailService;
 		}
 
 		public async Task<Recipe> CreateRecipeAsync(CreateRecipeDto dto, string createdBy)
@@ -41,6 +43,21 @@ namespace RecipeMeal.Infrastructure.Services
 			_dbContext.Recipes.Add(recipe);
 			await _dbContext.SaveChangesAsync();
 
+			// Compose email details
+			string subject = "New Recipe Created";
+			string body = $"A new recipe has been created by {createdBy}.\n\n" +
+						  $"**Recipe Details:**\n" +
+						  $"Title: {recipe.Title}\n" +
+						  $"Description: {recipe.Description}\n" +
+						  $"Category: {recipe.Category}\n" +
+						  $"Ingredients: {recipe.Ingredients}\n" +
+						  $"Steps: {recipe.Steps}\n" +
+						  $"Image URL: {recipe.ImageUrl}\n" +
+						  $"Created At: {recipe.CreatedAt}";
+
+			// Notify admins
+			await NotifyAdminsAsync(subject, body);
+
 			return recipe;
 		}
 
@@ -53,6 +70,18 @@ namespace RecipeMeal.Infrastructure.Services
 			if (recipe.CreatedBy != updatedBy && !await IsUserAdmin(updatedBy))
 				throw new UnauthorizedAccessException("You are not authorized to update this recipe.");
 
+			// Clone current recipe details for the email
+			var previousDetails = new
+			{
+				recipe.Title,
+				recipe.Description,
+				recipe.Category,
+				recipe.Ingredients,
+				recipe.Steps,
+				recipe.ImageUrl
+			};
+
+			// Update the recipe with new details
 			recipe.Title = dto.Title ?? recipe.Title;
 			recipe.Description = dto.Description ?? recipe.Description;
 			recipe.Ingredients = dto.Ingredients ?? recipe.Ingredients;
@@ -66,6 +95,28 @@ namespace RecipeMeal.Infrastructure.Services
 
 			_dbContext.Recipes.Update(recipe);
 			await _dbContext.SaveChangesAsync();
+
+			// Compose email details
+			string subject = "Recipe Updated";
+			string body = $"The recipe with ID {id} has been updated by {updatedBy}.\n\n" +
+						  $"**Previous Details:**\n" +
+						  $"Title: {previousDetails.Title}\n" +
+						  $"Description: {previousDetails.Description}\n" +
+						  $"Category: {previousDetails.Category}\n" +
+						  $"Ingredients: {previousDetails.Ingredients}\n" +
+						  $"Steps: {previousDetails.Steps}\n" +
+						  $"Image URL: {previousDetails.ImageUrl}\n\n" +
+						  $"**New Details:**\n" +
+						  $"Title: {recipe.Title}\n" +
+						  $"Description: {recipe.Description}\n" +
+						  $"Category: {recipe.Category}\n" +
+						  $"Ingredients: {recipe.Ingredients}\n" +
+						  $"Steps: {recipe.Steps}\n" +
+						  $"Image URL: {recipe.ImageUrl}\n" +
+						  $"Updated At: {recipe.UpdatedAt}";
+
+			// Notify admins
+			await NotifyAdminsAsync(subject, body);
 
 			return recipe;
 		}
@@ -120,6 +171,17 @@ namespace RecipeMeal.Infrastructure.Services
 			if (recipe.CreatedBy != updatedBy && !await IsUserAdmin(updatedBy))
 				throw new UnauthorizedAccessException("You are not authorized to update this recipe.");
 
+			// Clone current recipe details for the email
+			var previousDetails = new
+			{
+				recipe.Title,
+				recipe.Description,
+				recipe.Category,
+				recipe.Ingredients,
+				recipe.Steps,
+				recipe.ImageUrl
+			};
+
 			if (!string.IsNullOrEmpty(dto.Title))
 				recipe.Title = dto.Title;
 			if (!string.IsNullOrEmpty(dto.Description))
@@ -139,6 +201,28 @@ namespace RecipeMeal.Infrastructure.Services
 			_dbContext.Recipes.Update(recipe);
 			await _dbContext.SaveChangesAsync();
 
+			// Compose email details
+			string subject = "Recipe Patched/Updated";
+			string body = $"The recipe with ID {id} has been patched/updated by {updatedBy}.\n\n" +
+						  $"**Previous Details:**\n" +
+						  $"Title: {previousDetails.Title}\n" +
+						  $"Description: {previousDetails.Description}\n" +
+						  $"Category: {previousDetails.Category}\n" +
+						  $"Ingredients: {previousDetails.Ingredients}\n" +
+						  $"Steps: {previousDetails.Steps}\n" +
+						  $"Image URL: {previousDetails.ImageUrl}\n\n" +
+						  $"**New Details:**\n" +
+						  $"Title: {recipe.Title}\n" +
+						  $"Description: {recipe.Description}\n" +
+						  $"Category: {recipe.Category}\n" +
+						  $"Ingredients: {recipe.Ingredients}\n" +
+						  $"Steps: {recipe.Steps}\n" +
+						  $"Image URL: {recipe.ImageUrl}\n" +
+						  $"Updated At: {recipe.UpdatedAt}";
+
+			// Notify admins
+			await NotifyAdminsAsync(subject, body);
+
 			return recipe;
 		}
 
@@ -146,6 +230,18 @@ namespace RecipeMeal.Infrastructure.Services
 		{
 			var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
 			return user?.Role == Core.Enums.Role.Admin;
+		}
+
+		private async Task NotifyAdminsAsync(string subject, string body)
+		{
+			var adminUsers = await _dbContext.Users
+				.Where(u => u.Role == Core.Enums.Role.Admin)
+				.ToListAsync();
+
+			foreach (var admin in adminUsers)
+			{
+				await _emailService.SendAsync(admin.Email, subject, body);
+			}
 		}
 	}
 }

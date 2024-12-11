@@ -5,6 +5,11 @@ import { LayoutComponent } from './layouts/layout/layout.component';
 export const routes: Routes = [
 	{
 		path: 'login',
+		loadComponent: () => import('./components/auth/login/login.component').then(m => m.LoginComponent)
+	},
+
+	{
+		path: 'layout',
 		component: LayoutComponent,
 		canActivate: [AuthGuard],
 		children: [
@@ -17,8 +22,8 @@ export const routes: Routes = [
 			{ path: 'users', loadComponent: () => import('./components/admin/users/users.component').then(m => m.UsersComponent) }
 		]
 	},
+
 	{ path: 'signup', loadComponent: () => import('./components/auth/singup/signup.component').then(m => m.SignupComponent) },
-	{ path: 'login', loadComponent: () => import('./components/auth/login/login.component').then(m => m.LoginComponent) },
 	{ path: 'verify-email', loadComponent: () => import('./components/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent) },
 	{ path: 'reset-password', loadComponent: () => import('./components/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
 	{ path: 'request-password-reset', loadComponent: () => import('./components/auth/reset-password/request-password-reset.component').then(m => m.RequestPasswordResetComponent) },

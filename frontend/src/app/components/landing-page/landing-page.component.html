@@ -1,87 +1,198 @@
-<!-- landing-page.component.html -->
-
-<!-- Header Section -->
-<header class="bg-white shadow-sm fixed top-0 left-0 w-full z-50">
+<header
+	[ngClass]="{
+    'bg-white text-black shadow-md': isScrolled,
+    'bg-transparent text-white': !isScrolled
+  }"
+	class="fixed top-0 left-0 w-full z-50 transition-colors duration-300">
 	<div class="container mx-auto flex justify-between items-center p-4">
-		<!-- Logo Placeholder -->
-		<img src="../../../assets/images/logo-green.png" alt="" class="w-24" />
-		<!-- Get Started Button (Visible on Desktop) -->
-		<div class="hidden md:block">
-			<a routerLink="/login" class="bg-[#88C533] text-white px-6 py-2 rounded-md shadow-sm hover:bg-[#76b02e] transition-colors">Get Started</a>
+		<img
+			[src]="
+        isScrolled
+          ? '../../../assets/images/logo-green.png'
+          : '../../../assets/images/logo-white.png'
+      "
+			alt="FoodPro Logo"
+			class="w-36" />
+		<nav class="hidden md:flex space-x-6">
+			<a
+				href="#hero"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				Home
+			</a>
+			<a
+				href="#roles"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				Roles
+			</a>
+			<a
+				href="#features"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				Features
+			</a>
+			<a
+				href="#how-it-works"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				How It Works
+			</a>
+		</nav>
+		<div class="hidden md:flex space-x-4">
+			<a routerLink="/signup" class="bg-[#76b02e] hover:bg-[#6ba829] text-white px-6 py-2 rounded-md shadow-sm transition-colors">Sign Up</a>
+			<a routerLink="/login" class="bg-transparent border border-[#76b02e] text-[#76b02e] px-6 py-2 rounded-md shadow-sm hover:bg-[#6ba829] hover:text-white transition-colors">Sign In</a>
 		</div>
-		<!-- Mobile Menu Button -->
 		<div class="md:hidden">
-			<button (click)="toggleMobileMenu()" class="text-gray-700 focus:outline-none">
-				<i class="fas fa-bars fa-lg"></i>
+			<button (click)="toggleMobileMenu()" class="focus:outline-none">
+				<i class="fas fa-bars fa-lg" [ngClass]="{ 'text-black': isScrolled, 'text-white': !isScrolled }"></i>
 			</button>
 		</div>
 	</div>
-	<!-- Mobile Menu -->
-	<div [ngClass]="{'block': isMobileMenuOpen, 'hidden': !isMobileMenuOpen}" class="md:hidden bg-white shadow-lg">
-		<div class="flex flex-col space-y-4 p-4">
-			<a href="#hero" class="text-gray-700 hover:text-[#88C533] transition-colors">Home</a>
-			<a href="#roles" class="text-gray-700 hover:text-[#88C533] transition-colors">Roles</a>
-			<a href="#features" class="text-gray-700 hover:text-[#88C533] transition-colors">Features</a>
-			<a href="#how-it-works" class="text-gray-700 hover:text-[#88C533] transition-colors">How It Works</a>
-			<a href="#testimonials" class="text-gray-700 hover:text-[#88C533] transition-colors">Testimonials</a>
-			<a routerLink="/login" class="bg-[#88C533] text-white px-4 py-2 rounded-md shadow-sm hover:bg-[#76b02e] transition-colors">Get Started</a>
+	<div
+		[ngClass]="{
+      block: isMobileMenuOpen,
+      hidden: !isMobileMenuOpen
+    }"
+		class="md:hidden bg-gradient-to-r from-green-500 to-green-700 shadow-lg transition-colors duration-300">
+		<div class="flex flex-col space-y-4 p-6">
+			<a
+				href="#hero"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				Home
+			</a>
+			<a
+				href="#roles"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				Roles
+			</a>
+			<a
+				href="#features"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				Features
+			</a>
+			<a
+				href="#how-it-works"
+				class="hover:text-[#6ba829] transition-colors"
+				[ngClass]="{
+          'text-black': isScrolled,
+          'text-white': !isScrolled
+        }">
+				How It Works
+			</a>
+			<a routerLink="/signup" class="bg-[#76b02e] text-white px-4 py-2 rounded-md shadow-sm hover:bg-[#6ba829] transition-colors">Sign Up</a>
+			<a routerLink="/signin" class="bg-transparent border border-white text-white px-4 py-2 rounded-md shadow-sm hover:bg-[#6ba829] hover:text-white transition-colors">Sign In</a>
 		</div>
 	</div>
 </header>
 
 <!-- Hero Section -->
-<section id="hero" class="bg-cover bg-center h-screen" style="background-image: url('https://via.placeholder.com/1920x1080')">
-	<div class="bg-black bg-opacity-50 h-full flex flex-col justify-center items-center text-center text-white p-4">
-		<h1 class="text-5xl font-bold mb-4 animate-fade-in">Welcome to FoodPro</h1>
-		<p class="text-xl mb-8 animate-fade-in delay-200">Your Ultimate Recipe and Meal Planning Solution</p>
-		<div class="flex space-x-4">
-			<a href="#features" class="bg-[#88C533] text-white px-6 py-3 rounded-md shadow-md hover:bg-[#76b02e] transition-colors transform hover:scale-105">Discover Features</a>
-			<a routerLink="/login" class="bg-transparent border border-white text-white px-6 py-3 rounded-md shadow-md hover:bg-white hover:text-[#88C533] transition-colors transform hover:scale-105">Get Started</a>
+<div class="relative min-h-screen flex items-center justify-center">
+	<div class="absolute inset-0">
+		<img src="../../../assets/images/bgimage.jpg" alt="Healthy Food Background" class="w-full h-full object-cover brightness-50" />
+	</div>
+
+	<div class="relative z-10 container mx-auto px-4 py-24 lg:py-48">
+		<div class="max-w-3xl mx-auto text-center">
+			<h1 class="text-4xl md:text-6xl font-bold text-white mb-6" [ngClass]="{ 'text-black': isScrolled, 'text-white': !isScrolled }">{{ tagline }}</h1>
+			<p class="text-xl md:text-2xl text-gray-200 mb-8">{{ description }}</p>
+
+			<a routerLink="/signup" class="bg-[#76b02e] hover:bg-[#6ba829] text-white font-semibold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105">Sign Up Now</a>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+				<div class="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-sm">
+					<div class="text-[#76b02e] mb-4">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+						</svg>
+					</div>
+					<h3 class="text-xl font-semibold text-white mb-2">Customizable Meal Plans</h3>
+					<p class="text-gray-300">Personalize your meal plans based on your preferences and goals</p>
+				</div>
+
+				<div class="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-sm">
+					<div class="text-[#76b02e] mb-4">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+						</svg>
+					</div>
+					<h3 class="text-xl font-semibold text-white mb-2">Nutrition Tracking</h3>
+					<p class="text-gray-300">Monitor your daily nutrition intake with detailed analytics</p>
+				</div>
+
+				<div class="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-sm">
+					<div class="text-[#76b02e] mb-4">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+						</svg>
+					</div>
+					<h3 class="text-xl font-semibold text-white mb-2">Easy Recipe Management</h3>
+					<p class="text-gray-300">Access and organize your favorite recipes effortlessly</p>
+				</div>
+			</div>
 		</div>
 	</div>
-</section>
+</div>
 
-<!-- Roles Section -->
 <section id="roles" class="py-20 bg-gray-50">
 	<div class="container mx-auto px-6">
 		<h2 class="text-3xl font-bold text-center text-[#191B19] mb-12">Who We Are For</h2>
 		<div class="flex flex-wrap -mx-4">
-			<!-- Admin Role -->
 			<div class="w-full md:w-1/2 lg:w-1/5 px-4 mb-8">
 				<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-user-shield fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-user-shield fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Admin</h3>
 					<p class="text-gray-600 text-center">Manage users, oversee platform operations, and maintain system integrity.</p>
 				</div>
 			</div>
-			<!-- Chef Role -->
 			<div class="w-full md:w-1/2 lg:w-1/5 px-4 mb-8">
 				<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fa-regular fa-user fa-3x text-[#88C533] mb-4"></i>
+					<i class="fa-regular fa-user fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Chef</h3>
 					<p class="text-gray-600 text-center">Create and manage delicious recipes tailored to various dietary needs.</p>
 				</div>
 			</div>
-			<!-- Nutritionist Role -->
 			<div class="w-full md:w-1/2 lg:w-1/5 px-4 mb-8">
 				<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-user-md fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-user-md fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Nutritionist</h3>
 					<p class="text-gray-600 text-center">Design personalized meal plans to help users achieve their health goals.</p>
 				</div>
 			</div>
-			<!-- Customer Role -->
 			<div class="w-full md:w-1/2 lg:w-1/5 px-4 mb-8">
 				<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-user fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-user fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Customer</h3>
 					<p class="text-gray-600 text-center">Access meal suggestions, track nutritional intake, and manage meal plans.</p>
 				</div>
 			</div>
-			<!-- Meal Planner Role -->
 			<div class="w-full md:w-1/2 lg:w-1/5 px-4 mb-8">
 				<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-calendar-alt fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-calendar-alt fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Meal Planner</h3>
 					<p class="text-gray-600 text-center">Assist in creating balanced and varied meal schedules for users.</p>
 				</div>
@@ -90,55 +201,48 @@
 	</div>
 </section>
 
-<!-- Features Section -->
 <section id="features" class="py-20 bg-white">
 	<div class="container mx-auto px-6">
 		<h2 class="text-3xl font-bold text-center text-[#191B19] mb-12">Features</h2>
 		<div class="flex flex-wrap -mx-4">
-			<!-- Feature 1: Recipe Management -->
 			<div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
 				<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-book-open fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-book-open fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Recipe Management</h3>
 					<p class="text-gray-600 text-center">Create, update, and organize your favorite recipes with detailed ingredients and instructions.</p>
 				</div>
 			</div>
-			<!-- Feature 2: Personalized Meal Plans -->
 			<div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
 				<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-calendar-alt fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-calendar-alt fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Personalized Meal Plans</h3>
 					<p class="text-gray-600 text-center">Tailor meal plans to your dietary goals and preferences, ensuring balanced and nutritious meals.</p>
 				</div>
 			</div>
-			<!-- Feature 3: Nutritional Tracking -->
 			<div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
 				<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-heartbeat fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-heartbeat fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Nutritional Tracking</h3>
 					<p class="text-gray-600 text-center">Monitor your daily nutritional intake and stay on top of your health and wellness goals.</p>
 				</div>
 			</div>
-			<!-- Feature 4: Shopping List -->
 			<div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
 				<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-shopping-cart fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-shopping-cart fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Shopping List</h3>
 					<p class="text-gray-600 text-center">Automatically generate shopping lists based on your meal plans for a seamless grocery experience.</p>
 				</div>
 			</div>
-			<!-- Feature 5: User Reviews -->
 			<div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
 				<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-star fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-star fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">User Reviews</h3>
 					<p class="text-gray-600 text-center">Read and leave reviews to enhance your culinary experience and share feedback with the community.</p>
 				</div>
 			</div>
-			<!-- Feature 6: Multi-Platform Access -->
 			<div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
 				<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 flex flex-col items-center">
-					<i class="fas fa-laptop-code fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-laptop-code fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-center text-[#191B19] mb-2">Multi-Platform Access</h3>
 					<p class="text-gray-600 text-center">Access your meal plans and recipes on any device, ensuring a seamless experience anywhere.</p>
 				</div>
@@ -147,31 +251,27 @@
 	</div>
 </section>
 
-<!-- How It Works Section -->
 <section id="how-it-works" class="py-20 bg-gray-50">
 	<div class="container mx-auto px-6">
 		<h2 class="text-3xl font-bold text-center text-[#191B19] mb-12">How It Works</h2>
 		<div class="flex flex-wrap -mx-4">
-			<!-- Step 1 -->
 			<div class="w-full md:w-1/3 px-4 mb-8">
 				<div class="flex flex-col items-center text-center">
-					<i class="fas fa-pencil-ruler fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-pencil-ruler fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-[#191B19] mb-2">Create Recipes</h3>
 					<p class="text-gray-600">Easily create and manage your recipes with detailed ingredients and instructions.</p>
 				</div>
 			</div>
-			<!-- Step 2 -->
 			<div class="w-full md:w-1/3 px-4 mb-8">
 				<div class="flex flex-col items-center text-center">
-					<i class="fas fa-calendar-check fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-calendar-check fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-[#191B19] mb-2">Plan Your Meals</h3>
 					<p class="text-gray-600">Customize your meal plans based on your dietary goals and preferences.</p>
 				</div>
 			</div>
-			<!-- Step 3 -->
 			<div class="w-full md:w-1/3 px-4 mb-8">
 				<div class="flex flex-col items-center text-center">
-					<i class="fas fa-chart-line fa-3x text-[#88C533] mb-4"></i>
+					<i class="fas fa-chart-line fa-3x text-[#76b02e] mb-4"></i>
 					<h3 class="text-xl font-semibold text-[#191B19] mb-2">Track & Enjoy</h3>
 					<p class="text-gray-600">Monitor your nutritional intake and enjoy balanced, healthy meals every day.</p>
 				</div>
@@ -180,170 +280,34 @@
 	</div>
 </section>
 
-<!-- Testimonials Section -->
-<section id="testimonials" class="py-20 bg-white">
-	<div class="container mx-auto px-6">
-		<h2 class="text-3xl font-bold text-center text-[#191B19] mb-12">What Our Users Say</h2>
-		<div class="relative">
-			<!-- Testimonials Carousel -->
-			<div class="flex transition-transform duration-500 ease-in-out" [ngStyle]="{'transform': 'translateX(-' + currentTestimonialIndex * 100 + '%)'}">
-				<!-- Dynamic Testimonial Slides -->
-				<div class="w-full md:w-1/3 px-4">
-					<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1">
-						<p class="text-gray-700 mb-4">"FoodPro has completely transformed the way I plan my meals. It's intuitive and easy to use!"</p>
-						<div class="flex items-center">
-							<img src="https://via.placeholder.com/64" alt="User Avatar" class="rounded-full mr-4 w-16 h-16" />
-							<div>
-								<h4 class="text-md font-semibold text-[#191B19]">Jane Doe</h4>
-								<span class="text-sm text-gray-500">Chef</span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="w-full md:w-1/3 px-4">
-					<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1">
-						<p class="text-gray-700 mb-4">"The personalized meal plans helped me achieve my dietary goals effortlessly."</p>
-						<div class="flex items-center">
-							<img src="https://via.placeholder.com/64" alt="User Avatar" class="rounded-full mr-4 w-16 h-16" />
-							<div>
-								<h4 class="text-md font-semibold text-[#191B19]">John Smith</h4>
-								<span class="text-sm text-gray-500">Nutritionist</span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="w-full md:w-1/3 px-4">
-					<div class="bg-gray-50 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1">
-						<p class="text-gray-700 mb-4">"The shopping list feature saves me so much time at the grocery store. Highly recommend!"</p>
-						<div class="flex items-center">
-							<img src="https://via.placeholder.com/64" alt="User Avatar" class="rounded-full mr-4 w-16 h-16" />
-							<div>
-								<h4 class="text-md font-semibold text-[#191B19]">Emily Johnson</h4>
-								<span class="text-sm text-gray-500">Home Cook</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- Previous Button -->
-			<button class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-sm hover:bg-gray-300 transition-colors" (click)="prevTestimonial()">
-				<i class="fas fa-chevron-left"></i>
-			</button>
-			<!-- Next Button -->
-			<button class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-sm hover:bg-gray-300 transition-colors" (click)="nextTestimonial()">
-				<i class="fas fa-chevron-right"></i>
-			</button>
-		</div>
-	</div>
-</section>
-
-<!-- Features Detailed Section -->
-<section class="py-20 bg-gray-50">
-	<div class="container mx-auto px-6">
-		<h2 class="text-3xl font-bold text-center text-[#191B19] mb-12">All Features</h2>
-		<div class="space-y-12">
-			<!-- Feature Detail 1 -->
-			<div class="flex flex-col md:flex-row items-center">
-				<div class="md:w-1/2">
-					<i class="fas fa-book-open fa-3x text-[#88C533] mb-4"></i>
-					<h3 class="text-2xl font-semibold text-[#191B19] mb-2">Comprehensive Recipe Management</h3>
-					<p class="text-gray-600">Easily create, update, and categorize recipes with detailed ingredients, preparation steps, cooking time, and nutritional information. Organize recipes based on meal types and dietary preferences to streamline meal planning.</p>
-				</div>
-				<div class="md:w-1/2 mt-6 md:mt-0">
-					<img src="https://via.placeholder.com/600x400" alt="Recipe Management" class="rounded-lg shadow-sm" />
-				</div>
-			</div>
-			<!-- Feature Detail 2 -->
-			<div class="flex flex-col md:flex-row-reverse items-center">
-				<div class="md:w-1/2">
-					<i class="fas fa-calendar-alt fa-3x text-[#88C533] mb-4"></i>
-					<h3 class="text-2xl font-semibold text-[#191B19] mb-2">Personalized Meal Planning</h3>
-					<p class="text-gray-600">Create and manage personalized meal plans tailored to individual or family dietary goals, preferences, and restrictions. Schedule meals for the week, ensuring variety and nutritional balance in every plan.</p>
-				</div>
-				<div class="md:w-1/2 mt-6 md:mt-0">
-					<img src="https://via.placeholder.com/600x400" alt="Meal Planning" class="rounded-lg shadow-sm" />
-				</div>
-			</div>
-			<!-- Feature Detail 3 -->
-			<div class="flex flex-col md:flex-row items-center">
-				<div class="md:w-1/2">
-					<i class="fas fa-heartbeat fa-3x text-[#88C533] mb-4"></i>
-					<h3 class="text-2xl font-semibold text-[#191B19] mb-2">Nutritional Tracking and Insights</h3>
-					<p class="text-gray-600">Access detailed nutritional information for each recipe and meal. Track daily nutritional intake, compare it to personal goals, and gain insights into macronutrients and micronutrients for better health management.</p>
-				</div>
-				<div class="md:w-1/2 mt-6 md:mt-0">
-					<img src="https://via.placeholder.com/600x400" alt="Nutritional Tracking" class="rounded-lg shadow-sm" />
-				</div>
-			</div>
-			<!-- Feature Detail 4 -->
-			<div class="flex flex-col md:flex-row-reverse items-center">
-				<div class="md:w-1/2">
-					<i class="fas fa-shopping-cart fa-3x text-[#88C533] mb-4"></i>
-					<h3 class="text-2xl font-semibold text-[#191B19] mb-2">Automated Shopping Lists</h3>
-					<p class="text-gray-600">Generate shopping lists automatically based on the ingredients required for your meal plans. Easily track and mark ingredients as purchased, and manage stock levels for frequently used items to streamline your grocery shopping.</p>
-				</div>
-				<div class="md:w-1/2 mt-6 md:mt-0">
-					<img src="https://via.placeholder.com/600x400" alt="Shopping List" class="rounded-lg shadow-sm" />
-				</div>
-			</div>
-			<!-- Feature Detail 5 -->
-			<div class="flex flex-col md:flex-row items-center">
-				<div class="md:w-1/2">
-					<i class="fas fa-comments fa-3x text-[#88C533] mb-4"></i>
-					<h3 class="text-2xl font-semibold text-[#191B19] mb-2">Interactive User Reviews</h3>
-					<p class="text-gray-600">Engage with the community by reading and leaving reviews on recipes. Rate recipes based on taste, ease of preparation, and overall satisfaction to help others make informed decisions and improve recipe quality.</p>
-				</div>
-				<div class="md:w-1/2 mt-6 md:mt-0">
-					<img src="https://via.placeholder.com/600x400" alt="User Reviews" class="rounded-lg shadow-sm" />
-				</div>
-			</div>
-			<!-- Feature Detail 6 -->
-			<div class="flex flex-col md:flex-row-reverse items-center">
-				<div class="md:w-1/2">
-					<i class="fas fa-mobile-alt fa-3x text-[#88C533] mb-4"></i>
-					<h3 class="text-2xl font-semibold text-[#191B19] mb-2">Multi-Platform Accessibility</h3>
-					<p class="text-gray-600">Access FoodPro seamlessly across desktops, tablets, and mobile devices. Enjoy a consistent and responsive user experience, allowing you to plan meals, check ingredients, and follow recipes on-the-go.</p>
-				</div>
-				<div class="md:w-1/2 mt-6 md:mt-0">
-					<img src="https://via.placeholder.com/600x400" alt="Multi-Platform Access" class="rounded-lg shadow-sm" />
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
-
-<!-- Subscription Call-to-Action -->
-<section id="subscription" class="py-20 bg-[#88C533] text-white">
+<section id="subscription" class="py-20 bg-gradient-to-r from-green-500 to-green-700 text-white">
 	<div class="container mx-auto px-6 text-center">
 		<h2 class="text-3xl font-bold mb-6">Join FoodPro Today!</h2>
 		<p class="text-lg mb-8">Subscribe now to get access to premium recipes, personalized meal plans, and expert nutrition consultations.</p>
 		<form (ngSubmit)="subscribe()" class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
 			<input type="email" [(ngModel)]="subscriptionEmail" name="email" placeholder="Enter your email" class="w-full md:w-1/3 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#76b02e]" required />
-			<button type="submit" class="bg-white text-[#88C533] px-6 py-2 rounded-md shadow-sm hover:bg-gray-100 transition-colors">Subscribe Now</button>
+			<button type="submit" class="bg-[#76b02e] hover:bg-[#6ba829] text-white px-6 py-2 rounded-md shadow-sm transition-colors">Subscribe Now</button>
 		</form>
 	</div>
 </section>
 
-<!-- Footer Section -->
 <footer class="bg-gray-800 text-gray-200 py-8">
 	<div class="container mx-auto px-6 flex flex-col md:flex-row justify-between">
-		<!-- About Section -->
 		<div class="mb-6 md:mb-0">
 			<h4 class="text-lg font-semibold mb-4">FoodPro</h4>
 			<p class="text-sm">Your ultimate solution for managing recipes and meal plans. Empowering chefs, nutritionists, and home cooks to achieve their culinary goals.</p>
 		</div>
-		<!-- Social Media Links -->
 		<div class="flex space-x-6">
-			<a href="#" class="hover:text-[#88C533] transition-colors">
+			<a href="#" class="hover:text-[#6ba829] transition-colors">
 				<i class="fab fa-facebook-f fa-lg"></i>
 			</a>
-			<a href="#" class="hover:text-[#88C533] transition-colors">
+			<a href="#" class="hover:text-[#6ba829] transition-colors">
 				<i class="fab fa-twitter fa-lg"></i>
 			</a>
-			<a href="#" class="hover:text-[#88C533] transition-colors">
+			<a href="#" class="hover:text-[#6ba829] transition-colors">
 				<i class="fab fa-instagram fa-lg"></i>
 			</a>
-			<a href="#" class="hover:text-[#88C533] transition-colors">
+			<a href="#" class="hover:text-[#6ba829] transition-colors">
 				<i class="fab fa-linkedin-in fa-lg"></i>
 			</a>
 		</div>

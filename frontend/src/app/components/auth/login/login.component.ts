@@ -47,7 +47,7 @@ export class LoginComponent {
 
 				this.showAlert('success', 'Login Successful', 'Redirecting to your dashboard...');
 				setTimeout(() => {
-					this.router.navigate(['/recipes']);
+					this.router.navigate(['/layout/recipes']);
 				}, 2000);
 			},
 			error: err => {

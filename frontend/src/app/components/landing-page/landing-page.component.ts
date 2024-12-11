@@ -1,6 +1,5 @@
-// landing-page.component.ts
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -18,14 +17,23 @@ interface Testimonial {
 	templateUrl: './landing-page.component.html',
 	styleUrls: ['./landing-page.component.css']
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPageComponent implements OnInit, OnDestroy {
 	// Mobile menu toggle
 	isMobileMenuOpen: boolean = false;
+	isScrolled = false;
+	tagline: string = 'Plan Your Perfect Meals, Track Your Health, Eat Well!';
+	description: string = 'Take control of your nutrition journey with our comprehensive meal planning and health tracking platform.';
 
 	// Subscription form
 	subscriptionEmail: string = '';
 
-	// Testimonials data
+	@HostListener('window:scroll', [])
+	onWindowScroll() {
+		const heroHeight = document.getElementById('hero')?.offsetHeight || 0;
+		this.isScrolled = window.scrollY > heroHeight;
+	}
+
+	// Testimonials data (Removed in HTML, but kept here if needed later)
 	testimonials: Testimonial[] = [
 		{
 			name: 'Jane Doe',
@@ -47,17 +55,17 @@ export class LandingPageComponent implements OnInit {
 		}
 	];
 
-	// Current testimonial index for carousel
+	// Current testimonial index for carousel (Removed in HTML)
 	currentTestimonialIndex: number = 0;
 
-	// Timer for auto-rotation of testimonials
+	// Timer for auto-rotation of testimonials (Removed in HTML)
 	testimonialInterval: any;
 
 	ngOnInit() {
-		// Start the testimonial carousel auto-rotation
-		this.testimonialInterval = setInterval(() => {
-			this.nextTestimonial();
-		}, 5000);
+		// Start the testimonial carousel auto-rotation (Commented out as Testimonials section is removed)
+		// this.testimonialInterval = setInterval(() => {
+		//   this.nextTestimonial();
+		// }, 5000);
 	}
 
 	// Clean up the interval on component destroy
@@ -72,15 +80,15 @@ export class LandingPageComponent implements OnInit {
 		this.isMobileMenuOpen = !this.isMobileMenuOpen;
 	}
 
-	// Navigate to previous testimonial
-	prevTestimonial() {
-		this.currentTestimonialIndex = (this.currentTestimonialIndex - 1 + this.testimonials.length) % this.testimonials.length;
-	}
+	// Navigate to previous testimonial (Removed functionality)
+	// prevTestimonial() {
+	//   this.currentTestimonialIndex = (this.currentTestimonialIndex - 1 + this.testimonials.length) % this.testimonials.length;
+	// }
 
-	// Navigate to next testimonial
-	nextTestimonial() {
-		this.currentTestimonialIndex = (this.currentTestimonialIndex + 1) % this.testimonials.length;
-	}
+	// Navigate to next testimonial (Removed functionality)
+	// nextTestimonial() {
+	//   this.currentTestimonialIndex = (this.currentTestimonialIndex + 1) % this.testimonials.length;
+	// }
 
 	// Handle subscription form submission
 	subscribe() {

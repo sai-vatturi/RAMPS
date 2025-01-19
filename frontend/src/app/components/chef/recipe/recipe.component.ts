@@ -32,17 +32,24 @@ export class RecipeComponent implements OnInit {
 	// Add the loading flag
 	isLoading: boolean = false;
 
+	// Pagination and count-related properties
+	pageNumber: number = 1;
+	pageSize: number = 9;
+	totalCount: number = 0;
+
 	constructor(private recipeService: RecipeService, private reviewService: ReviewService) {}
 
 	ngOnInit(): void {
 		this.userRole = localStorage.getItem('userRole');
 		console.log('User Role:', this.userRole);
 		this.loadRecipes(); // Move loadRecipes here to ensure it's called after initialization
+		this.loadRecipeCount(); // Load the recipe count on initialization
 	}
 
+	// Updated loadRecipes to support pagination
 	loadRecipes() {
 		this.isLoading = true; // Start loading
-		this.recipeService.getAllRecipes().subscribe({
+		this.recipeService.getAllRecipes(this.pageNumber, this.pageSize).subscribe({
 			next: data => {
 				const loadedRecipes = data?.$values || [];
 				let pendingRatings = loadedRecipes.map((recipe: any) =>
@@ -69,6 +76,18 @@ export class RecipeComponent implements OnInit {
 			error: err => {
 				alert(`Error loading recipes: ${err.error}`);
 				this.isLoading = false; // Ensure loading is stopped on error
+			}
+		});
+	}
+
+	// New method to load the total count of recipes
+	loadRecipeCount() {
+		this.recipeService.getRecipeCount().subscribe({
+			next: data => {
+				this.totalCount = data.count || 0;
+			},
+			error: err => {
+				console.error('Error loading recipe count:', err);
 			}
 		});
 	}
@@ -103,6 +122,10 @@ export class RecipeComponent implements OnInit {
 
 	applySorting() {
 		this.applyFilters();
+	}
+
+	get totalPages() {
+		return Math.ceil(this.totalCount / this.pageSize);
 	}
 
 	applyMealTimeFilter(filter: string) {
@@ -289,12 +312,25 @@ export class RecipeComponent implements OnInit {
 				next: () => {
 					alert('Recipe deleted successfully.');
 					this.loadRecipes();
-					if (this.selectedRecipe && this.selectedRecipe.recipeId === id) {
-						this.cancelEdit();
-					}
 				},
 				error: err => alert(`Error deleting recipe: ${err.error}`)
 			});
+		}
+	}
+
+	// Pagination Methods
+
+	previousPage() {
+		if (this.pageNumber > 1) {
+			this.pageNumber--;
+			this.loadRecipes();
+		}
+	}
+
+	nextPage() {
+		if (this.pageNumber * this.pageSize < this.totalCount) {
+			this.pageNumber++;
+			this.loadRecipes();
 		}
 	}
 }

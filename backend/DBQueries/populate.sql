@@ -426,23 +426,23 @@ VALUES
 
 
 
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/masala-dosa.jpg' WHERE Title = 'Masala Dosa';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/butter-chicken.jpg' WHERE Title = 'Butter Chicken';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/paneer-tikka.jpg' WHERE Title = 'Paneer Tikka';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/mango-lassi.webp' WHERE Title = 'Mango Lassi';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/pav-bhaji.webp' WHERE Title = 'Pav Bhaji';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/vegan-tofu.webp' WHERE Title = 'Vegan Tofu Curry';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/avacado-toast.avif' WHERE Title = 'Avocado Toast';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/chole-bature.jpg' WHERE Title = 'Chole Bhature';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/idly-sambar.jpg' WHERE Title = 'Idli Sambar';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/biryani.jpg' WHERE Title = 'Biryani';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/fruit-salad.webp' WHERE Title = 'Fruit Salad';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/falooda.jpg' WHERE Title = 'Falooda';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/aloo-paratha.webp' WHERE Title = 'Aloo Paratha';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/pani-puri.webp' WHERE Title = 'Pani Puri';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/dal-makhani-recipe.jpg' WHERE Title = 'Dal Makhani';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/samosa.jpg' WHERE Title = 'Samosa';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/rasam.jpg' WHERE Title = 'Rasam';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/gulab-jamun.webp' WHERE Title = 'Gulab Jamun';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/pesto-pasta.jpg' WHERE Title = 'Pesto Pasta';
-UPDATE Recipes SET ImageUrl = 'https://recipemealstorage.blob.core.windows.net/recipe-images/chocolate-brownie.jpg' WHERE Title = 'Chocolate Brownie';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/masala-dosa.jpg' WHERE Title = 'Masala Dosa';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/butter-chicken.jpg' WHERE Title = 'Butter Chicken';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/paneer-tikka.jpg' WHERE Title = 'Paneer Tikka';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/mango-lassi.webp' WHERE Title = 'Mango Lassi';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/pav-bhaji.webp' WHERE Title = 'Pav Bhaji';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/vegan-tofu.webp' WHERE Title = 'Vegan Tofu Curry';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/avacado-toast.avif' WHERE Title = 'Avocado Toast';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/chole-bature.jpg' WHERE Title = 'Chole Bhature';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/idly-sambar.jpg' WHERE Title = 'Idli Sambar';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/biryani.jpg' WHERE Title = 'Biryani';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/fruit-salad.webp' WHERE Title = 'Fruit Salad';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/falooda.jpg' WHERE Title = 'Falooda';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/aloo-paratha.webp' WHERE Title = 'Aloo Paratha';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/pani-puri.webp' WHERE Title = 'Pani Puri';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/dal-makhani-recipe.jpg' WHERE Title = 'Dal Makhani';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/samosa.jpg' WHERE Title = 'Samosa';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/rasam.jpg' WHERE Title = 'Rasam';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/gulab-jamun.webp' WHERE Title = 'Gulab Jamun';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/pesto-pasta.jpg' WHERE Title = 'Pesto Pasta';
+UPDATE Recipes SET ImageUrl = 'https://recipemealphotos.blob.core.windows.net/recipe-images/chocolate-brownie.jpg' WHERE Title = 'Chocolate Brownie';

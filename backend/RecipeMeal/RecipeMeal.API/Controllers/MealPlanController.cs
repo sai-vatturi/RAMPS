@@ -87,7 +87,6 @@ namespace RecipeMeal.API.Controllers
 			}
 			catch (UnauthorizedAccessException ex)
 			{
-				// Changed from Forbid(ex.Message) to StatusCode with message
 				return StatusCode(403, new { message = ex.Message });
 			}
 		}

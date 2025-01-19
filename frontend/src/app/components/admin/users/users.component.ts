@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { AdminService } from '../../../services/admin.service';
 
 @Component({
@@ -81,6 +83,7 @@ export class UsersComponent {
 			error: err => console.error(`Error adding user: ${err.message}`)
 		});
 	}
+
 	openActionDialog(user: any, action: 'approve' | 'delete') {
 		this.selectedUser = user;
 		this.action = action;
@@ -148,5 +151,67 @@ export class UsersComponent {
 			alert('No changes made to the role.');
 			this.closeChangeRoleDialog();
 		}
+	}
+
+	downloadAllUsersPDF() {
+		const doc = new jsPDF();
+
+		doc.setFontSize(18);
+		doc.text('User Details Report', 105, 20, { align: 'center' });
+
+		let currentY = 30;
+
+		doc.setFontSize(14);
+		doc.text('Pending Users', 14, currentY);
+		currentY += 6;
+
+		if (this.pendingUsers.length > 0) {
+			const pendingTableData = this.pendingUsers.map(user => [user.firstName, user.lastName, user.username, user.email, user.role || 'N/A']);
+
+			(doc as any).autoTable({
+				head: [['First Name', 'Last Name', 'Username', 'Email', 'Role']],
+				body: pendingTableData,
+				startY: currentY,
+				theme: 'grid',
+				headStyles: { fillColor: [75, 175, 80] },
+				styles: { fontSize: 10 },
+				margin: { left: 14, right: 14 }
+			});
+
+			currentY = (doc as any).lastAutoTable.finalY + 10;
+		} else {
+			doc.setFontSize(12);
+			doc.text('No pending users.', 14, currentY);
+			currentY += 10;
+		}
+
+		doc.setFontSize(14);
+		doc.text('Approved Users', 14, currentY);
+		currentY += 6;
+
+		if (this.approvedUsers.length > 0) {
+			const approvedTableData = this.approvedUsers.map(user => [user.firstName, user.lastName, user.username, user.email, user.role || 'N/A']);
+
+			(doc as any).autoTable({
+				head: [['First Name', 'Last Name', 'Username', 'Email', 'Role']],
+				body: approvedTableData,
+				startY: currentY,
+				theme: 'grid',
+				headStyles: { fillColor: [33, 150, 243] },
+				styles: { fontSize: 10 },
+				margin: { left: 14, right: 14 }
+			});
+
+			currentY = (doc as any).lastAutoTable.finalY + 10;
+		} else {
+			doc.setFontSize(12);
+			doc.text('No approved users.', 14, currentY);
+			currentY += 10;
+		}
+
+		doc.setFontSize(10);
+		doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, doc.internal.pageSize.height - 10);
+
+		doc.save('User_Details_Report.pdf');
 	}
 }

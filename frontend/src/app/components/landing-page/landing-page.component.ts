@@ -18,13 +18,10 @@ interface Testimonial {
 	styleUrls: ['./landing-page.component.css']
 })
 export class LandingPageComponent implements OnInit, OnDestroy {
-	// Mobile menu toggle
 	isMobileMenuOpen: boolean = false;
 	isScrolled = false;
 	tagline: string = 'Plan Your Perfect Meals, Track Your Health, Eat Well!';
 	description: string = 'Take control of your nutrition journey with our comprehensive meal planning and health tracking platform.';
-
-	// Subscription form
 	subscriptionEmail: string = '';
 
 	@HostListener('window:scroll', [])
@@ -33,7 +30,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 		this.isScrolled = window.scrollY > heroHeight;
 	}
 
-	// Testimonials data (Removed in HTML, but kept here if needed later)
 	testimonials: Testimonial[] = [
 		{
 			name: 'Jane Doe',
@@ -55,45 +51,23 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 		}
 	];
 
-	// Current testimonial index for carousel (Removed in HTML)
 	currentTestimonialIndex: number = 0;
-
-	// Timer for auto-rotation of testimonials (Removed in HTML)
 	testimonialInterval: any;
 
-	ngOnInit() {
-		// Start the testimonial carousel auto-rotation (Commented out as Testimonials section is removed)
-		// this.testimonialInterval = setInterval(() => {
-		//   this.nextTestimonial();
-		// }, 5000);
-	}
+	ngOnInit() {}
 
-	// Clean up the interval on component destroy
 	ngOnDestroy() {
 		if (this.testimonialInterval) {
 			clearInterval(this.testimonialInterval);
 		}
 	}
 
-	// Toggle mobile menu
 	toggleMobileMenu() {
 		this.isMobileMenuOpen = !this.isMobileMenuOpen;
 	}
 
-	// Navigate to previous testimonial (Removed functionality)
-	// prevTestimonial() {
-	//   this.currentTestimonialIndex = (this.currentTestimonialIndex - 1 + this.testimonials.length) % this.testimonials.length;
-	// }
-
-	// Navigate to next testimonial (Removed functionality)
-	// nextTestimonial() {
-	//   this.currentTestimonialIndex = (this.currentTestimonialIndex + 1) % this.testimonials.length;
-	// }
-
-	// Handle subscription form submission
 	subscribe() {
 		if (this.subscriptionEmail) {
-			// Handle subscription logic here (e.g., API call)
 			alert(`Subscribed with email: ${this.subscriptionEmail}`);
 			this.subscriptionEmail = '';
 		}

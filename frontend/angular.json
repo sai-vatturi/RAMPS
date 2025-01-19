@@ -43,7 +43,7 @@
 								},
 								{
 									"type": "anyComponentStyle",
-									"maximumWarning": "30kb",
+									"maximumWarning": "32kb",
 									"maximumError": "50kb"
 								}
 							]
@@ -72,5 +72,8 @@
 				}
 			}
 		}
-	}
+  },
+  "cli": {
+    "analytics": "8298190f-55b1-40f5-9219-4429dda95253"
+  }
 }

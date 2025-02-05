@@ -56,11 +56,11 @@ namespace RecipeMeal.API.Controllers
 
 		[HttpGet]
 		[AllowAnonymous]
-		public async Task<IActionResult> GetAllRecipes()
+		public async Task<IActionResult> GetAllRecipes([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 		{
 			try
 			{
-				var recipes = await _recipeService.GetAllRecipesAsync();
+				var recipes = await _recipeService.GetAllRecipesAsync(pageNumber, pageSize);
 				return Ok(recipes);
 			}
 			catch (Exception ex)
@@ -68,6 +68,22 @@ namespace RecipeMeal.API.Controllers
 				return BadRequest(new { message = ex.Message });
 			}
 		}
+
+		[HttpGet("count")]
+		[AllowAnonymous]
+		public async Task<IActionResult> GetRecipeCount()
+		{
+			try
+			{
+				var count = await _recipeService.GetRecipeCountAsync();
+				return Ok(new { count });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+		}
+
 
 		[HttpGet("{id}")]
 		[AllowAnonymous]

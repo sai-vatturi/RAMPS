@@ -25,7 +25,9 @@ RUN rm -rf /app/RecipeMeal.API && mkdir -p /app/RecipeMeal.API
 # Now copy appsettings.json into the correct directory
 COPY ./RecipeMeal.API/appsettings.json /app/RecipeMeal.API/appsettings.json
 
+# Expose the ports for both HTTP (80) and HTTPS (443)
 EXPOSE 80
+EXPOSE 443
 
-# Start the application
+# Start the application with HTTPS enabled
 ENTRYPOINT ["dotnet", "RecipeMeal.API.dll"]

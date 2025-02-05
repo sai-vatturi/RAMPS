@@ -64,7 +64,7 @@ namespace RecipeMeal.Infrastructure.Services
 			_dbContext.Users.Add(user);
 			await _dbContext.SaveChangesAsync();
 
-			string verificationLink = $"http://foodproapp.s3-website.ap-south-1.amazonaws.com/verify-email?token={user.EmailVerificationToken}";
+			string verificationLink = $"https://polite-wave-0a42a4400.4.azurestaticapps.net/#/verify-email?token={user.EmailVerificationToken}";
 			await _emailService.SendAsync(user.Email, "Verify Your Email", $"Click here to verify your email: {verificationLink}");
 
 			return "User registered successfully. Please check your email to verify your account.";
@@ -117,7 +117,7 @@ namespace RecipeMeal.Infrastructure.Services
 			_dbContext.Users.Update(user);
 			await _dbContext.SaveChangesAsync();
 
-			string resetLink = $"http://foodproapp.s3-website.ap-south-1.amazonaws.com/reset-password?token={user.PasswordResetToken}";
+			string resetLink = $"https://polite-wave-0a42a4400.4.azurestaticapps.net/#/reset-password?token={user.PasswordResetToken}";
 			await _emailService.SendAsync(user.Email, "Reset Your Password", $"Click here to reset your password: {resetLink}");
 		}
 

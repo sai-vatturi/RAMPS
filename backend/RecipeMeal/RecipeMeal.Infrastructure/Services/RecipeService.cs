@@ -121,9 +121,18 @@ namespace RecipeMeal.Infrastructure.Services
 			return recipe;
 		}
 
-		public async Task<IEnumerable<object>> GetAllRecipesAsync()
+		public async Task<IEnumerable<object>> GetAllRecipesAsync(int pageNumber = 0, int pageSize = 0)
 		{
-			return await _dbContext.Recipes
+			// If no pagination is provided (both pageNumber and pageSize are 0 or negative), return all records
+			IQueryable<Recipe> query = _dbContext.Recipes;
+
+			if (pageNumber > 0 && pageSize > 0)
+			{
+				// Apply pagination if both pageNumber and pageSize are valid
+				query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+			}
+
+			var recipes = await query
 				.Select(r => new
 				{
 					r.RecipeId,
@@ -137,7 +146,17 @@ namespace RecipeMeal.Infrastructure.Services
 					r.CreatedAt
 				})
 				.ToListAsync();
+
+			return recipes;
 		}
+
+		public async Task<int> GetRecipeCountAsync()
+		{
+			return await _dbContext.Recipes.CountAsync();
+		}
+
+
+
 
 		public async Task<Recipe> GetRecipeByIdAsync(int id)
 		{

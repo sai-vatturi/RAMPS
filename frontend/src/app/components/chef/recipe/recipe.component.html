@@ -134,12 +134,41 @@
 				<span class="text-sm text-gray-500 ml-2">({{ selectedRecipe.averageRating.toFixed(1) }})</span>
 			</div>
 
-			<div *ngIf="selectedRecipe">
-				<div class="flex justify-end space-x-2 mt-4">
-					<button (click)="openEditDialog(selectedRecipe)" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Edit</button>
-					<button (click)="deleteRecipe(selectedRecipe.recipeId)" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
+			<div *ngIf="userRole === 'Admin' || userRole === 'Chef'" class="flex justify-end space-x-2 mt-4">
+				<button (click)="openEditDialog(selectedRecipe)" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Edit</button>
+				<button (click)="deleteRecipe(selectedRecipe.recipeId)" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
+			</div>
+
+			<h3 class="text-xl font-semibold text-[#494949] mt-6 mb-4">Reviews</h3>
+			<div *ngIf="reviews.length > 0; else noReviews">
+				<div *ngFor="let review of reviews" class="bg-gray-100 p-4 rounded-lg shadow-md mb-4">
+					<div class="flex justify-between items-center mb-2">
+						<h4 class="text-sm font-bold text-[#494949]">{{ review.userName }}</h4>
+						<p class="text-sm text-gray-500">Rating: {{ review.rating }}</p>
+					</div>
+					<p class="text-sm text-[#494949] mb-2">{{ review.comment }}</p>
+					<div class="flex space-x-2" *ngIf="review.userName === currentUsername">
+						<button class="text-sm text-blue-500 hover:underline" (click)="editReview(review)">Edit</button>
+						<button class="text-sm text-red-500 hover:underline" (click)="deleteReview(review)">Delete</button>
+					</div>
 				</div>
 			</div>
+			<ng-template #noReviews>
+				<p class="text-sm text-gray-500">No reviews yet. Be the first to add one!</p>
+			</ng-template>
+
+			<form (ngSubmit)="addReview()" class="space-y-4 mt-4 bg-gray-50 p-4 rounded-lg shadow-md">
+				<h4 class="text-lg font-semibold text-[#494949]">Add Your Review</h4>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Rating (1-5)</label>
+					<input type="number" [(ngModel)]="newReview.rating" name="rating" required min="1" max="5" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]" />
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-[#494949]">Comment</label>
+					<textarea [(ngModel)]="newReview.comment" name="comment" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#88C533]"></textarea>
+				</div>
+				<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Submit Review</button>
+			</form>
 		</div>
 	</div>
 </div>

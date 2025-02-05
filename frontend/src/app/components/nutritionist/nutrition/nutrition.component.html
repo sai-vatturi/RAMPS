@@ -117,31 +117,64 @@
 		</div>
 
 		<!-- Actual Nutrition Cards -->
-		<div *ngIf="!isLoadingNutrition" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 			<div *ngFor="let nutrition of filteredNutrition" class="bg-white rounded-xl p-6 flex flex-col shadow-sm transition-transform transform hover:scale-105 hover:shadow-md" style="border: 1px solid rgba(0, 0, 0, 0.1)">
 				<div class="flex-1">
-					<h3 class="text-xl font-semibold mb-2 text-[#191B19]">{{ nutrition.recipeTitle }}</h3>
-					<p>
-						Calories:
-						<span class="font-semibold text-[#4b7a0a]">{{ nutrition.calories }}</span>
-					</p>
-					<p>
-						Protein:
-						<span class="font-semibold text-[#4b7a0a]">{{ nutrition.protein }}</span>
-					</p>
-					<p>
-						Carbs:
-						<span class="font-semibold text-[#4b7a0a]">{{ nutrition.carbs }}</span>
-					</p>
-					<p>
-						Fat:
-						<span class="font-semibold text-[#4b7a0a]">{{ nutrition.fat }}</span>
-					</p>
-					<p>
-						Vitamins:
-						<span class="font-semibold text-[#4b7a0a]">{{ nutrition.vitamins }}</span>
+					<h3 class="text-xl font-semibold mb-4 text-[#191B19]">{{ nutrition.recipeTitle }}</h3>
+
+					<!-- Calories -->
+					<div class="mb-4">
+						<div class="flex justify-between mb-1">
+							<span class="text-sm">Calories</span>
+							<span class="text-sm font-semibold">{{ nutrition.calories }}</span>
+						</div>
+						<div class="w-full bg-gray-200 rounded-full h-2">
+							<div class="bg-blue-500 h-2 rounded-full transition-all duration-300" [style.width.%]="getPercentage(nutrition.calories, 500)"></div>
+						</div>
+					</div>
+
+					<!-- Protein -->
+					<div class="mb-4">
+						<div class="flex justify-between mb-1">
+							<span class="text-sm">Protein</span>
+							<span class="text-sm font-semibold">{{ nutrition.protein }}g</span>
+						</div>
+						<div class="w-full bg-gray-200 rounded-full h-2">
+							<div class="bg-green-500 h-2 rounded-full transition-all duration-300" [style.width.%]="getPercentage(nutrition.protein, 50)"></div>
+						</div>
+					</div>
+
+					<!-- Carbs -->
+					<div class="mb-4">
+						<div class="flex justify-between mb-1">
+							<span class="text-sm">Carbs</span>
+							<span class="text-sm font-semibold">{{ nutrition.carbs }}g</span>
+						</div>
+						<div class="w-full bg-gray-200 rounded-full h-2">
+							<div class="bg-orange-500 h-2 rounded-full transition-all duration-300" [style.width.%]="getPercentage(nutrition.carbs, 300)"></div>
+						</div>
+					</div>
+
+					<!-- Fat -->
+					<div class="mb-4">
+						<div class="flex justify-between mb-1">
+							<span class="text-sm">Fat</span>
+							<span class="text-sm font-semibold">{{ nutrition.fat }}g</span>
+						</div>
+						<div class="w-full bg-gray-200 rounded-full h-2">
+							<div class="bg-red-500 h-2 rounded-full transition-all duration-300" [style.width.%]="getPercentage(nutrition.fat, 65)"></div>
+						</div>
+					</div>
+
+					<!-- Vitamins -->
+					<p class="text-sm mt-2">
+						<span class="font-medium">Vitamins:</span>
+						<span class="text-[#4b7a0a]">{{' ' + nutrition.vitamins }}</span>
 					</p>
 				</div>
+
+				<!-- Action Buttons -->
 				<div *ngIf="userRole !== 'User' && userRole !== 'MealPlanner'" class="mt-4 flex space-x-2">
 					<button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors" (click)="openEditModal(nutrition)">Edit</button>
 					<button class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors" (click)="confirmDelete(nutrition.nutritionId)">Delete</button>

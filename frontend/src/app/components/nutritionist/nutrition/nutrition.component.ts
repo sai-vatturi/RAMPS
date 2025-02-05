@@ -141,6 +141,20 @@ export class NutritionComponent implements OnInit {
 		}
 	}
 
+	// Calculate percentage for progress bars
+	getPercentage(value: number, max: number): number {
+		const percentage = (value / max) * 100;
+		return Math.min(percentage, 100);
+	}
+
+	// Reference values for max nutrition
+	maxValues = {
+		calories: 10,
+		protein: 30,
+		carbs: 50,
+		fat: 50
+	};
+
 	// Apply Nutrition Filter
 	applyNutritionFilter(filter: string) {
 		this.selectedNutritionFilter = filter;

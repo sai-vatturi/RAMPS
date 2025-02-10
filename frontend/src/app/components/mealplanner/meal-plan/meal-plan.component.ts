@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MealPlanService } from '../../../services/meal-plan.service';
+import { RecipeService } from '../../../services/recipe.service'; // Add this import
 
 @Component({
 	selector: 'app-meal-plan',
@@ -28,7 +29,10 @@ export class MealPlanComponent implements OnInit {
 	isLoadingAvailableRecipes: boolean = false;
 	isLoadingCreateUpdate: boolean = false;
 
-	constructor(private mealPlanService: MealPlanService) {}
+	constructor(
+		private mealPlanService: MealPlanService,
+		private recipeService: RecipeService // Inject RecipeService
+	) {}
 
 	ngOnInit() {
 		this.userRole = localStorage.getItem('userRole');
@@ -49,14 +53,48 @@ export class MealPlanComponent implements OnInit {
 		this.isLoadingMealPlans = true; // Start loading
 		this.mealPlanService.getAllMealPlans().subscribe({
 			next: data => {
-				this.mealPlans = (data.$values || data).map((plan: any) => ({
-					...plan,
-					recipes: (plan.recipes?.$values || plan.recipes || []).map((recipe: any) => ({
-						...recipe,
-						mealPeriod: this.getMealPeriod(recipe.mealTime)
-					}))
-				}));
-				this.isLoadingMealPlans = false; // Loading finished
+				const mealPlans = data.$values || data;
+
+				// Fetch recipe details for each meal plan
+				const recipePromises = mealPlans.map((plan: any) => {
+					const recipeDetailsPromises = (plan.recipes?.$values || plan.recipes || []).map((recipe: any) => {
+						return this.recipeService
+							.getRecipeById(recipe.recipeId)
+							.toPromise()
+							.then((recipeDetails: any) => {
+								return {
+									...recipe,
+									title: recipeDetails.title,
+									imageUrl: recipeDetails.imageUrl, // Fetch image URL from recipe details
+									mealPeriod: this.getMealPeriod(recipe.mealTime)
+								};
+							})
+							.catch(() => {
+								return {
+									...recipe,
+									title: 'Unknown Recipe',
+									imageUrl: 'https://via.placeholder.com/150?text=No+Image', // Fallback image
+									mealPeriod: this.getMealPeriod(recipe.mealTime)
+								};
+							});
+					});
+
+					return Promise.all(recipeDetailsPromises).then(recipes => {
+						return {
+							...plan,
+							recipes
+						};
+					});
+				});
+
+				Promise.all(recipePromises)
+					.then(updatedMealPlans => {
+						this.mealPlans = updatedMealPlans;
+						this.isLoadingMealPlans = false; // Loading finished
+					})
+					.catch(() => {
+						this.isLoadingMealPlans = false; // Ensure loading is stopped on error
+					});
 			},
 			error: err => {
 				alert(`Error loading meal plans: ${err.error}`);

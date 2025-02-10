@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { jsPDF } from 'jspdf'; // Import jsPDF for PDF generation
 import { RecipeService } from '../../../services/recipe.service';
 import { ReviewService } from '../../../services/review.service';
 
@@ -332,5 +333,154 @@ export class RecipeComponent implements OnInit {
 			this.pageNumber++;
 			this.loadRecipes();
 		}
+	}
+	async downloadRecipeAsPdf(recipe: any): Promise<void> {
+		const doc = new jsPDF({
+			orientation: 'portrait',
+			unit: 'mm',
+			format: 'a4'
+		});
+
+		const primaryColor = '#191B19';
+		const accentColor = '#4CAF50';
+		const secondaryColor = '#494949';
+
+		// Header
+		doc.setFillColor(accentColor);
+		doc.rect(0, 0, 210, 40, 'F');
+
+		// Header text
+		doc.setTextColor('#FFFFFF');
+		doc.setFontSize(26);
+		doc.text(recipe.title, 15, 25);
+
+		doc.setFillColor('#FFFFFF');
+		doc.setTextColor(accentColor);
+		doc.setFontSize(12);
+		const categoryWidth = doc.getTextWidth(recipe.category) + 10;
+		doc.roundedRect(15, 32, categoryWidth, 7, 1, 1, 'F');
+		doc.text(recipe.category, 20, 37);
+
+		let yPosition = 45;
+
+		// Add circular image if available
+		if (recipe.imageUrl) {
+			try {
+				const response = await fetch(recipe.imageUrl, { mode: 'cors' });
+				const blob = await response.blob();
+				const base64: string = await new Promise<string>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onloadend = () => resolve(reader.result as string);
+					reader.onerror = reject;
+					reader.readAsDataURL(blob);
+				});
+
+				// Create temporary image to get dimensions
+				const img = new Image();
+				await new Promise<void>((resolve, reject) => {
+					img.onload = () => resolve();
+					img.onerror = reject;
+					img.src = base64;
+				});
+
+				// Calculate dimensions for circular image
+				const circleSize = 40; // 40mm diameter
+				const xCenter = doc.internal.pageSize.getWidth() / 2 - circleSize / 2;
+				yPosition += 10; // Add some spacing after header
+
+				// Calculate dimensions to maintain aspect ratio
+				let imageWidth = circleSize;
+				let imageHeight = circleSize;
+				const aspectRatio = img.width / img.height;
+
+				if (aspectRatio > 1) {
+					// Image is wider than tall
+					imageHeight = circleSize / aspectRatio;
+					// Center vertically
+					const yOffset = (circleSize - imageHeight) / 2;
+					doc.addImage(base64, 'JPEG', xCenter, yPosition + yOffset, imageWidth, imageHeight);
+				} else {
+					// Image is taller than wide or square
+					imageWidth = circleSize * aspectRatio;
+					// Center horizontally
+					const xOffset = (circleSize - imageWidth) / 2;
+					doc.addImage(base64, 'JPEG', xCenter + xOffset, yPosition, imageWidth, imageHeight);
+				}
+
+				yPosition += circleSize + 20; // Add spacing after image
+			} catch (error) {
+				console.warn('Failed to load image:', error);
+				yPosition += 15; // Add some spacing even if image fails
+			}
+		} else {
+			yPosition += 15; // Add some spacing if no image
+		}
+
+		// Function to add recipe content (Description, Ingredients, Steps, Footer)
+		const addRecipeContent = () => {
+			// Description Section
+			doc.setTextColor(accentColor);
+			doc.setFontSize(16);
+			doc.text('Description', 15, yPosition);
+
+			doc.setTextColor(secondaryColor);
+			doc.setFontSize(12);
+			const splitDescription = doc.splitTextToSize(recipe.description, 180);
+			yPosition += 10;
+			doc.text(splitDescription, 15, yPosition);
+			yPosition += splitDescription.length * 7 + 10;
+
+			// Ingredients Section
+			doc.setTextColor(accentColor);
+			doc.setFontSize(16);
+			doc.text('Ingredients', 15, yPosition);
+			yPosition += 10;
+
+			doc.setTextColor(secondaryColor);
+			doc.setFontSize(12);
+			const ingredients: string[] = recipe.ingredients.split(',');
+			ingredients.forEach((ingredient: string) => {
+				const bulletPoint = '•';
+				doc.text(bulletPoint, 15, yPosition);
+				const splitIngredient = doc.splitTextToSize(ingredient.trim(), 170);
+				doc.text(splitIngredient, 25, yPosition);
+				yPosition += splitIngredient.length * 7;
+			});
+			yPosition += 10;
+
+			// Steps Section
+			doc.setTextColor(accentColor);
+			doc.setFontSize(16);
+			doc.text('Steps', 15, yPosition);
+			yPosition += 10;
+
+			doc.setTextColor(secondaryColor);
+			doc.setFontSize(12);
+			const steps: string[] = recipe.steps
+				.split(/\d+\.\s?/)
+				.map((step: string) => step.replace(/\\n/g, '').trim())
+				.filter((step: string) => step !== '');
+			steps.forEach((step: string, index: number) => {
+				const stepNumber = `${index + 1}.`;
+				doc.text(stepNumber, 15, yPosition);
+				const splitStep = doc.splitTextToSize(step, 170);
+				doc.text(splitStep, 25, yPosition);
+				yPosition += splitStep.length * 7;
+			});
+
+			// Simplified Footer
+			const pageCount = (doc as any).internal.pages.length;
+			doc.setTextColor('#888888');
+			doc.setFontSize(10);
+			for (let i = 1; i <= pageCount; i++) {
+				doc.setPage(i);
+				doc.text('Generated by FoodPro', doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+			}
+
+			const sanitizedTitle = recipe.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+			doc.save(`${sanitizedTitle}_recipe.pdf`);
+		};
+
+		addRecipeContent();
 	}
 }

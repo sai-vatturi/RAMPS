@@ -138,6 +138,7 @@
 				<button (click)="openEditDialog(selectedRecipe)" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Edit</button>
 				<button (click)="deleteRecipe(selectedRecipe.recipeId)" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
 			</div>
+			<button (click)="downloadRecipeAsPdf(selectedRecipe)" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Download PDF</button>
 
 			<h3 class="text-xl font-semibold text-[#494949] mt-6 mb-4">Reviews</h3>
 			<div *ngIf="reviews.length > 0; else noReviews">

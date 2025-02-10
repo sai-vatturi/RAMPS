@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer components {
-  .screen-large {
-    @apply hidden lg:block;
-  }
+	.screen-large {
+		@apply hidden lg:block;
+	}
 }

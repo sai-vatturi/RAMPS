@@ -88,6 +88,8 @@ builder.Services.AddScoped<IShoppingService, ShoppingService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<UserValidationService>();
+builder.Services.AddScoped<IFoodRecommendationService, FoodRecommendationService>();
+builder.Services.AddHttpClient();
 
 // Configure Entity Framework and database context
 builder.Services.AddDbContext<RecipeMealDbContext>(options =>

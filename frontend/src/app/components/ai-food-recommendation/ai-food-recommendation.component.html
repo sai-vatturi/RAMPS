@@ -1,0 +1,26 @@
+<div class="min-h-screen font-sans p-6 bg-gray-50">
+	<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+		<h1 class="text-3xl font-bold text-[#191B19] mb-6">AI Food Recommendation</h1>
+		<p class="text-gray-600 mb-6">Ask the AI for food recommendations based on your health condition.</p>
+
+		<!-- Input for User Prompt -->
+		<div class="mb-6">
+			<textarea [(ngModel)]="userPrompt" placeholder="e.g., I currently have a fever, what food to eat?" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CAF50]" rows="4"></textarea>
+		</div>
+
+		<!-- Submit Button -->
+		<button (click)="getFoodRecommendation()" [disabled]="isLoading" class="w-full bg-[#4CAF50] text-white px-6 py-3 rounded-lg hover:bg-[#388E3C] transition-colors flex items-center justify-center">
+			<span *ngIf="!isLoading">Get Recommendation</span>
+			<span *ngIf="isLoading">Loading...</span>
+			<svg *ngIf="isLoading" class="w-5 h-5 ml-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+			</svg>
+		</button>
+
+		<!-- AI Response -->
+		<div *ngIf="aiResponse" class="mt-6 p-4 bg-gray-100 rounded-lg">
+			<h2 class="text-xl font-semibold text-[#191B19] mb-2">AI Recommendation:</h2>
+			<p class="text-gray-700 whitespace-pre-line">{{ aiResponse }}</p>
+		</div>
+	</div>
+</div>

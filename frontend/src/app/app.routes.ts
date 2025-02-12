@@ -19,7 +19,8 @@ export const routes: Routes = [
 			{ path: 'meal-plan', loadComponent: () => import('./components/mealplanner/meal-plan/meal-plan.component').then(m => m.MealPlanComponent) },
 			{ path: 'shopping-lists', loadComponent: () => import('./components/shopping-list/shopping-list.component').then(m => m.ShoppingComponent) },
 			{ path: 'dietary-preferences', loadComponent: () => import('./components/dietary-preferences/dietary-preferences.component').then(m => m.DietaryPreferencesComponent) },
-			{ path: 'users', loadComponent: () => import('./components/admin/users/users.component').then(m => m.UsersComponent) }
+			{ path: 'users', loadComponent: () => import('./components/admin/users/users.component').then(m => m.UsersComponent) },
+			{ path: 'ai-food-recommendation', loadComponent: () => import('./components/ai-food-recommendation/ai-food-recommendation.component').then(m => m.AiFoodRecommendationComponent) }
 		]
 	},
 

@@ -20,7 +20,8 @@ export const routes: Routes = [
 			{ path: 'shopping-lists', loadComponent: () => import('./components/shopping-list/shopping-list.component').then(m => m.ShoppingComponent) },
 			{ path: 'dietary-preferences', loadComponent: () => import('./components/dietary-preferences/dietary-preferences.component').then(m => m.DietaryPreferencesComponent) },
 			{ path: 'users', loadComponent: () => import('./components/admin/users/users.component').then(m => m.UsersComponent) },
-			{ path: 'ai-food-recommendation', loadComponent: () => import('./components/ai-food-recommendation/ai-food-recommendation.component').then(m => m.AiFoodRecommendationComponent) }
+			{ path: 'ai-food-recommendation', loadComponent: () => import('./components/ai-food-recommendation/ai-food-recommendation.component').then(m => m.AiFoodRecommendationComponent) },
+			{ path: 'home', loadComponent: () => import('./components/home/home.component').then(m => m.HomeComponent) }
 		]
 	},
 

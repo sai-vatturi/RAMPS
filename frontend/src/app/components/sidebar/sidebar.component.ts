@@ -24,6 +24,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private menuConfig = {
 		common: [
+			{ label: 'Home', icon: 'fas fa-home', path: 'home' }, // Add this as the first item
 			{ label: 'Recipes', icon: 'fas fa-utensils', path: 'recipes' },
 			{ label: 'Nutritions', icon: 'fas fa-leaf', path: 'nutrition' },
 			{ label: 'Meal Plans', icon: 'fas fa-calendar-alt', path: 'meal-plan' },

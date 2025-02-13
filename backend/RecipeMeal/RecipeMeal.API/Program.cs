@@ -89,6 +89,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<UserValidationService>();
 builder.Services.AddScoped<IFoodRecommendationService, FoodRecommendationService>();
+builder.Services.AddScoped<IHomePageService, HomePageService>();
 builder.Services.AddHttpClient();
 
 // Configure Entity Framework and database context
@@ -136,7 +137,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Ensure the app listens on all interfaces on port 80
-// app.Urls.Add("http://0.0.0.0:80");
+app.Urls.Add("http://0.0.0.0:80");
 
 // Run the application
 app.Run();
